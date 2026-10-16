@@ -23,9 +23,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","No
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 a{color:inherit}
 .top{position:sticky;top:0;z-index:5;background:#2b2118;color:#fff;padding:12px 20px calc(10px);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.brand{display:flex;flex-direction:column;min-width:150px}
-.brand b{font-size:1.15rem;letter-spacing:-.01em}
-.brand span{font-size:.78rem;opacity:.7}
+.brand{display:flex;align-items:center;gap:12px;min-width:200px}
+.brand .logo{width:54px;height:54px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.brand .logo img{width:46px;height:46px;object-fit:contain}
+.brand .bt{display:flex;flex-direction:column;line-height:1.2}
+.brand b{font-size:1.35rem;letter-spacing:-.02em;color:#ffb37a}
+.brand .bt span{font-size:.82rem;opacity:.75;margin-top:2px}
 .clock{flex:1;text-align:center;display:flex;align-items:baseline;justify-content:center;gap:12px}
 .clock .d{font-size:1.05rem;opacity:.85}
 .clock .t{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em}
@@ -120,7 +123,7 @@ body.night .btnlink{background:#f3eee6;color:#1d1a16}
 </head>
 <body>
 <div class="top">
-  <div class="brand"><b>업무 대시보드</b><span>빵을그리다 · UTCA · 메일</span></div>
+  <div class="brand"><span class="logo"><img src="brand_logo.png" alt="빵을그리다 로고"></span><div class="bt"><b>빵을그리다</b><span>업무 대시보드</span></div></div>
   <div class="clock"><span class="d" id="cd"></span><span class="t" id="ct"></span></div>
   <div class="tools">
     <div class="upd" id="upd"></div>
