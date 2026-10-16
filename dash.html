@@ -213,7 +213,7 @@ function vHome(){
   const na=naverActions(n),ua=utcaActions(u),ac=auditCnt(a);
   const tmr=D.delivery&&D.delivery.days&&D.delivery.days.slice(1).find(x=>x.custs.length);
   let h='<div class="kpis">'+
-    kpi('오늘 확인할 메일',na.length+ua.length,'건','네이버 '+na.length+' · UTCA '+ua.length,'var(--red)','naver')+
+    kpi('오늘 확인할 메일',(n||u)?na.length+ua.length:'-','건',(n||u)?'네이버 '+na.length+' · UTCA '+ua.length:'다음 알림부터','var(--red)','naver')+
     kpi('이카운트 경고',ac.경고||0,'건',a?'확인 '+(ac.확인||0)+' · '+esc(a.label.split(' (')[0]):'자료 없음','var(--bread)','audit')+
     kpi('오늘 출고 거래처',td?td.custs.length:0,'곳',tmr?'다음 '+md(tmr.date)+' '+tmr.custs.length+'곳':'판매전표 기준','var(--amber)','delivery')+
     kpi('네이버 새 메일',n?(n.total||0):'-','건',n?esc(n.when||''):'다음 알림부터','var(--naver)','naver')+
