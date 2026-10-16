@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6feb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="빵을그리다">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>빵을그리다 앱 모음</title>
+<style>
+:root{--blue:#1f6feb;--ink:#1d2433;--sub:#667085;--bg:#f4f6fa}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+header{background:var(--blue);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 22px}
+header .in,main{max-width:1100px;margin:0 auto}
+header h1{margin:0;font-size:24px}
+header p{margin:6px 0 0;opacity:.9;font-size:15px}
+main{padding:16px 14px 40px}
+h2{font-size:15px;color:var(--sub);margin:18px 4px 8px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+a.tile{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:18px;padding:18px 16px;text-decoration:none;color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.08);min-height:132px;border:2px solid transparent}
+a.tile:active{border-color:var(--blue)}
+.ico{font-size:34px;line-height:1}
+.t{font-size:18px;font-weight:800;word-break:keep-all}
+.d{font-size:13.5px;color:var(--sub);line-height:1.45;word-break:keep-all}
+.where{font-size:12px;font-weight:700;color:var(--blue);margin-top:auto}
+.note{background:#fff;border-radius:14px;padding:14px 16px;margin-top:18px;font-size:14px;color:var(--sub);line-height:1.6}
+</style>
+</head>
+<body>
+<header><div class="in"><h1>🍞 빵을그리다 앱 모음</h1><p id="today"></p></div></header>
+<main>
+  <h2>배송·출고</h2>
+  <div class="grid">
+    <a class="tile" href="../dongseon/#board"><span class="ico">🚚</span><span class="t">출고 보드</span><span class="d">오늘 코스별 품목 체크, 적재 완료, 특이사항 공유</span><span class="where">출고장 태블릿 추천</span></a>
+    <a class="tile" href="../dongseon/#delivery"><span class="ico">🗺️</span><span class="t">배송 코스</span><span class="d">이카운트 전표 기준 요일별 코스 만들기·순서 바꾸기</span><span class="where">사무실 · 담당자</span></a>
+    <a class="tile" href="../dongseon/#cust"><span class="ico">📍</span><span class="t">거래처 길안내</span><span class="d">거래처 이름 입력 → 티맵으로 바로 안내</span><span class="where">기사님 휴대폰</span></a>
+    <a class="tile" href="../dongseon/#plan"><span class="ico">🧭</span><span class="t">길찾기</span><span class="d">여러 곳 들르는 순서·도착 시간 계산</span><span class="where">누구나</span></a>
+  </div>
+  <h2>재고·생산</h2>
+  <div class="grid">
+    <a class="tile" href="../wonryo/index.html"><span class="ico">📦</span><span class="t">통합 재고관리</span><span class="d">원료·완제품·생지 재고, 출고 예정, 일일 보고</span><span class="where">전 직원</span></a>
+  </div>
+  <div class="note">
+    · 처음 한 번 <b>홈 화면에 추가</b>해 두면 앱처럼 쓸 수 있어요. (안드로이드: 크롬 ⋮ → 앱 설치 / 아이폰·아이패드: 사파리 공유 → 홈 화면에 추가)<br>
+    · 배송·출고·거래처 앱의 직원용 암호는 담당자에게 받으세요.<br>
+    · 새 앱이 생기면 이 화면에 버튼이 추가돼요. 다시 설치할 필요 없어요.
+  </div>
+</main>
+<script>
+const d = new Date(); document.getElementById('today').textContent = `${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]}) · 필요한 앱을 눌러 주세요`;
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
