@@ -52,10 +52,13 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 .bar .hint{font-size:.8rem;color:var(--faint)}
 
 /* KPI */
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media (max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi{min-height:190px}}
-@media (max-width:560px){.kpis{grid-template-columns:1fr}}
-.kpi{position:relative;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px 18px;display:flex;flex-direction:column;min-height:max(196px,calc((100vh - 230px) / 2));transition:border-color .15s,box-shadow .15s}
+.kpis{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.kpis .kpi{grid-column:span 3}.kpis .kpi.w4{grid-column:span 4}
+.grp{grid-column:1/-1;font-size:.8rem;font-weight:800;color:var(--sub);letter-spacing:.02em;margin:2px 0 -4px;display:flex;align-items:center;gap:8px}
+.grp::after{content:"";flex:1;height:1px;background:var(--line)}
+@media (max-width:980px){.kpis .kpi,.kpis .kpi.w4{grid-column:span 6}.kpi{min-height:180px}}
+@media (max-width:560px){.kpis .kpi,.kpis .kpi.w4{grid-column:span 12}}
+.kpi{position:relative;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px 18px;display:flex;flex-direction:column;min-height:max(180px,calc((100vh - 290px) / 2));transition:border-color .15s,box-shadow .15s}
 .kpi:hover{border-color:#cbd5e1;box-shadow:0 4px 14px rgba(16,24,40,.07)}
 .kpi:active{transform:translateY(1px)}
 .kpi .top{display:flex;align-items:center;gap:10px}
@@ -76,7 +79,9 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 .kpi .val .dl{margin-left:8px;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--gray-bg);color:var(--sub)}
 .kpi .val .dl.up{background:var(--red-bg);color:var(--red)} .kpi .val .dl.down{background:var(--green-bg);color:var(--green)}
 .kpi .ft{padding-top:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--sub)}
-.kpi .ft .go{margin-left:auto;display:flex;align-items:center;gap:2px;font-weight:600;color:var(--faint);font-size:.8rem}
+.kpi .ft{min-width:0}.kpi .ft>span:not(.badge):not(.go){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kpi .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.kpi .ft .go{white-space:nowrap;flex:none;margin-left:auto;display:flex;align-items:center;gap:2px;font-weight:600;color:var(--faint);font-size:.8rem}
 .kpi .ft .go svg{width:16px;height:16px}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
 .badge::before{content:"";width:7px;height:7px;border-radius:4px;background:currentColor}
@@ -232,7 +237,7 @@ function uRef(u){if(!u||!u.sections)return [];const s=u.sections.find(x=>x.kind=
 const nAct=n=>(n&&n.action)||[];
 const aCnt=a=>(a&&a.count)||{경고:0,확인:0,참고:0};
 const whenShort=x=>x?(x.when||md(x.at)).replace(' 정기확인',''):'';
-const SLOTS=[{t:'06:30',h:6.5,kind:'audit',nm:'이카운트 입력값 점검'},{t:'07:00',h:7,kind:'naver',nm:'네이버 메일 중요 전달사항'},{t:'07:00',h:7,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'21:00',h:21,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'22:00',h:22,kind:'naver',nm:'네이버 메일 중요 전달사항'}];
+const SLOTS_KH=1;const SLOTS=[{t:'06:30',h:6.5,kind:'audit',nm:'이카운트 입력값 점검'},{t:'07:00',h:7,kind:'naver',nm:'네이버 메일 중요 전달사항'},{t:'07:00',h:7,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'21:00',h:21,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'22:00',h:22,kind:'naver',nm:'네이버 메일 중요 전달사항'}];
 function slot(s){const now=kst(),nh=now.getHours()+now.getMinutes()/60;
   const hit=(D[s.kind]||[]).find(x=>{if(!sameDay(x.at,Date.now()))return false;const k=kst(x.at),h=k.getHours()+k.getMinutes()/60;return h>=s.h-0.2&&h<s.h+2.5;});
   if(hit)return {st:'done',txt:'완료 '+hm(hit.at)};if(nh<s.h)return {st:'wait',txt:'예정'};if(nh<s.h+1)return {st:'wait',txt:'진행 중'};
@@ -247,8 +252,8 @@ const IC={
  brief:'<path d="M4 8h16v11H4zM9 8V5h6v3"/><path d="M4 13h16"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
 const KAKAO='<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#FEE500"/><path d="M20 9C12.8 9 7 13.6 7 19.2c0 3.6 2.4 6.8 6 8.6l-1.2 4.6c-.1.4.3.7.7.5l5.4-3.6c.7.1 1.4.1 2.1.1 7.2 0 13-4.6 13-10.2S27.2 9 20 9z" fill="#3C1E1E"/><text x="20" y="22.3" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="7.2" fill="#FEE500">TALK</text></svg>';
-const LOGO={naver:'<img src="logo_naver.png" alt="네이버">',gmail:'<img src="logo_gmail.png" alt="Gmail">',ecount:'<img src="logo_ecount.png" alt="이카운트">',dongseon:'<img src="logo_dongseon.png" alt="내 동선">',kakao:KAKAO};
-const APP={naver:1,dongseon:1,kakao:1};
+const LOGO={naver:'<img src="logo_naver.png" alt="네이버">',gmail:'<img src="logo_gmail.png" alt="Gmail">',ecount:'<img src="logo_ecount.png" alt="이카운트">',dongseon:'<img src="logo_dongseon.png" alt="내 동선">',haccp:'<img src="logo_haccp.png" alt="HACCP">',kakao:KAKAO};
+const APP={naver:1,dongseon:1,kakao:1,haccp:1};
 const one=x=>'<span class="lg'+(APP[x]?' app':'')+'">'+LOGO[x]+'</span>';
 const logoHtml=l=>Array.isArray(l)?'<span class="duo">'+l.map(one).join('')+'</span>':one(l);
 const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';
@@ -276,15 +281,25 @@ function kpis(){
   // 5 UTCA
   out.push(!u?{k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'07:00 · 21:00 확인'}:
     {k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',src:whenShort(u),v:(u.stats&&u.stats.total)||0,u:'건',cls:ua?'alert':'',badge:ua?['red','확인 필요 '+ua]:['green','확인 필요 없음'],ft:u.empty?'새 메일 없음':'안 읽음 '+((u.stats&&u.stats.unread)||0)});
+  // 7 K-HACCP
+  const kh=latest(D.khaccp);
+  if(!kh)out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'미작성 · 미결재 · 이탈'});
+  else{const c=kh.counts||{};const tot=(c.unwritten||0)+(c.unapproved||0)+(c.deviation||0);
+    out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:kh.label||'',v:tot,u:'건',cls:c.deviation?'alert':tot?'warn':'ok',
+      badge:c.deviation?['red','이탈 '+c.deviation]:c.unwritten?['amber','미작성 '+c.unwritten]:c.unapproved?['blue','미결재 '+c.unapproved]:['green','모두 정상'],
+      ft:'미작성 '+(c.unwritten||0)+' · 미결재 '+(c.unapproved||0)+' · 이탈 '+(c.deviation||0)});}
   // 6 알림 현황
   const ss=SLOTS.map(slot),done=ss.filter(x=>x.st==='done').length,miss=ss.filter(x=>x.st==='miss').length;
   const pl=D.play&&!/모든 인증 완료/.test(D.play.status||'')?D.play.status:'';
   out.push({k:'sched',logo:'kakao',ic:'clock',lb:'오늘 자동 알림',v:done,u:'/ '+SLOTS.length+' 완료',cls:miss?'alert':'',badge:miss?['red','누락 '+miss]:['green','정상 작동'],ft:pl?'구글 플레이: '+pl:''});
   return out;
 }
-function kpiHtml(x){
+function kpiLayout(){const by={};kpis().forEach(x=>by[x.k]=x);
+  const g1=['khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean),g2=['mail','naver','utca'].map(k=>by[k]).filter(Boolean);
+  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+'<div class="grp">메일</div>'+g2.map(x=>kpiHtml(x,'w4')).join('');}
+function kpiHtml(x,w){
   const dl=x.dl==null||x.dl===0?(x.dl===0?'<span class="dl">전일과 같음</span>':''):'<span class="dl '+(x.dl>0?'up':'down')+'">전일 대비 '+(x.dl>0?'+':'')+x.dl+'</span>';
-  return '<button class="kpi '+(x.cls||'')+'" data-open="'+x.k+'"><div class="top">'+logoHtml(x.logo)+'<span class="lb">'+x.lb+'</span>'+(x.src?'<span class="src">'+esc(x.src)+'</span>':'')+'</div>'+
+  return '<button class="kpi '+(x.cls||'')+' '+(w||'')+'" data-open="'+x.k+'"><div class="top">'+logoHtml(x.logo)+'<span class="lb">'+x.lb+'</span>'+(x.src?'<span class="src">'+esc(x.src)+'</span>':'')+'</div>'+
     '<div class="val"><b class="num">'+x.v+'</b><span>'+x.u+'</span>'+dl+'</div>'+
     '<div class="ft"><span class="badge b-'+x.badge[0]+'">'+esc(x.badge[1])+'</span>'+(x.ft?'<span>'+esc(x.ft)+'</span>':'')+'<span class="go">자세히'+chev+'</span></div></button>';
 }
@@ -292,7 +307,7 @@ function render(){
   if(!D){$('#main').innerHTML='<div class="note gray">불러오는 중…</div>';return;}
   const stale=Date.now()-new Date(D.built.replace(' ','T')+':00+09:00').getTime()>20*3600e3;
   $('#main').innerHTML='<div class="bar"><h1>오늘의 현황</h1><span class="fresh'+(loadErr?' err':stale?' stale':'')+'" id="fresh"><i></i> </span>'+(loadErr?'<span class="hint" style="color:var(--red)">'+esc(loadErr)+'</span>':'')+'<span class="sp"></span><span class="hint">카드를 누르면 자세한 내용이 열려요</span></div>'+
-    '<div class="kpis">'+kpis().map(kpiHtml).join('')+'</div><div class="foot">5분마다 자동 갱신 · 메일·이카운트 원본은 바꾸지 않아요</div>';
+    '<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · 메일·이카운트 원본은 바꾸지 않아요</div>';
   tick();
   if(openKind)fillPanel(openKind);
 }
@@ -356,7 +371,17 @@ function pSched(){
   if(D.play)h+='<div class="box"><h3>구글 플레이 개발자 계정</h3><div class="t1" style="font-weight:700">'+esc(D.play.status)+'</div><div class="t2" style="font-size:.88rem;color:var(--sub);margin-top:4px">'+esc(D.play.detail||'')+(D.play.at?' · '+md(D.play.at)+' '+hm(D.play.at)+' 확인':'')+'</div></div>';
   h+='<div class="meta">알림이 끝날 때마다 이 화면 자료도 함께 갱신돼요. 「기록 없음」이 계속되면 Aside에 알려 주세요.</div>';
   return {s:'카톡 알림과 같은 시각에 자동으로 확인해요',h};}
-const PANELS={mail:['확인할 메일',pMail,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
+function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP 점검 기록이 없어요.<br>첫 자동 점검 후 보여요.')};
+  const c=k.counts||{};let h=hist('khaccp');
+  h+='<div class="box"><div class="stats">'+stat('이탈',c.deviation||0)+stat('미작성',c.unwritten||0)+stat('미결재',c.unapproved||0)+'</div></div>';
+  const sec=(title,tag,mk,arr,fn,okTxt)=>'<div class="box"><h3><span class="tag '+tag+'">'+title+'</span> <span class="c">'+(arr||[]).length+'건</span></h3>'+((arr||[]).length?'<div class="rows">'+arr.map(x=>'<div class="row"><span class="mk '+mk+'"></span><div class="bd"><div class="t1">'+(x.date?'<span class="tag">'+esc(x.date)+'</span>':'')+esc(x.title||'')+'</div>'+fn(x)+'</div></div>').join('')+'</div>':'<div class="note ok">'+okTxt+'</div>')+'</div>';
+  h+=sec('이탈','red','red',k.deviation,x=>'<div class="t2">'+rich(x.item||'')+'</div>'+(x.action?'<div class="t2" style="color:var(--sub)">'+esc(x.action)+'</div>':''),'한계기준 이탈 없음');
+  h+=sec('미작성','amber','amber',k.unwritten,x=>x.note?'<div class="t2">'+esc(x.note)+'</div>':'','빠진 일지 없음');
+  h+=sec('미결재','blue','blue',k.unapproved,x=>'<div class="t2">'+esc([x.writer?'작성 '+x.writer:'',x.step||'승인 대기'].filter(Boolean).join(' · '))+'</div>','결재 대기 없음');
+  if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
+  h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
+  return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):''),h};}
+const PANELS={khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['확인할 메일',pMail,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
 function openPanel(k){openKind=k;fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
