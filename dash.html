@@ -181,6 +181,25 @@ body.night .hist button.on,body.night .days button.on{background:#f3f4f6;color:#
 body.night .days button.on span{color:#4b5563}
 body.night .link,body.night .lock button{background:#f3f4f6;color:#111827}
 body.night .kpi.alert{border-color:#7f1d1d}
+/* 공장 운영 (2026-10-17) */
+.kpis .kpi.sm{min-height:170px;padding:16px 18px 14px}.kpi.sm .val{padding:8px 0 4px}.kpi.sm .val b{font-size:clamp(2.2rem,6vh,3.4rem)}
+.kpis .kpi.w6{grid-column:span 6}
+.grp .gsub{font-weight:600;color:var(--faint);font-size:.75rem}
+.kpis .kpi.todow{grid-column:1/-1;min-height:auto;cursor:pointer}
+.todow .tw{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin:10px 0 12px}
+.trow{display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);min-width:0}
+.trow .mk{width:4px;height:18px;border-radius:2px;background:var(--line);flex:none}.trow .mk.red{background:var(--red)}.trow .mk.amber{background:#f59e0b}.trow .mk.blue{background:var(--blue)}
+.trow .tt{font-size:.92rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:760px){.todow .tw{grid-template-columns:1fr}.kpis .kpi.w6{grid-column:span 12}}
+.tblw{overflow-x:auto}.tbl{width:100%;border-collapse:collapse;font-size:.88rem}.tbl th{font-size:.75rem;color:var(--sub);font-weight:700;text-align:left;padding:6px;border-bottom:1px solid var(--line);white-space:nowrap}.tbl td{padding:8px 6px;border-top:1px solid var(--line);vertical-align:top}.tbl td.r,.tbl th:not(:first-child){text-align:right}.tbl small{color:var(--sub)}
+.neg{color:var(--red)}.okc{color:var(--green);font-weight:700}
+.ul{margin:6px 0 0;padding-left:18px;font-size:.88rem;color:var(--ink2)}
+.nban{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.nban b{white-space:nowrap}.nban span{flex:1;font-size:.86rem;min-width:0}.nban svg{width:18px;height:18px;flex:none}
+body.night .nban{background:#36270b;border-color:#78350f;color:#fbbf24}
+.tg{flex:none;min-width:64px;height:36px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:.85rem;color:var(--sub);background:var(--card)}.tg.on{background:var(--green-bg);border-color:#bbf7d0;color:var(--green)}.tg:disabled{opacity:.5}
+.cp{width:100%;font:inherit;font-size:.8rem;padding:10px;border:1px solid var(--line);border-radius:10px;margin:10px 0 8px;background:var(--soft);color:var(--ink2)}
+body.staff .tools #bInst{display:none!important}
 </style>
 </head>
 <body>
@@ -215,10 +234,15 @@ let D=null,loadErr='',lastLoad=0,openKind=null;
 
 function pickKey(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])k=([A-Za-z0-9_-]{16,})/);if(m)return m[1];const t=s.trim();return /^[A-Za-z0-9_-]{16,}$/.test(t)?t:'';}
 const k0=pickKey(location.hash)||pickKey(location.search);
+// 2026-10-17: 직원용 공장 대시보드 (?f=열쇠) — 메일·매출 없이 공장 자료만 (factory.enc.json)
+const LS_FKEY='dash_fkey_v1';function pickF(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])f=([A-Za-z0-9_-]{16,})/);return m?m[1]:'';}
+const f0=pickF(location.search)||pickF(location.hash);if(f0){try{localStorage.setItem(LS_FKEY,f0);}catch(_){}}
+let STAFF=!!f0;try{if(!STAFF&&!localStorage.getItem(LS_KEY)&&localStorage.getItem(LS_FKEY))STAFF=true;}catch(_){}
+if(STAFF)document.body.classList.add('staff');
 if(k0){try{localStorage.setItem(LS_KEY,k0);}catch(_){}window.__MEMKEY=k0;}
 // 주소에 열쇠를 항상 남겨 둔다 → 이 주소를 즐겨찾기/홈 화면에 추가하면 어느 브라우저에서든 바로 열림
 function keepKeyInUrl(k){try{if(k&&pickKey(location.search)!==k)history.replaceState(null,'',location.pathname+'?k='+k);}catch(_){}}
-try{keepKeyInUrl(k0||localStorage.getItem(LS_KEY));}catch(_){}
+try{if(STAFF){const fk=f0||localStorage.getItem(LS_FKEY);if(fk&&pickF(location.search)!==fk)history.replaceState(null,'',location.pathname+'?f='+fk);}else keepKeyInUrl(k0||localStorage.getItem(LS_KEY));}catch(_){}
 
 function kst(d){const x=d?new Date(d):new Date();return new Date(x.getTime()+(x.getTimezoneOffset()+540)*60000);}
 function md(d){const k=kst(d);return (k.getMonth()+1)+'/'+k.getDate()+'('+DOW[k.getDay()]+')';}
@@ -234,6 +258,10 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
 
 async function load(){
   if(window.__DASH_TEST){D=window.__DASH_TEST;lastLoad=Date.now();render();return;}
+  if(STAFF){let fk=null;try{fk=localStorage.getItem(LS_FKEY);}catch(_){}fk=fk||f0;
+    try{const r=await fetch('factory.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 오류 ('+r.status+')');D=await decrypt(await r.json(),fk);lastLoad=Date.now();loadErr='';try{localStorage.setItem(LS_DATA+'_f',JSON.stringify({at:lastLoad,d:D}));}catch(_){}}
+    catch(err){loadErr=err&&err.name==='OperationError'?'링크의 열쇠가 맞지 않아요. 새 직원용 링크를 받아 주세요':String(err&&err.message||err);if(!D){try{const c=JSON.parse(localStorage.getItem(LS_DATA+'_f')||'null');if(c){D=c.d;lastLoad=c.at;}}catch(_){}}if(!D){$('#main').innerHTML='<div class="lock"><h1>공장 대시보드</h1><p>'+esc(loadErr)+'</p></div>';return;}}
+    render();return;}
   let k=null;try{k=localStorage.getItem(LS_KEY);}catch(_){}k=k||window.__MEMKEY;
   if(!k){renderLock();return;}
   if(!(window.crypto&&crypto.subtle)){renderLock('이 브라우저에서는 열 수 없어요. 크롬(Chrome)에서 열어 주세요.');return;}
@@ -283,8 +311,94 @@ const logoHtml=l=>Array.isArray(l)?'<span class="duo">'+l.map(one).join('')+'</s
 const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';
 const chev='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>';
 
+// ---------- 공장 운영 (2026-10-17 야간 고도화 · 이카운트 × K-HACCP) ----------
+const NF_LIST=[
+ {k:'fac',st:1,nm:'공장 운영 카드 4개',ds:'생산 실적 · 출고 대비 재고 · 원료 남은 기간 · 생산↔K-HACCP 대조'},
+ {k:'todo',st:1,nm:'오늘 할 일 (담당별 자동 정리)',ds:'이카운트·K-HACCP·대조 결과에서 할 일을 뽑아 생산·품질·구매·사무로 나눠 보여 줘요'},
+ {k:'ref',st:1,nm:'참고 카드 (재고 이상 · 4~10월 대조 분석 · 매출 흐름)',ds:'매출 흐름은 대표 화면에만 보여요'},
+ {k:'staff',st:2,nm:'직원용 공장 대시보드 링크',ds:'메일·매출 없이 공장 정보만 보이는 별도 링크 (열쇠가 달라요)'}];
+function nfOn(k){if(D&&D.flags&&D.flags[k]===false)return false;return !(ui.nf&&ui.nf[k]===false);}
+const F_=()=>(D&&D.factory)||null;
+const fmtN=v=>v==null?'–':Math.round(v).toLocaleString();
+const ROLE_C={'생산':'blue','구매':'amber','품질':'red','결재':'blue','사무':'','재고':'amber'};
+function facKpis(){const f=F_();const out=[];if(!f)return out;
+  const w=f.week||{};const top=(w.rows||[]).filter(r=>r.per&&r.tw).slice(0,3).map(r=>r.nm+' '+r.tw).join(' · ');
+  out.push({k:'fprod',logo:'ecount',lb:'이번 주 생산',src:md(w.mon+'T00:00:00+09:00')+'~',v:fmtN(w.twBox),u:'박스',cls:'info',badge:['blue','생산일 '+(w.twDays||0)+'일'],ft:'지난주 같은 기간 '+fmtN(w.lwBox)+'박스'+(top?' · '+top:'')});
+  const sh=((f.need&&f.need.own)||[]).filter(x=>x.shortEa>0);
+  out.push({k:'fneed',logo:'ecount',lb:'출고 대비 재고',src:'앞으로 14일',v:sh.length,u:'품목 부족',cls:sh.length?'alert':'ok',badge:sh.length?['red','생산 필요']:['green','부족 없음'],ft:sh.length?sh.map(x=>x.nm+' '+Math.ceil(x.shortEa/x.per)+'박스').join(' · '):'입력된 출고를 모두 낼 수 있어요'});
+  const rr=((f.raw&&f.raw.rows)||[]);const red=rr.filter(r=>r.lv==='red'),amb=rr.filter(r=>r.lv==='amber');
+  out.push({k:'fraw',logo:'ecount',lb:'원료 남은 기간',src:'최근 8주 사용 기준',v:red.length,u:'종 발주 필요',cls:red.length?'alert':amb.length?'warn':'ok',badge:red.length?['red','발주 필요']:amb.length?['amber','다음 입고에 포함 '+amb.length]:['green','여유 있음'],ft:red.concat(amb).slice(0,3).map(r=>r.nm+' '+r.weeks+'주').join(' · ')||'모든 원료 3주 이상'});
+  const m=f.match;const bad=m?(m.cnt.diff||0)+(m.cnt.kh_none||0)+(m.cnt.ec_none||0):0;
+  out.push({k:'fmatch',logo:'haccp',lb:'생산량 대조',src:m?md(m.from+'T00:00:00+09:00')+'~'+md(m.to+'T00:00:00+09:00'):'',v:m&&m.rate!=null?m.rate:'–',u:'% 일치',cls:bad?'warn':m?'ok':'',badge:!m?['gray','기록 대기']:bad?['amber','다름 '+bad+'건']:['green','모두 일치'],ft:m?'제품·날짜 '+m.total+'건 대조'+(f.cover&&f.cover.missN?' · CCP 빠진 날 '+f.cover.missN:''):''});
+  return out;}
+function refKpis(staff){const f=F_();const out=[];if(!f)return out;
+  const ng=f.neg||{};out.push({k:'fstock',logo:'ecount',lb:'재고 이상',src:'이카운트',v:ng.own||0,u:'자사 마이너스',cls:ng.own?'warn':'ok',badge:['gray','전체 마이너스 '+(ng.total||0)],ft:'최근 30일 움직인 품목 '+(ng.active||0)+' · 조정 '+((f.adj&&f.adj.n)||0)+'줄(14일)'});
+  const a=f.analysis;if(a&&a.prodMatch)out.push({k:'fana',logo:'haccp',lb:'4~10월 대조 분석',src:a.period.replace(/2026-/g,'').replace(' ~ ','~'),v:a.prodMatch.rate,u:'% 일치',cls:'info',badge:['blue','제품·날짜 '+a.prodMatch.total+'건'],ft:'다름 '+(a.prodMatch.cnt.diff||0)+' · 한쪽만 '+((a.prodMatch.cnt.kh_none||0)+(a.prodMatch.cnt.ec_none||0))+' · 소비기한 다름 '+((a.expiry&&a.expiry.diff||[]).length)});
+  if(!staff&&f.sales){const s=f.sales;const d=s.lw?Math.round((s.tw-s.lw)/s.lw*100):null;out.push({k:'fsales',logo:'ecount',lb:'이번 주 매출',src:'공급가액',v:fmtN(s.tw/10000),u:'만원',cls:'info',badge:d==null?['gray','비교 없음']:[d>=0?'green':'amber','지난주 같은 기간 '+(d>=0?'+':'')+d+'%'],ft:'입력된 앞으로 매출 '+fmtN(s.fut/10000)+'만원'});}
+  return out;}
+function todoWide(){const f=F_();if(!f||!f.todo)return '';const t=f.todo;const c={red:0,amber:0,blue:0};t.forEach(x=>c[x.lv]++);
+  return '<div class="kpi todow '+(c.red?'alert':'')+'" data-open="ftodo" role="button" tabindex="0"><div class="top"><span class="ic">'+svg('alert')+'</span><span class="lb">오늘 할 일 · 담당별 자동 정리</span><span class="src">이카운트 · K-HACCP · 대조</span></div>'+
+   '<div class="tw">'+t.slice(0,6).map(x=>'<div class="trow"><span class="mk '+x.lv+'"></span><span class="tag '+(ROLE_C[x.role]||'')+'">'+esc(x.role)+'</span><div class="tt">'+esc(x.title)+'</div></div>').join('')+'</div>'+
+   '<div class="ft"><span class="badge b-'+(c.red?'red':c.amber?'amber':'green')+'">급함 '+c.red+' · 확인 '+c.amber+' · 참고 '+c.blue+'</span><span class="go">전체 '+t.length+'건'+chev+'</span></div></div>';}
+function facLayout(staff){let h='';const f=F_();if(!f)return '';
+  if(nfOn('fac'))h+='<div class="grp">공장 운영 · 이카운트 × K-HACCP <span class="gsub">'+esc((f.built||'').slice(5).replace('-','/'))+' 기준</span></div>'+facKpis().map(x=>kpiHtml(x,'sm')).join('');
+  if(nfOn('todo'))h+=todoWide();
+  if(nfOn('ref')){const r=refKpis(staff);if(r.length)h+='<div class="grp">참고</div>'+r.map(x=>kpiHtml(x,r.length===3?'sm w4':'sm w6')).join('');}
+  return h;}
+function nightBanner(){if(STAFF||ui.nfSeen)return '';return '<button class="nban" data-open="night"><b>🌙 밤사이 새로 생긴 기능</b><span>공장 운영 카드 · 오늘 할 일 · 직원용 링크 — 눌러서 확인하고 켜기/끄기</span>'+chev+'</button>';}
+// 상세
+const ddMd=d=>d?md(d+'T00:00:00+09:00'):'';
+const tbl=(head,rows)=>'<div class="tblw"><table class="tbl"><thead><tr>'+head.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>';
+function srcMeta(f){return '<div class="meta">자료: '+esc(f.src.ecount||'')+(f.src.stockAt?' · 재고 '+esc(String(f.src.stockAt).slice(5,16).replace('T',' '))+'':'')+(f.src.khaccp?' · '+esc(f.src.khaccp):'')+'</div>';}
+function pFprod(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const w=f.week;
+  let h='<div class="box"><h3>제품별 생산 <span class="c">이번 주 vs 지난주</span></h3>'+tbl(['제품','이번 주','지난주 같은 기간','지난주 전체'],w.rows.map(r=>'<tr><td>'+esc(r.nm)+'</td><td class="r"><b>'+r.tw+'</b> '+r.unit+(r.twEa?' <small>+낱개 '+r.twEa+'</small>':'')+'</td><td class="r">'+r.lw+'</td><td class="r">'+r.lwAll+'</td></tr>'))+'</div>';
+  const KS={ok:['green','일치'],ok_ea:['green','일치(정상품)'],diff:['amber','수량 다름'],kh_none:['red','K-HACCP 없음'],ec_none:['red','이카운트 없음'],'':['','']};
+  h+='<div class="box"><h3>최근 생산일 <span class="c">이카운트 생산입고 · K-HACCP 생산작업일지 대조</span></h3><div class="rows">'+f.days.map(d=>'<div class="row"><span class="mk blue"></span><div class="bd"><div class="t1">'+esc(d.md)+'</div>'+d.items.map(i=>'<div class="t2">'+esc(i.nm)+' <b>'+(i.box?i.box+'박스':'')+(i.ea?' 낱개 '+i.ea:'')+(i.np?' 비상품 '+i.np:'')+(i.kg?i.kg+(i.fam==='dough'?'봉':'배합'):'')+'</b>'+(i.kh&&KS[i.kh]?' <span class="tag '+KS[i.kh][0]+'">'+KS[i.kh][1]+'</span>':'')+'</div>').join('')+'</div></div>').join('')+'</div></div>';
+  h+=srcMeta(f);return {s:'이카운트 생산입고 기준 · 박스 수 (배합은 배합 단위)',h};}
+function pFneed(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const n=f.need;
+  let h='<div class="note '+(n.own.some(x=>x.shortEa>0)?'red':'ok')+'" style="margin-bottom:12px">'+esc(n.rule)+'</div>';
+  h+='<div class="box"><h3>자사 제품 <span class="c">'+ddMd(n.from)+' ~ '+ddMd(n.to)+' 출고</span></h3>'+tbl(['제품','출고 예정','이카운트 재고','더 필요','첫 출고'],n.own.map(x=>'<tr><td>'+esc(x.nm)+'</td><td class="r">'+x.dueBox+'박스</td><td class="r '+(x.stockEa<0?'neg':'')+'">'+fmtN(x.stockEa)+'개<br><small>'+x.stockBox+'박스</small></td><td class="r">'+(x.shortEa?'<b class="neg">'+Math.ceil(x.shortEa/x.per)+'박스</b>':'<span class="okc">없음</span>')+'</td><td>'+ddMd(x.first)+'</td></tr>'))+'</div>';
+  for(const x of n.own.filter(x=>x.shortEa>0))h+='<div class="box"><h3>'+esc(x.nm)+' 출고 예정 <span class="c">'+x.n+'건 · '+x.custs+'곳</span></h3><div class="rows">'+x.lines.map(l=>'<div class="row"><span class="mk"></span><div class="bd"><div class="t1">'+esc(ddMd(l.d))+' '+esc(l.c)+'</div><div class="t2">'+esc(l.it)+' '+l.q+'</div></div></div>').join('')+'</div></div>';
+  if(n.buy.length)h+='<div class="box"><h3>출고가 잡혔는데 재고가 마이너스인 매입 상품 <span class="c">'+n.buyN+'개</span></h3>'+tbl(['품목','출고 예정','이카운트 재고','첫 출고'],n.buy.map(x=>'<tr><td>'+esc(x.nm)+'</td><td class="r">'+x.due+'</td><td class="r neg">'+fmtN(x.stock)+'</td><td>'+ddMd(x.first)+'</td></tr>'))+'<div class="meta" style="margin-top:8px">구매(입고) 입력이 빠졌는지, 실제로 발주가 필요한지 확인하세요.</div></div>';
+  h+=srcMeta(f);return {s:'이카운트 판매전표(미래 날짜)와 재고 기준',h};}
+function pFraw(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const r=f.raw;const LV={red:['red','발주'],amber:['amber','다음 입고에'],green:['green','여유'],blue:['blue','많음'],gray:['','자료 없음']};
+  let h='<div class="box"><h3>원료 남은 기간 <span class="c">최근 8주('+ddMd(r.since)+'~) 평균 사용량 ÷ 이카운트 재고</span></h3>'+tbl(['원료','남은 기간','주 사용량','재고'],r.rows.map(x=>'<tr><td><span class="tag '+LV[x.lv][0]+'">'+LV[x.lv][1]+'</span> '+esc(x.nm)+'</td><td class="r"><b>'+(x.weeks==null?'–':x.weeks+'주')+'</b></td><td class="r">'+fmtN(x.weekly)+x.unit+'</td><td class="r">'+fmtN(x.stock)+x.unit+'</td></tr>'))+'<div class="meta" style="margin-top:8px">빨강 1.5주 미만 · 주황 3주 미만 · 파랑 12주 넘음(많음). 실제 발주는 통합재고관리 「원료 발주」에서 해요.</div></div>';
+  h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (원료 발주)</a>';
+  h+=srcMeta(f);return {s:'원료수불부 · 이카운트 생산소모 기준',h};}
+function pFmatch(){const f=F_();if(!f||!f.match)return {s:'',h:empty('대조 자료가 아직 없어요 (K-HACCP 로그인 필요)')};const m=f.match;
+  let h='<div class="box"><div class="stats">'+stat('일치',(m.cnt.ok||0)+(m.cnt.ok_ea||0))+stat('수량 다름',m.cnt.diff||0)+stat('K-HACCP 없음',m.cnt.kh_none||0)+stat('이카운트 없음',m.cnt.ec_none||0)+stat('적요 소비기한 없음',m.expBlank||0)+'</div><div class="meta" style="margin-top:10px">K-HACCP 생산작업일지는 정상품(박스×입수+낱개)만 적고 비상품은 빼요. 배합은 이카운트 1배합 = 마늘 14.96kg · 크림 20.98kg 으로 맞춰 봐요.</div></div>';
+  const bad=m.rows.filter(r=>/diff|none/.test(r.st));
+  h+='<div class="box"><h3>확인할 것 <span class="c">'+bad.length+'건</span></h3>'+(bad.length?'<div class="rows">'+bad.map(r=>'<div class="row"><span class="mk '+(r.st==='diff'?'amber':'red')+'"></span><div class="bd"><div class="t1"><span class="tag">'+esc(ddMd(r.date))+'</span>'+esc(r.nm)+'</div><div class="t2">'+esc(r.note)+'</div></div></div>').join('')+'</div>':'<div class="note ok">두 시스템 생산량이 모두 같아요</div>')+'</div>';
+  if(f.cover)h+='<div class="box"><h3>생산일 CCP 기록 <span class="c">생산 '+f.cover.days.length+'일</span></h3>'+(f.cover.missN?'<div class="rows">'+f.cover.days.filter(c=>c.miss.length).map(c=>'<div class="row"><span class="mk red"></span><div class="bd"><div class="t1">'+esc(c.md)+'</div><div class="t2">'+esc(c.miss.join(', '))+'</div></div></div>').join('')+'</div>':'<div class="note ok">생산한 날마다 생산작업일지 · 금속검출 · 급속냉동 · 오븐/크림배합 기록이 있어요</div>')+'</div>';
+  h+=srcMeta(f);return {s:'최근 30일 · 날짜×제품 '+m.total+'건',h};}
+function pFtodo(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const by={};f.todo.forEach(t=>(by[t.role]=by[t.role]||[]).push(t));
+  let h='';for(const role of ['생산','품질','결재','구매','재고','사무'].filter(r=>by[r]))h+='<div class="box"><h3><span class="tag '+(ROLE_C[role]||'')+'">'+role+'</span> <span class="c">'+by[role].length+'건</span></h3><div class="rows">'+by[role].map(t=>'<div class="row"><span class="mk '+t.lv+'"></span><div class="bd"><div class="t1">'+esc(t.title)+' <span class="tag">'+esc(t.src)+'</span></div><div class="t2">'+esc(t.detail)+'</div></div></div>').join('')+'</div></div>';
+  h+='<div class="meta">아침 07:50 · 저녁 17:50 에 이카운트와 K-HACCP를 다시 읽어 자동으로 바꿔요. 원본은 고치지 않아요.</div>';
+  return {s:'급함(빨강) → 확인(주황) → 참고(파랑) 순',h};}
+function pFstock(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const n=f.neg,a=f.adj;
+  let h='<div class="box"><h3>마이너스 재고 <span class="c">최근 30일 움직인 품목 '+n.active+' / 전체 '+n.total+'</span></h3>'+tbl(['품목','재고','구분'],n.rows.map(x=>'<tr><td>'+esc(x.nm)+'<br><small>'+esc(x.code)+'</small></td><td class="r neg">'+fmtN(x.q)+'</td><td>'+(x.own?'<span class="tag blue">자사</span>':'<span class="tag">매입</span>')+'</td></tr>'))+'<div class="meta" style="margin-top:8px">이카운트 재고에는 미리 넣은 출고가 이미 빠져 있어요. 마이너스는 생산입고·구매 입력 누락이거나 앞으로 더 만들어야 하는 양이에요.</div></div>';
+  h+='<div class="box"><h3>최근 14일 재고조정 <span class="c">'+a.n+'줄 · 적요 없음 '+a.noMemo+'</span></h3><div class="stats">'+a.days.map(d=>stat(d.d,d.n+'줄')).join('')+'</div>'+(a.top.length?tbl(['날짜','품목','조정'],a.top.map(x=>'<tr><td>'+esc(x.d)+'</td><td>'+esc(x.nm)+'<br><small>'+esc(x.wh||'')+'</small></td><td class="r '+(x.adj<0?'neg':'')+'">'+fmtN(x.adj)+'</td></tr>')):'')+'</div>';
+  h+=srcMeta(f);return {s:'이카운트 재고현황 · 재고조정',h};}
+function pFana(){const f=F_();const a=f&&f.analysis;if(!a)return {s:'',h:empty('분석 자료가 없어요')};const p=a.prodMatch;
+  let h='<div class="box"><h3>생산량 대조 <span class="c">'+esc(a.period)+'</span></h3><div class="stats">'+stat('일치',p.cnt.ok)+stat('정상품만 일치',p.cnt.ok_ea)+stat('수량 다름',p.cnt.diff)+stat('K-HACCP 없음',p.cnt.kh_none)+stat('이카운트 없음',p.cnt.ec_none)+'</div><div class="meta" style="margin-top:10px">'+esc(p.rule||'')+'</div></div>';
+  h+='<div class="box"><h3>다르거나 한쪽에만 있는 기록 <span class="c">'+p.issues.filter(i=>!/^ok/.test(i.st)).length+'건</span></h3><div class="rows">'+p.issues.filter(i=>!/^ok/.test(i.st)).map(i=>'<div class="row"><span class="mk '+(i.st==='diff'?'amber':'red')+'"></span><div class="bd"><div class="t1"><span class="tag">'+esc(ddMd(i.date))+'</span>'+esc(i.nm)+'</div><div class="t2">'+esc(i.note)+'</div></div></div>').join('')+'</div></div>';
+  const e=a.expiry;h+='<div class="box"><h3>소비기한 표기</h3><div class="t2">같은 날·같은 제품 '+e.compared+'건 중 '+e.same+'건 같음 · 다름 '+e.diff.length+'건</div><ul class="ul">'+e.diff.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><div class="t2" style="margin-top:6px">이카운트 생산입고 적요의 소비기한: 4~6월 100% 기록 → 7월 8건 → 8월부터 0건 (통합재고관리에서 자동 입력하면서 빠짐)</div><ul class="ul">'+Object.entries(e.shelf).map(([k,v])=>'<li>'+esc(k)+': '+esc(v)+'</li>').join('')+'</ul></div>';
+  h+='<div class="box"><h3>K-HACCP 작성·결재</h3><div class="t2">'+esc(a.khWrite.note)+'</div>'+tbl(['월','일지','당일 작성','결재까지','미결'],a.khWrite.months.map(m=>'<tr><td>'+esc(m.m)+'</td><td class="r">'+m.n+'</td><td class="r">'+m.same+'</td><td class="r">'+m.apprAvg+'일</td><td class="r">'+m.pending+'</td></tr>'))+'</div>';
+  h+='<div class="box"><h3>그 밖에 찾은 것</h3><ul class="ul"><li>'+esc(a.stockRule)+'</li><li>10/11 재고조정 '+a.adj.d1011.n.toLocaleString()+'줄이 한꺼번에 들어갔고 적요가 없어요 (사유 기록 필요)</li><li>'+esc(a.dupCode)+'</li><li>생산입고 창고: 9월까지 생산공장-청결구역1→생지완제_냉동, 10/12부터 빵을그리다→빵을그리다</li><li>생산일 CCP 기록: 생산 '+a.ccpCover.prodDays+'일 중 '+a.ccpCover.missDays.length+'일만 빠짐 ('+a.ccpCover.missDays.map(d=>d.md+' '+d.miss.join(',')).join(' · ')+')</li></ul></div>';
+  return {s:'밤샘 전수 분석 결과 (고정 자료)',h};}
+function pFsales(){const f=F_();const s=f&&f.sales;if(!s)return {s:'',h:empty('매출 자료가 없어요')};
+  let h='<div class="box"><div class="stats">'+stat('이번 주',fmtN(s.tw/10000)+'만')+stat('지난주 같은 기간',fmtN(s.lw/10000)+'만')+stat('지난주 전체',fmtN(s.lwAll/10000)+'만')+stat('서로도우(SD_) 이번 주',fmtN(s.sd/10000)+'만')+'</div></div>';
+  h+='<div class="box"><h3>최근 4주 거래처 TOP 8</h3>'+tbl(['거래처','공급가액'],s.top.map(x=>'<tr><td>'+esc(x.c)+'</td><td class="r">'+fmtN(x.v/10000)+'만원</td></tr>'))+'<div class="meta" style="margin-top:8px">'+esc(s.note)+' · 직원용 화면에는 보이지 않아요</div></div>';
+  return {s:'대표 전용',h};}
+function pNight(){
+  let h='<div class="note ok" style="margin-bottom:12px">밤사이 Aside가 이카운트와 K-HACCP를 비교 분석해서 새 기능을 만들었어요. 모두 켜 둔 상태예요. 필요 없는 것은 끄면 이 기기에서 바로 사라져요.</div>';
+  for(const st of [1,2]){h+='<div class="box"><h3>'+(st===1?'1단계 · 보기만 하는 화면':'2단계 · 직원 공유')+'</h3><div class="rows">'+NF_LIST.filter(x=>x.st===st).map(x=>{const on=nfOn(x.k);const forced=D&&D.flags&&D.flags[x.k]===false;return '<div class="row"><span class="mk '+(on?'green':'')+'"></span><div class="bd"><div class="t1">'+esc(x.nm)+'</div><div class="t2">'+esc(x.ds)+'</div></div><button class="tg '+(on?'on':'')+'" data-nf="'+x.k+'"'+(forced?' disabled title="Aside가 모든 기기에서 꺼 둠"':'')+'>'+(on?'켜짐':'꺼짐')+'</button></div>';}).join('')+'</div></div>';}
+  if(D&&D.staffKey&&nfOn('staff')){const u=location.origin+location.pathname+'?f='+D.staffKey;h+='<div class="box"><h3>직원용 공장 대시보드 링크</h3><div class="t2">메일·매출·자동 알림 없이 「생산·품질·출고 + 공장 운영」만 보여요. 공장 TV·태블릿이나 직원 휴대폰에 이 링크를 한 번 열면 다음부터 바로 열려요.</div><input class="cp" readonly value="'+esc(u)+'"><button class="link" data-copy="'+esc(u)+'" style="width:100%;border:0">링크 복사</button></div>';}
+  h+='<div class="meta">모든 기기에서 한꺼번에 끄거나 완전히 지우려면 Aside에게 「공장 운영 카드 지워줘」처럼 말해 주세요. 통합재고관리의 「🌙 변경 승인」 화면에서도 같은 내용을 단계별로 승인할 수 있어요.</div>';
+  return {s:'2026-10-17 야간 작업 · 켜기/끄기는 이 기기에만 적용',h};}
+
 // ---------- KPI ----------
-function kpis(){
+function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit||[];}
   const n=latest(D.naver),u=latest(D.utca),a=latest(D.audit),a2=D.audit&&D.audit[1];
   const dd=D.delivery&&D.delivery.days,td=dd&&dd[0],nx=dd&&dd.slice(1).find(x=>x.custs.length);
   const na=nAct(n).length,ua=uAct(u).length,ac=aCnt(a);
@@ -318,9 +432,13 @@ function kpis(){
   out.push({k:'sched',logo:'kakao',ic:'clock',lb:'오늘 자동 알림',v:done,u:'/ '+SLOTS.length+' 완료',cls:miss?'alert':'',badge:miss?['red','누락 '+miss]:['green','정상 작동'],ft:pl?'구글 플레이: '+pl:''});
   return out;
 }
-function kpiLayout(){const by={};kpis().forEach(x=>by[x.k]=x);
+function staffLayout(){const by={};kpis().forEach(x=>by[x.k]=x);const f=F_();
+  const a=f&&f.audit;const c=a?a.count||{}:{};const ws=a?(a.findings||[]).filter(x=>x.level==='경고').length:0;
+  const au=a?{k:'faudit',logo:'ecount',lb:'이카운트 입력 점검',src:a.label.split(' (')[0],v:ws,u:'건',cls:ws?'warn':'ok',badge:ws?['amber','생산·재고 경고']:['green','이상 없음'],ft:'생산·재고·구매 항목만 · 매일 06:30'}:null;
+  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'w4')).join('')+facLayout(true);}
+function kpiLayout(){if(STAFF)return staffLayout();const by={};kpis().forEach(x=>by[x.k]=x);
   const g1=['khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean),g2=1;
-  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+'<div class="grp">메일</div>'+mailWide();}
+  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
 function acctLine(n){if(n.byAcct){const e=Object.entries(n.byAcct).filter(([k,v])=>v);return e.length?e.map(([k,v])=>k+' '+v).join(' · '):'새 메일 없음';}return '참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0);}
 function mailWide(){
   const n=latest(D.naver),u=latest(D.utca),na=nAct(n).length,ua=uAct(u).length,tot=na+ua,none=!n&&!u;
@@ -341,7 +459,8 @@ function render(){
   if(!D){$('#main').innerHTML='<div class="note gray">불러오는 중…</div>';return;}
   const stale=Date.now()-new Date(D.built.replace(' ','T')+':00+09:00').getTime()>20*3600e3;
   $('#main').innerHTML='<div class="bar"><h1>오늘의 현황</h1><span class="fresh'+(loadErr?' err':stale?' stale':'')+'" id="fresh"><i></i> </span>'+(loadErr?'<span class="hint" style="color:var(--red)">'+esc(loadErr)+'</span>':'')+'<span class="sp"></span><span class="hint">카드를 누르면 자세한 내용이 열려요</span></div>'+
-    '<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · 메일·이카운트 원본은 바꾸지 않아요</div>';
+    nightBanner()+'<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · '+(STAFF?'직원용 공장 화면 · ':'')+'이카운트·K-HACCP 원본은 바꾸지 않아요</div>';
+  if(STAFF){const t=document.querySelector('.brand .tt');if(t)t.textContent='공장 대시보드';}
   tick();
   if(openKind)fillPanel(openKind);
 }
@@ -415,18 +534,20 @@ function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP �
   if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
   h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
   return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):''),h};}
+function pFaudit(){const a=F_()&&F_().audit;if(!a)return {s:'',h:empty('점검 기록이 없어요')};return {s:esc(a.label),h:(a.findings.length?'<div class="box"><div class="rows">'+a.findings.map(fRow).join('')+'</div></div>':'<div class="note ok">이상 없음</div>')};}
 function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab||'act';
   const seg='<div class="seg">'+[['act','확인 필요',(n||u)?nAct(n).length+uAct(u).length:'–'],['naver','네이버 메일',n?(n.total||0):'–'],['utca','UTCA 메일',u?((u.stats&&u.stats.total)||0):'–']].map(([k,l,c])=>'<button data-mtab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' <b class="num">'+c+'</b></button>').join('')+'</div>';
   const r=t==='naver'?pNaver():t==='utca'?pUtca():pMail();
   return {s:r.s,h:seg+r.h};}
-const PANELS={khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
+const PANELS={night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
 function openPanel(k){openKind=k;fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
 window.addEventListener('popstate',()=>closePanel(true));
 $('#scrim').onclick=()=>closePanel();$('#pClose').onclick=()=>closePanel();
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('mailw')){ui.mailTab='act';openPanel('mail');}});
-document.addEventListener('click',e=>{const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab]');if(!t)return;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('mailw')){ui.mailTab='act';openPanel('mail');}if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('todow'))openPanel('ftodo');});
+document.addEventListener('click',e=>{const nf=e.target.closest('[data-nf],[data-copy]');if(nf){if(nf.dataset.copy){try{navigator.clipboard.writeText(nf.dataset.copy).catch(()=>{});}catch(_){}nf.textContent='복사했어요';return;}ui.nf=ui.nf||{};ui.nf[nf.dataset.nf]=!nfOn(nf.dataset.nf);ui.nfSeen=1;saveUi();render();fillPanel('night');return;}
+  const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab]');if(!t)return;if(t.dataset&&t.dataset.open==='night'){ui.nfSeen=1;saveUi();}
   if(t.hasAttribute('data-open')){if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}openPanel(t.dataset.open);return;}
   if(t.hasAttribute('data-mtab')){ui.mailTab=t.dataset.mtab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-hist'))ui.sel[t.dataset.hist]=+t.dataset.i;
@@ -448,7 +569,7 @@ window.addEventListener('appinstalled',()=>{instEv=null;$('#bInst').style.displa
 $('#bInst').onclick=async()=>{if(!instEv)return;instEv.prompt();try{await instEv.userChoice;}catch(_){}instEv=null;$('#bInst').style.display='none';};
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_){}}
 applyNight();
-try{const c0=JSON.parse(localStorage.getItem(LS_DATA)||'null');if(c0&&(localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
+try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
 load();setInterval(load,5*60000);
 })();
