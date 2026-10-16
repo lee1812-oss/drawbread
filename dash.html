@@ -147,8 +147,9 @@ const saveUi=()=>localStorage.setItem(LS_UI,JSON.stringify(ui));
 let D=null, loadErr='', lastLoad=0;
 
 // 열쇠: 링크(#k=...)로 한 번 열면 이 기기에 기억
-const hp=new URLSearchParams(location.hash.slice(1));
-if(hp.get('k')){localStorage.setItem(LS_KEY,hp.get('k'));history.replaceState(null,'',location.pathname+location.search);}
+function pickKey(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])k=([A-Za-z0-9_-]{16,})/);if(m)return m[1];const t=s.trim();return /^[A-Za-z0-9_-]{16,}$/.test(t)?t:'';}
+const k0=pickKey(location.hash)||pickKey(location.search);
+if(k0){try{localStorage.setItem(LS_KEY,k0);}catch(_){window.__MEMKEY=k0;}try{history.replaceState(null,'',location.pathname);}catch(_){}}
 
 function kst(d){const x=d?new Date(d):new Date();return new Date(x.getTime()+(x.getTimezoneOffset()+540)*60000);}
 function md(d){const k=kst(d);return (k.getMonth()+1)+'/'+k.getDate()+'('+DOW[k.getDay()]+')';}
@@ -167,8 +168,9 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
 
 async function load(){
   if(window.__DASH_TEST){D=window.__DASH_TEST;lastLoad=Date.now();render();return;}
-  const k=localStorage.getItem(LS_KEY);
+  let k=null;try{k=localStorage.getItem(LS_KEY);}catch(_){}k=k||window.__MEMKEY;
   if(!k){renderLock();return;}
+  if(!(window.crypto&&crypto.subtle)){renderLock('이 브라우저에서는 열 수 없어요. 크롬(Chrome)에서 열어 주세요.');return;}
   try{
     const r=await fetch('dash.enc.json?t='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('자료 파일을 못 불러왔어요 ('+r.status+')');
@@ -176,7 +178,8 @@ async function load(){
     D=await decrypt(e,k);lastLoad=Date.now();loadErr='';
     try{localStorage.setItem(LS_DATA,JSON.stringify({at:lastLoad,d:D}));}catch(_){}
   }catch(err){
-    if(err&&err.name==='OperationError'){localStorage.removeItem(LS_KEY);renderLock('열쇠가 맞지 않아요. 카톡으로 받은 링크로 다시 열어 주세요.');return;}
+    if(err&&err.name==='OperationError'){try{localStorage.removeItem(LS_KEY);}catch(_){}window.__MEMKEY=null;renderLock('열쇠가 맞지 않아요. 링크 전체(#k= 뒤까지)를 다시 붙여넣어 주세요.');return;}
+    if(!D){renderLock('자료를 불러오지 못했어요: '+String(err&&err.message||err));return;}
     loadErr=navigator.onLine?String(err.message||err):'인터넷 연결이 끊겨 있어요';
     const c=JSON.parse(localStorage.getItem(LS_DATA)||'null');if(c&&!D){D=c.d;lastLoad=c.at;}
   }
@@ -187,7 +190,8 @@ function renderLock(msg){
   $('#tabs').innerHTML='';
   $('#main').innerHTML='<div class="lock"><h1>업무 대시보드</h1><div class="muted">이 기기에서 처음 열었어요. 카카오톡 「나와의 채팅」으로 받은 <b>대시보드 링크</b>를 이 기기에서 한 번 눌러 주세요. 그다음부터는 바로 열려요.</div>'+
   '<input id="kin" placeholder="또는 받은 링크 전체를 붙여넣기" autocomplete="off"><button id="kbtn">열기</button>'+(msg?'<div class="err">'+esc(msg)+'</div>':'')+'</div>';
-  $('#kbtn').onclick=()=>{const v=$('#kin').value.trim();const m=v.match(/[#&]k=([\w-]+)/);const k=m?m[1]:v;if(k){localStorage.setItem(LS_KEY,k);load();}};
+  $('#kbtn').onclick=()=>{const k=pickKey($('#kin').value);if(!k){renderLock('붙여넣은 내용에서 열쇠를 찾지 못했어요. 링크 전체를 붙여넣어 주세요.');return;}
+    try{localStorage.setItem(LS_KEY,k);}catch(_){}window.__MEMKEY=k;$('#kbtn').textContent='여는 중…';$('#kbtn').disabled=true;load();};
 }
 
 // ---------- 공통 도우미 ----------
