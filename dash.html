@@ -92,6 +92,27 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 .kpi.warn .ic{background:var(--amber-bg);color:var(--amber)}
 .kpi.ok .ic{background:var(--green-bg);color:var(--green)}
 .kpi.info .ic{background:var(--blue-bg);color:var(--blue)}
+.kpis .kpi.mailw{grid-column:1/-1;flex-direction:row;gap:20px;cursor:pointer}
+.mailw .mw-l{flex:0 0 30%;display:flex;flex-direction:column;min-width:0}
+.mailw .mw-r{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+.msub{display:flex;align-items:flex-start;gap:12px;text-align:left;border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--soft);min-width:0}
+.msub:hover{border-color:#cbd5e1}.msub:active{transform:translateY(1px)}
+.msub .mi{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+.msub .mt{font-weight:700;font-size:1rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.msub .mt .src{font-size:.75rem;color:var(--faint);font-weight:500}
+.msub .mn{display:flex;align-items:baseline;gap:6px;margin:auto 0;padding:10px 0;flex-wrap:wrap}
+.msub .mn b{font-size:clamp(2.2rem,7vh,3.4rem);font-weight:700;line-height:1;letter-spacing:-.03em}
+.msub .mn>span{color:var(--sub);font-weight:600}
+.msub .mn .badge{margin-left:6px;align-self:center}
+.msub .ms{font-size:.82rem;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msub .go{align-self:center;color:var(--faint)}.msub .go svg{width:20px;height:20px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px;margin-bottom:14px;position:sticky;top:-16px;z-index:2}
+.seg button{height:42px;border-radius:9px;font-weight:700;font-size:.9rem;color:var(--ink2)}
+.seg button b{margin-left:4px;font-weight:800}
+.seg button.on{background:var(--ink);color:#fff}
+body.night .seg button.on{background:#f3f4f6;color:#111827}
+@media (max-width:980px){.kpis .kpi.mailw{flex-direction:column}.mailw .mw-l{flex:none}}
+@media (max-width:560px){.mailw .mw-r{grid-template-columns:1fr}}
 .foot{margin-top:18px;text-align:center;font-size:.78rem;color:var(--faint)}
 
 /* 상세 패널 */
@@ -298,8 +319,18 @@ function kpis(){
   return out;
 }
 function kpiLayout(){const by={};kpis().forEach(x=>by[x.k]=x);
-  const g1=['khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean),g2=['mail','naver','utca'].map(k=>by[k]).filter(Boolean);
-  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+'<div class="grp">메일</div>'+g2.map(x=>kpiHtml(x,'w4')).join('');}
+  const g1=['khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean),g2=1;
+  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+'<div class="grp">메일</div>'+mailWide();}
+function acctLine(n){if(n.byAcct){const e=Object.entries(n.byAcct).filter(([k,v])=>v);return e.length?e.map(([k,v])=>k+' '+v).join(' · '):'새 메일 없음';}return '참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0);}
+function mailWide(){
+  const n=latest(D.naver),u=latest(D.utca),na=nAct(n).length,ua=uAct(u).length,tot=na+ua,none=!n&&!u;
+  const sub=(k,logo,lb,x,act,newN,extra)=>'<button class="msub" data-open="mail" data-sub="'+k+'">'+logoHtml(logo)+'<div class="mi"><div class="mt">'+lb+(x?'<span class="src">'+esc(whenShort(x))+'</span>':'')+'</div><div class="mn"><b class="num">'+(x?newN:'–')+'</b><span>건</span>'+(x?(act?'<span class="badge b-red">확인 필요 '+act+'</span>':'<span class="badge b-green">확인 필요 없음</span>'):'<span class="badge b-gray">기록 대기</span>')+'</div><div class="ms">'+esc(extra)+'</div></div><span class="go">'+chev+'</span></button>';
+  return '<div class="kpi mailw '+(none?'':tot?'alert':'ok')+'" data-open="mail" data-sub="act" role="button" tabindex="0">'+
+    '<div class="mw-l"><div class="top">'+logoHtml(['naver','gmail'])+'<span class="lb">메일 통합</span></div><div class="val"><b class="num">'+(none?'–':tot)+'</b><span>건 확인 필요</span></div>'+
+    '<div class="ft"><span class="badge b-'+(none?'gray':tot?'red':'green')+'">'+(none?'기록 대기':tot?'확인 필요':'급한 메일 없음')+'</span><span class="go">전체 보기'+chev+'</span></div></div>'+
+    '<div class="mw-r">'+sub('naver','naver','네이버 메일',n,na,n?(n.total||0):0,n?acctLine(n):'lee1812 외 3개 주소 · 07:00 · 22:00 확인')+
+    sub('utca','gmail','UTCA 메일',u,ua,u?((u.stats&&u.stats.total)||0):0,u?(u.empty?'새 메일 없음':'안 읽음 '+((u.stats&&u.stats.unread)||0)+' · utcasolution@gmail.com'):'utcasolution@gmail.com · 07:00 · 21:00 확인')+'</div></div>';
+}
 function kpiHtml(x,w){
   const dl=x.dl==null||x.dl===0?(x.dl===0?'<span class="dl">전일과 같음</span>':''):'<span class="dl '+(x.dl>0?'up':'down')+'">전일 대비 '+(x.dl>0?'+':'')+x.dl+'</span>';
   return '<button class="kpi '+(x.cls||'')+' '+(w||'')+'" data-open="'+x.k+'"><div class="top">'+logoHtml(x.logo)+'<span class="lb">'+x.lb+'</span>'+(x.src?'<span class="src">'+esc(x.src)+'</span>':'')+'</div>'+
@@ -384,15 +415,20 @@ function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP �
   if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
   h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
   return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):''),h};}
-const PANELS={khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['확인할 메일',pMail,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
+function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab||'act';
+  const seg='<div class="seg">'+[['act','확인 필요',(n||u)?nAct(n).length+uAct(u).length:'–'],['naver','네이버 메일',n?(n.total||0):'–'],['utca','UTCA 메일',u?((u.stats&&u.stats.total)||0):'–']].map(([k,l,c])=>'<button data-mtab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' <b class="num">'+c+'</b></button>').join('')+'</div>';
+  const r=t==='naver'?pNaver():t==='utca'?pUtca():pMail();
+  return {s:r.s,h:seg+r.h};}
+const PANELS={khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
 function openPanel(k){openKind=k;fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
 window.addEventListener('popstate',()=>closePanel(true));
 $('#scrim').onclick=()=>closePanel();$('#pClose').onclick=()=>closePanel();
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();});
-document.addEventListener('click',e=>{const t=e.target.closest('[data-open],[data-hist],[data-day]');if(!t)return;
-  if(t.hasAttribute('data-open')){openPanel(t.dataset.open);return;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('mailw')){ui.mailTab='act';openPanel('mail');}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab]');if(!t)return;
+  if(t.hasAttribute('data-open')){if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}openPanel(t.dataset.open);return;}
+  if(t.hasAttribute('data-mtab')){ui.mailTab=t.dataset.mtab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-hist'))ui.sel[t.dataset.hist]=+t.dataset.i;
   if(t.hasAttribute('data-day'))ui.day=+t.dataset.day;
   saveUi();if(openKind)fillPanel(openKind);});
