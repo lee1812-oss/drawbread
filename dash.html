@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 16:30">
+<meta name="dash-build" content="2026-10-19 16:50">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -450,7 +450,7 @@ function pcSnd(){const h=PC.hb,sc=pcScr();
   const sub=!seen?'신호 기록 없음':st==='ok'?'신호 '+hm(seen)+' · 20초마다':'마지막 신호 '+hm(seen)+' · '+ago(seen);
   let lines,live=false,note='',tm='';
   const real=sc&&!sc.stale&&sc.s.snd&&sc.s.snd.l&&sc.s.snd.l.length;
-  if(real){lines=sc.s.snd.l.slice();live=sc.live;tm=hms(Date.parse(sc.s.at));}
+  if(real){lines=sc.s.snd.l.slice();live=sc.live;tm=hms(Date.parse(sc.s.at));note=sc.s.snd.e||'';}
   else{lines=[];(j.recent||[]).filter(r=>!r.t&&Date.now()-Date.parse(r.at)<24*3600e3).slice(0,3).reverse().forEach(r=>lines.push(kstStamp(r.at)+'  '+(r.k==='sale'?'[판매입력] ':'')+(r.ok?'전표 생성 ('+r.n+'품목)':'실패: '+(r.e||''))));
     if(seen)lines.push(kstStamp(seen)+'  중계 확인 · 보낼 건 '+(j.wait||0)+'건'+(j.hold?' · 모아 두는 중 '+j.hold+'건':''));
     note=sc&&!sc.stale?'전송기 창을 찾지 못했어요'+(sc.s.snd&&sc.s.snd.e?' ('+sc.s.snd.e+')':''):'PC 화면 연결 전 · 중계 기록으로 표시';tm=seen?hms(seen):'';}
@@ -464,7 +464,7 @@ function pcSync(a){const d=PC.dt,sb=PC.hb&&PC.hb.sync,sc=pcScr();
   if(scrL){const lt=pcLastTime(scrL);const m=lt?(Date.now()-lt)/60000:null;   // 실제 창: 마지막 [시각] 줄로 판단 (5분마다 돌므로 7분 이내면 작동 중)
     const st=m==null?'chk':m<=7?'ok':m<=15?'late':'stop';const lines=scrL.slice();
     if(st==='stop')lines.push('— '+Math.round(m)+'분째 새 줄 없음: 동기화 창을 확인해 주세요');
-    return {st,sub:lt?'확인 '+hm(lt)+' · 5분마다':sub0,lines,live:sc.live,note:'',sc,last,lt,tm:hms(Date.parse(sc.s.at)),real:true};}
+    return {st,sub:lt?'확인 '+hm(lt)+' · 5분마다':sub0,lines,live:sc.live,note:sc.s.sync.e||'',sc,last,lt,tm:hms(Date.parse(sc.s.at)),real:true};}
   if(sb&&sb.at){const t=Date.parse(sb.at)||0,m=(Date.now()-t)/60000;const st=m<=12?'ok':m<=30?'late':'stop';
     return {st,sub:(st==='ok'?'확인 ':'마지막 확인 ')+hm(t)+' · 5분마다',lines:[kstStamp(t)+'  '+(sb.msg||'재고 확인')+(sb.next?' · 다음 '+sb.next:'')],live:false,note:'동기화 프로그램 신호',sc,last,beat:sb,tm:hms(t)};}
   if(!d)return {st:PC.dtErr?'na':'wait',sub:PC.dtErr?'재고 자료를 못 읽었어요':'확인 중…',lines:[],live:false,note:PC.dtErr?'재고 자료를 읽지 못했어요':'확인 중…',sc,last:0};
@@ -478,7 +478,7 @@ function pcCard(key,nm,ps,s,title){const c=PCST[s.st]||PCST.wait;
 function pcPair(){const a=pcSnd(),b=pcSync(a);
   return '<div class="pcw" id="pcw">'+pcCard('snd','이카운트 전송기','생산·판매 → 이카운트',a,'Ecount production sender')+pcCard('sync','재고 자동 동기화','재고 → 통합재고관리',b,'재고 자동 동기화'+(b.sc&&b.sc.s.pc?' · '+b.sc.s.pc:''))+'</div>';}
 function pcPaint(){const el=document.getElementById('pcw');if(el)el.outerHTML=pcPair();if(openKind==='pcmon')fillPanel('pcmon');}
-const PC_HELP='<div class="box"><h3>PC 화면 중계기</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">사무실 PC에서 「PC화면_중계기.bat」을 한 번만 실행하면, 두 검은 창의 화면이 이 칸에 실시간(약 20초 간격)으로 그대로 보여요. 두 프로그램은 건드리지 않고 화면 글자만 읽어요. PC를 켤 때 저절로 함께 켜져요.</div></div>';
+const PC_HELP='<div class="box"><h3>PC 화면 중계기</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">사무실 PC에서 「PC화면_중계기.bat」을 한 번만 실행하면, 두 검은 창의 화면이 이 칸에 실시간(약 20초 간격)으로 그대로 보여요. 전송기 지킴이도 함께 켜져서, 전송기가 꺼지면 다시 켜고 창을 눌러 멈춘 「선택」 상태도 풀어 줘요. PC를 켤 때 저절로 함께 켜져요.</div></div>';
 function pcSndBody(a){const j=a.j||{};let h;
   if(a.st==='ok')h='<div class="note ok">작동 중이에요. 마지막 신호 '+hms(a.seen)+' — 20초마다 중계를 확인해요.</div>';
   else if(a.st==='late')h='<div class="note amb">신호가 늦어요. 마지막 신호 '+hm(a.seen)+' ('+ago(a.seen)+'). 잠시 뒤에도 그대로면 사무실 PC를 확인해 주세요.</div>';
