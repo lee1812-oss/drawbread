@@ -201,6 +201,28 @@ body.night .nban{background:#36270b;border-color:#78350f;color:#fbbf24}
 .tg{flex:none;min-width:64px;height:36px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:.85rem;color:var(--sub);background:var(--card)}.tg.on{background:var(--green-bg);border-color:#bbf7d0;color:var(--green)}.tg:disabled{opacity:.5}
 .cp{width:100%;font:inherit;font-size:.8rem;padding:10px;border:1px solid var(--line);border-radius:10px;margin:10px 0 8px;background:var(--soft);color:var(--ink2)}
 body.staff .tools #bInst{display:none!important}
+/* 사무실 PC 프로그램 (2026-10-19) — 「생산량 대조」 자리에 이카운트 전송기 · 재고 자동 동기화 두 화면 */
+.kpis .pcw{grid-column:span 3;display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0;container-type:inline-size}
+@media (max-width:980px){.kpis .pcw{grid-column:span 6}}
+@media (max-width:560px){.kpis .pcw{grid-column:span 12}}
+.kpis .pcw .kpi{grid-column:auto!important;min-height:170px;padding:14px 13px 12px;min-width:0;cursor:pointer}
+.pcs .pt{font-size:.95rem;font-weight:800;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;min-width:0}
+.pcs .pt i{width:8px;height:8px;border-radius:4px;background:var(--faint);flex:none}
+.pcs.ok .pt i{background:var(--green)}.pcs.warn .pt i{background:#f59e0b}.pcs.alert .pt i{background:var(--red)}
+.pcs .ps{font-size:.72rem;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.pcs .ps,.pcs .pm,.pb .note,.pb .t2,.pb .meta{word-break:keep-all;overflow-wrap:break-word}
+.pcs .pv{margin:auto 0;padding:8px 0 2px;font-size:clamp(1.6rem,4.4vh,2.3rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--sub);white-space:nowrap}
+.pcs.ok .pv{color:var(--green)}.pcs.warn .pv{color:var(--amber)}.pcs.alert .pv{color:var(--red)}
+.pcs .pm{font-size:.8rem;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px}
+.pcs .scr{background:#0c0c0c;color:#e5e7eb;border-radius:7px;padding:6px 8px;font-size:.74rem;line-height:1.4;text-align:left;word-break:keep-all;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(2.8em + 12px)}
+.pcs .scr b{font-family:"Cascadia Mono",Consolas,"D2Coding",monospace;color:#9ca3af;font-weight:400;margin-right:5px}.pcs .scr.bad{color:#fca5a5}.pcs .scr.warn{color:#fcd34d}
+body.night .pcs .scr{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
+.con{background:#0c0c0c;color:#e5e7eb;border-radius:10px;padding:12px 14px;font-family:"Cascadia Mono",Consolas,"D2Coding","Malgun Gothic",monospace;font-size:.82rem;line-height:1.65;overflow-x:auto}
+.con div{white-space:nowrap}.con .t{color:#9ca3af}.con .g{color:#4ade80}.con .r{color:#f87171}.con .y{color:#fcd34d}
+body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+.note.amb{background:var(--amber-bg);color:var(--amber)}
+@container (max-width:300px){.kpis .pcw .kpi{padding:12px 10px 10px}.pcs .pt{font-size:.8rem;white-space:normal;word-break:keep-all;line-height:1.25;align-items:flex-start}.pcs .pt i{margin-top:5px}.pcs .ps{display:none}.pcs .pv{font-size:1.45rem}.pcs .pm{font-size:.72rem}.pcs .scr{font-size:.68rem}}
 </style>
 </head>
 <body>
@@ -314,7 +336,7 @@ const chev='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 
 // ---------- 공장 운영 (2026-10-17 야간 고도화 · 이카운트 × K-HACCP) ----------
 const NF_LIST=[
- {k:'fac',st:1,nm:'공장 운영 카드 4개',ds:'생산 실적 · 출고 대비 재고 · 원료 남은 기간 · 생산↔K-HACCP 대조'},
+ {k:'fac',st:1,nm:'공장 운영 카드 4개',ds:'생산 실적 · 출고 대비 재고 · 원료 남은 기간 · 사무실 PC 프로그램(이카운트 전송기 · 재고 자동 동기화)'},
  {k:'todo',st:1,nm:'오늘 할 일 (담당별 자동 정리)',ds:'이카운트·K-HACCP·대조 결과에서 할 일을 뽑아 생산·품질·구매·사무로 나눠 보여 줘요'},
  {k:'ref',st:1,nm:'참고 카드 (재고 이상 · 4~10월 대조 분석 · 매출 흐름)',ds:'매출 흐름은 대표 화면에만 보여요'},
  {k:'staff',st:2,nm:'직원용 공장 대시보드 링크',ds:'메일·매출 없이 공장 정보만 보이는 별도 링크 (열쇠가 달라요)'}];
@@ -329,8 +351,7 @@ function facKpis(){const f=F_();const out=[];if(!f)return out;
   out.push({k:'fneed',logo:'ecount',lb:'출고 대비 재고',src:'앞으로 14일',v:sh.length,u:'품목 부족',cls:sh.length?'alert':'ok',badge:sh.length?['red','생산 필요']:['green','부족 없음'],ft:sh.length?sh.map(x=>x.nm+' '+Math.ceil(x.shortEa/x.per)+'박스').join(' · '):'입력된 출고를 모두 낼 수 있어요'});
   const rr=((f.raw&&f.raw.rows)||[]);const red=rr.filter(r=>r.lv==='red'),amb=rr.filter(r=>r.lv==='amber');
   out.push({k:'fraw',logo:'ecount',lb:'원료 남은 기간',src:'최근 8주 사용 기준',v:red.length,u:'종 발주 필요',cls:red.length?'alert':amb.length?'warn':'ok',badge:red.length?['red','발주 필요']:amb.length?['amber','다음 입고에 포함 '+amb.length]:['green','여유 있음'],ft:red.concat(amb).slice(0,3).map(r=>r.nm+' '+r.weeks+'주').join(' · ')||'모든 원료 3주 이상'});
-  const m=f.match;const bad=m?(m.cnt.diff||0)+(m.cnt.kh_none||0)+(m.cnt.ec_none||0):0;
-  out.push({k:'fmatch',logo:'haccp',lb:'생산량 대조',src:m?md(m.from+'T00:00:00+09:00')+'~'+md(m.to+'T00:00:00+09:00'):'',v:m&&m.rate!=null?m.rate:'–',u:'% 일치',cls:(bad||(f.ccp&&f.ccp.miss.length))?'warn':m?'ok':'',badge:!m?['gray','기록 대기']:bad?['amber','다름 '+bad+'건']:(f.ccp&&f.ccp.miss.length)?['amber','CCP 측정 빠짐']:['green','모두 일치'],ft:m?'제품·날짜 '+m.total+'건 대조'+(f.ccp&&f.ccp.miss.length?' · CCP 측정 빠짐 '+f.ccp.miss.length:''):''});
+  // 2026-10-19: 「생산량 대조」 카드는 빼고, 그 자리에 사무실 PC 프로그램 두 화면(pcPair)을 둠. 대조 상세(pFmatch)는 지우지 않고 남겨 둠
   return out;}
 function refKpis(staff){const f=F_();const out=[];if(!f)return out;
   const ng=f.neg||{};out.push({k:'fstock',logo:'ecount',lb:'재고 이상',src:'이카운트',v:ng.own||0,u:'자사 마이너스',cls:ng.own?'warn':'ok',badge:['gray','전체 마이너스 '+(ng.total||0)],ft:'최근 30일 움직인 품목 '+(ng.active||0)+' · 조정 '+((f.adj&&f.adj.n)||0)+'줄(14일)'});
@@ -342,11 +363,88 @@ function todoWide(){const f=F_();if(!f||!f.todo)return '';const t=f.todo;const c
    '<div class="tw">'+t.slice(0,6).map(x=>'<div class="trow"><span class="mk '+x.lv+'"></span><span class="tag '+(ROLE_C[x.role]||'')+'">'+esc(x.role)+'</span><div class="tt">'+esc(x.title)+'</div></div>').join('')+'</div>'+
    '<div class="ft"><span class="badge b-'+(c.red?'red':c.amber?'amber':'green')+'">급함 '+c.red+' · 확인 '+c.amber+' · 참고 '+c.blue+'</span><span class="go">전체 '+t.length+'건'+chev+'</span></div></div>';}
 function facLayout(staff){let h='';const f=F_();if(!f)return '';
-  if(nfOn('fac'))h+='<div class="grp">공장 운영 · 이카운트 × K-HACCP <span class="gsub">'+esc((f.built||'').slice(5).replace('-','/'))+' 기준</span></div>'+facKpis().map(x=>kpiHtml(x,'sm')).join('');
+  if(nfOn('fac'))h+='<div class="grp">공장 운영 · 이카운트 × K-HACCP <span class="gsub">'+esc((f.built||'').slice(5).replace('-','/'))+' 기준</span></div>'+facKpis().map(x=>kpiHtml(x,'sm')).join('')+pcPair();
   if(nfOn('todo'))h+=todoWide();
   if(nfOn('ref')){const r=refKpis(staff);if(r.length)h+='<div class="grp">참고</div>'+r.map(x=>kpiHtml(x,r.length===3?'sm w4':'sm w6')).join('');}
   return h;}
 function nightBanner(){if(STAFF||ui.nfSeen)return '';return '<button class="nban" data-open="night"><b>🌙 밤사이 새로 생긴 기능</b><span>공장 운영 카드 · 오늘 할 일 · 직원용 링크 — 눌러서 확인하고 켜기/끄기</span>'+chev+'</button>';}
+// ---------- 사무실 PC 프로그램 (2026-10-19) — 「생산량 대조」 자리: 이카운트 전송기 · 재고 자동 동기화 ----------
+// 전송기: 중계 hb(열쇠 없이 — 전송기가 20초마다 남기는 마지막 신호와 오늘 전표 수만, 품목·거래처 없음)
+// 재고 동기화: ../wonryo/data.json 마지막 반영 시각. 동기화는 재고가 바뀔 때만 올리므로 켜져 있는지는 같은 PC 전송기 신호로 함께 봄
+// (통합재고관리 v069와 같은 기준). 동기화 프로그램이 중계 syncBeat를 보내면 그 신호를 바로 씀.
+const RELAY_URL='https://script.google.com/macros/s/AKfycbwc4iYf-iUXLIkw_9mENM2nRyX5BNdz4TveLP5cKE-5CXd2hiTQ34kDxSanQFJk9O8S3g/exec';
+LOGO.pc='<svg viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
+const PC={hb:null,hbAt:0,hbOk:0,hbErr:'',dt:null,dtAt:0,dtErr:'',cm:null,cmAt:0,cmErr:''};
+function hms(d){const k=kst(d);return [k.getHours(),k.getMinutes(),k.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+async function pcPoll(force){
+  if(!force&&(document.hidden||!D))return;const now=Date.now(),js=[];
+  if(force||now-PC.hbAt>55e3){PC.hbAt=now;js.push(fetch(RELAY_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'hb'})}).then(r=>r.json()).then(j=>{if(!j||!j.ok)throw new Error((j&&j.error)||'응답 오류');PC.hb=j;PC.hbOk=Date.now();PC.hbErr='';}).catch(e=>{PC.hbErr=String(e&&e.message||e);}));}
+  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);return r.json();}).then(d=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)};PC.dtErr='';}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
+  if(!js.length)return;await Promise.all(js);pcPaint();}
+async function pcCommits(){if(PC.cmAt&&Date.now()-PC.cmAt<(PC.cm?600e3:120e3))return;PC.cmAt=Date.now();
+  try{const r=await fetch('https://api.github.com/repos/lee1812-oss/wonryo/commits?path=data.json&per_page=8',{headers:{Accept:'application/vnd.github+json'}});if(!r.ok)throw new Error('GitHub '+r.status);const a=await r.json();PC.cm=a.map(c=>({at:(c.commit&&c.commit.committer&&c.commit.committer.date)||'',msg:(c.commit&&c.commit.message)||''}));PC.cmErr='';}catch(e){PC.cmErr=String(e&&e.message||e);}
+  if(openKind==='pcmon')fillPanel('pcmon');}
+const PCST={ok:['ok','작동 중','green'],late:['warn','늦어짐','amber'],chk:['warn','확인 필요','amber'],stop:['alert','멈춤','red'],wait:['','확인 중',''],na:['','연결 안 됨','']};
+function pcSnd(){const h=PC.hb;
+  if(!h)return {st:PC.hbErr?'na':'wait',sub:PC.hbErr?'중계 연결 안 됨':'신호 확인 중…',line:PC.hbErr?'중계에 연결하지 못했어요':'',lc:PC.hbErr?'bad':''};
+  const seen=Date.parse((h.agent&&h.agent.seen)||'')||0;const old=Date.now()-PC.hbOk>5*60000;
+  let st=!seen?'stop':(Date.now()-seen)<=2*60000?'ok':(Date.now()-seen)<=10*60000?'late':'stop';if(old&&PC.hbErr)st='na';
+  const j=h.jobs||{};const tot=(j.prod||0)+(j.sale||0);
+  const sub=!seen?'신호 기록 없음':st==='ok'?'신호 '+hm(seen)+' · 20초마다':'마지막 신호 '+hm(seen)+' · '+ago(seen);
+  let line,lc='',lt=seen;
+  if(st==='na'){line='중계에 연결하지 못했어요';lc='bad';lt=0;}
+  else if(st==='stop'){line='전송기 창이나 PC가 꺼진 것 같아요';lc='bad';lt=0;}
+  else if(j.fail){line='오늘 실패 '+j.fail+'건 — 눌러서 확인';lc='bad';}
+  else if(j.wait){line='보낼 건 '+j.wait+'건 처리 중';lc='warn';}
+  else if(tot){line='오늘 전표 '+tot+'건 (생산 '+(j.prod||0)+' · 판매 '+(j.sale||0)+')';}
+  else line='보낼 건 없음'+(j.hold?' · 모아 두는 중 '+j.hold+'건':'');
+  return {st,sub,line,lc,lt,seen,j};}
+function pcWork(){const k=kst();const d=k.getDay(),h=k.getHours();return d>0&&d<6&&h>=9&&h<19;}
+function pcSync(a){const d=PC.dt,sb=PC.hb&&PC.hb.sync;
+  if(sb&&sb.at){const t=Date.parse(sb.at)||0,m=(Date.now()-t)/60000;const st=m<=12?'ok':m<=30?'late':'stop';
+    return {st,sub:(st==='ok'?'확인 ':'마지막 확인 ')+hm(t)+' · 5분마다',line:st==='stop'?'동기화 신호가 끊겼어요':(sb.msg||'재고 확인'),lc:st==='stop'?'bad':'',lt:st==='stop'?0:t,beat:sb};}
+  if(!d)return {st:PC.dtErr?'na':'wait',sub:PC.dtErr?'재고 자료를 못 읽었어요':'확인 중…',line:'',lc:''};
+  const last=Date.parse(d.at||'')||0;const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop';
+  let st='ok',line='재고 반영 '+(d.n||0)+'품목',lc='',lt=last;
+  if(lm<=10)st='ok';
+  else if(pcOff){st='stop';line='사무실 PC 신호 없음';lc='bad';lt=0;}
+  else if(pcWork()&&lm>180){st='chk';line='3시간 넘게 반영 없음';lc='warn';lt=0;}
+  return {st,sub:'반영 '+(last?(sameDay(last,Date.now())?hm(last):md(last)+' '+hm(last)):'–')+' · 5분마다',line,lc,lt,last};}
+function pcCard(key,nm,ps,s){const c=PCST[s.st]||PCST.wait;
+  return '<button class="kpi pcs '+c[0]+'" data-open="pcmon" data-pc="'+key+'" title="'+esc(nm+' — '+c[1])+'"><div class="pt"><i></i>'+nm+'</div><div class="ps">'+ps+'</div><div class="pv">'+c[1]+'</div><div class="pm">'+esc(s.sub||'')+'</div><div class="scr '+(s.lc||'')+'">'+(s.lt?'<b>'+hm(s.lt)+'</b>':'')+esc(s.line||'…')+'</div></button>';}
+function pcPair(){const a=pcSnd(),b=pcSync(a);
+  return '<div class="pcw" id="pcw">'+pcCard('snd','이카운트 전송기','생산·판매 → 이카운트',a)+pcCard('sync','재고 자동 동기화','재고 → 통합재고관리',b)+'</div>';}
+function pcPaint(){const el=document.getElementById('pcw');if(el)el.outerHTML=pcPair();if(openKind==='pcmon')fillPanel('pcmon');}
+function pcSndBody(a){const j=(PC.hb&&PC.hb.jobs)||{};let h;
+  if(a.st==='ok')h='<div class="note ok">작동 중이에요. 마지막 신호 '+hms(a.seen)+' — 20초마다 중계를 확인해요.</div>';
+  else if(a.st==='late')h='<div class="note amb">신호가 늦어요. 마지막 신호 '+hm(a.seen)+' ('+ago(a.seen)+'). 잠시 뒤에도 그대로면 사무실 PC를 확인해 주세요.</div>';
+  else if(a.st==='stop')h='<div class="note red">멈춘 것 같아요. 마지막 신호 '+(a.seen?md(a.seen)+' '+hm(a.seen)+' ('+ago(a.seen)+')':'없음')+'. 사무실 PC에서 「Ecount production sender」 검은 창이 떠 있는지 확인해 주세요.</div>';
+  else h='<div class="note gray">'+(PC.hbErr?'중계에 연결하지 못했어요 ('+esc(PC.hbErr)+')':'신호 확인 중…')+'</div>';
+  h+='<div class="box" style="margin-top:12px"><h3>오늘 처리 <span class="c">시험 전표 제외</span></h3><div class="stats">'+stat('생산입고 전표',j.prod||0)+stat('판매입력 전표',j.sale||0)+stat('실패',j.fail||0)+stat('보낼 건',j.wait||0)+stat('모아 두는 중',j.hold||0)+'</div></div>';
+  const rec=(j.recent||[]).filter(r=>!r.t);
+  const ls=rec.slice().reverse().map(r=>'<div><span class="t">'+md(r.at)+' '+hms(r.at)+'</span>  <span class="'+(r.ok?'g':'r')+'">'+(r.k==='sale'?'[판매입력] ':'[생산입고] ')+(r.ok?'전표 생성':'실패')+'</span> ('+r.n+'품목'+(r.m>1?' · '+r.m+'건 합침':'')+')'+(r.e?' <span class="r">'+esc(r.e)+'</span>':'')+'</div>');
+  if(a.seen)ls.push('<div><span class="t">'+md(a.seen)+' '+hms(a.seen)+'</span>  <span class="'+(a.st==='ok'?'g':'y')+'">중계 확인</span> · 보낼 건 '+(j.wait||0)+'건'+(j.hold?' · 모아 두는 중 '+j.hold+'건':'')+'</div>');
+  h+='<div class="box"><h3>PC 화면 <span class="c">최근 전표 '+rec.length+'건 · 맨 아래 줄이 지금 상태</span></h3><div class="con">'+(ls.join('')||'<div class="t">기록 없음</div>')+'</div></div>';
+  h+='<div class="box"><h3>이 프로그램은</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">휴대폰·태블릿에서 넣은 생산일지·판매입력을 구글 중계에서 받아 이카운트에 전표로 넣어요. 이카운트는 등록된 사무실 PC에서만 받기 때문에, 이 창이 꺼지면 입력이 이카운트로 넘어가지 않고 중계에서 기다려요.</div><div class="meta" style="margin:10px 0 0">멈췄을 때: 사무실 PC에서 C:\\ecount_sender 폴더의 production_sender.bat을 더블클릭 → 검은 창이 뜨면 최소화해 두세요. 기다리던 건은 다시 켜지면 자동으로 보내져요.</div></div>';
+  return h;}
+function pcSyncBody(b,a){const d=PC.dt,sb=b.beat;let h;
+  if(b.st==='ok')h='<div class="note ok">'+(sb?'작동 중이에요. 마지막 확인 '+hms(sb.at)+(sb.next?' · 다음 확인 '+esc(sb.next):''):'정상으로 보여요. 사무실 PC가 켜져 있고'+(b.last?' 마지막 반영은 '+(sameDay(b.last,Date.now())?'':md(b.last)+' ')+hm(b.last)+'이에요.':' 반영 기록을 기다리고 있어요.'))+'</div>';
+  else if(b.st==='chk')h='<div class="note amb">근무시간에 3시간 넘게 재고 반영이 없어요. 사무실 PC에서 재고 동기화 검은 창이 떠 있는지 확인해 주세요.</div>';
+  else if(b.st==='late')h='<div class="note amb">동기화 신호가 늦어요. 마지막 확인 '+hm(sb.at)+'.</div>';
+  else if(b.st==='stop')h='<div class="note red">'+(sb?'동기화 신호가 끊겼어요. 마지막 확인 '+md(sb.at)+' '+hm(sb.at)+'.':'사무실 PC 신호가 없어요. PC가 꺼졌거나 프로그램 창이 닫혔을 수 있어요.')+'</div>';
+  else h='<div class="note gray">'+(PC.dtErr?'재고 자료를 읽지 못했어요 ('+esc(PC.dtErr)+')':'확인 중…')+'</div>';
+  h+='<div class="box" style="margin-top:12px"><h3>지금 상태</h3><div class="stats">'+stat('마지막 반영',d&&d.at?hm(d.at):'–')+stat('기준일',d&&d.base?d.base.slice(5).replace('-','/'):'–')+stat('품목',d?d.n:'–')+stat('사무실 PC',a.st==='ok'||a.st==='late'?'켜짐':a.st==='stop'?'신호 없음':'–')+'</div></div>';
+  const ls=[];
+  if(PC.cm&&PC.cm.length)PC.cm.slice().reverse().forEach(c=>{const m=c.msg.match(/\((\d+)품목\)/);ls.push('<div><span class="t">'+md(c.at)+' '+hm(c.at)+'</span>  <span class="g">재고 반영</span> → 통합재고관리 ('+(m?m[1]:'?')+'품목)</div>');});
+  else if(d&&d.at)ls.push('<div><span class="t">'+md(d.at)+' '+hm(d.at)+'</span>  <span class="g">재고 반영</span> → 통합재고관리 ('+d.n+'품목)</div>');
+  if(sb)ls.push('<div><span class="t">'+md(sb.at)+' '+hms(sb.at)+'</span>  '+esc(sb.msg||'재고 확인')+(sb.next?' · 다음 '+esc(sb.next):'')+'</div>');
+  else if(a.seen)ls.push('<div><span class="t">'+md(a.seen)+' '+hms(a.seen)+'</span>  <span class="'+(a.st==='ok'?'g':'y')+'">사무실 PC 신호</span> (같은 PC의 전송기)</div>');
+  h+='<div class="box"><h3>PC 화면 <span class="c">재고가 바뀌어 올린 기록'+(PC.cmErr?' · 기록 조회 실패':'')+'</span></h3><div class="con">'+(ls.join('')||'<div class="t">기록 없음</div>')+'</div></div>';
+  h+='<div class="box"><h3>이 프로그램은</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">5분마다 이카운트 재고현황(약 800품목)을 읽어, 바뀐 게 있을 때만 통합재고관리로 올려요. 바뀐 게 없으면 올리지 않아서 「마지막 반영」 시각이 한동안 그대로일 수 있어요.'+(sb?'':' 이 프로그램은 따로 신호를 보내지 않아서, 켜져 있는지는 같은 PC의 전송기 신호로 함께 봐요.')+'</div><div class="meta" style="margin:10px 0 0">멈췄을 때: 사무실 PC(COM-LEE)에서 재고 동기화 검은 창이 떠 있는지 확인하고, 없으면 다시 실행해 주세요.</div></div>';
+  return h;}
+function pPcmon(){const t=ui.pcTab==='sync'?'sync':'snd';const a=pcSnd(),b=pcSync(a);if(t==='sync')pcCommits();
+  const seg='<div class="seg two">'+[['snd','이카운트 전송기',a],['sync','재고 자동 동기화',b]].map(([k,l,s])=>'<button data-pctab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' · '+(PCST[s.st]||PCST.wait)[1]+'</button>').join('')+'</div>';
+  return {s:'사무실 PC · 1분마다 확인'+(PC.hbOk?' · '+hm(PC.hbOk)+' 확인':''),h:seg+(t==='sync'?pcSyncBody(b,a):pcSndBody(a))};}
 // 상세
 const ddMd=d=>d?md(d+'T00:00:00+09:00'):'';
 const tbl=(head,rows)=>'<div class="tblw"><table class="tbl"><thead><tr>'+head.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>';
@@ -463,7 +561,7 @@ function render(){
   if(!D){$('#main').innerHTML='<div class="note gray">불러오는 중…</div>';return;}
   const stale=Date.now()-new Date(D.built.replace(' ','T')+':00+09:00').getTime()>20*3600e3;
   $('#main').innerHTML='<div class="bar"><h1>오늘의 현황</h1><span class="fresh'+(loadErr?' err':stale?' stale':'')+'" id="fresh"><i></i> </span>'+(loadErr?'<span class="hint" style="color:var(--red)">'+esc(loadErr)+'</span>':'')+'<span class="sp"></span><span class="hint">카드를 누르면 자세한 내용이 열려요</span></div>'+
-    nightBanner()+'<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · '+(STAFF?'직원용 공장 화면 · ':'')+'이카운트·K-HACCP 원본은 바꾸지 않아요</div>';
+    nightBanner()+'<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · 사무실 PC 상태는 1분마다 · '+(STAFF?'직원용 공장 화면 · ':'')+'이카운트·K-HACCP 원본은 바꾸지 않아요</div>';
   if(STAFF){const t=document.querySelector('.brand .tt');if(t)t.textContent='공장 대시보드';}
   tick();
   if(openKind)fillPanel(openKind);
@@ -544,6 +642,7 @@ function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab|
   const r=t==='naver'?pNaver():t==='utca'?pUtca():pMail();
   return {s:r.s,h:seg+r.h};}
 const PANELS={night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
+PANELS.pcmon=['사무실 PC 프로그램',pPcmon,'pc'];
 function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
 function openPanel(k){openKind=k;fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
@@ -551,8 +650,9 @@ window.addEventListener('popstate',()=>closePanel(true));
 $('#scrim').onclick=()=>closePanel();$('#pClose').onclick=()=>closePanel();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('mailw')){ui.mailTab='act';openPanel('mail');}if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('todow'))openPanel('ftodo');});
 document.addEventListener('click',e=>{const nf=e.target.closest('[data-nf],[data-copy]');if(nf){if(nf.dataset.copy){try{navigator.clipboard.writeText(nf.dataset.copy).catch(()=>{});}catch(_){}nf.textContent='복사했어요';return;}ui.nf=ui.nf||{};ui.nf[nf.dataset.nf]=!nfOn(nf.dataset.nf);ui.nfSeen=1;saveUi();render();fillPanel('night');return;}
-  const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab]');if(!t)return;if(t.dataset&&t.dataset.open==='night'){ui.nfSeen=1;saveUi();}
-  if(t.hasAttribute('data-open')){if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}openPanel(t.dataset.open);return;}
+  const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab],[data-pctab]');if(!t)return;if(t.dataset&&t.dataset.open==='night'){ui.nfSeen=1;saveUi();}
+  if(t.hasAttribute('data-open')){if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}if(t.dataset.pc){ui.pcTab=t.dataset.pc;saveUi();pcPoll(true);}openPanel(t.dataset.open);return;}
+  if(t.hasAttribute('data-pctab')){ui.pcTab=t.dataset.pctab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-mtab')){ui.mailTab=t.dataset.mtab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-hist'))ui.sel[t.dataset.hist]=+t.dataset.i;
   if(t.hasAttribute('data-day'))ui.day=+t.dataset.day;
@@ -565,7 +665,7 @@ let wake=null;
 $('#bBoard').onclick=async()=>{const on=!document.body.classList.contains('board');document.body.classList.toggle('board',on);$('#tBoard').textContent=on?'전광판 끄기':'전광판';
   if(on){try{await document.documentElement.requestFullscreen();}catch(_){}try{wake=await navigator.wakeLock.request('screen');}catch(_){}}
   else{try{if(document.fullscreenElement)await document.exitFullscreen();}catch(_){}try{wake&&wake.release();}catch(_){}wake=null;}};
-document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){if(document.body.classList.contains('board')&&!wake){try{wake=await navigator.wakeLock.request('screen');}catch(_){}}if(Date.now()-lastLoad>120000)load();}});
+document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){if(document.body.classList.contains('board')&&!wake){try{wake=await navigator.wakeLock.request('screen');}catch(_){}}if(Date.now()-lastLoad>120000)load();pcPoll(false);}});
 // 앱 설치(다운로드)
 let instEv=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;$('#bInst').style.display='';});
@@ -576,6 +676,7 @@ applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
 load();setInterval(load,5*60000);
+pcPoll(true);setInterval(()=>pcPoll(false),60000);
 })();
 </script>
 </body>
