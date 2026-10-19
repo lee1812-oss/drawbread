@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 15:15">
+<meta name="dash-build" content="2026-10-19 15:25">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -467,7 +467,7 @@ function pcSync(a){const d=PC.dt,sb=PC.hb&&PC.hb.sync,sc=pcScr();
   if(sb&&sb.at){const t=Date.parse(sb.at)||0,m=(Date.now()-t)/60000;const st=m<=12?'ok':m<=30?'late':'stop';
     return {st,sub:(st==='ok'?'확인 ':'마지막 확인 ')+hm(t)+' · 5분마다',lines:[kstStamp(t)+'  '+(sb.msg||'재고 확인')+(sb.next?' · 다음 '+sb.next:'')],live:false,note:'동기화 프로그램 신호',sc,last,beat:sb,tm:hms(t)};}
   if(!d)return {st:PC.dtErr?'na':'wait',sub:PC.dtErr?'재고 자료를 못 읽었어요':'확인 중…',lines:[],live:false,note:PC.dtErr?'재고 자료를 읽지 못했어요':'확인 중…',sc,last:0};
-  const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop';
+  const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop'&&!(last&&a.seen&&last>a.seen);   // 전송기 신호가 끊긴 뒤에도 재고 반영이 있었으면 PC는 켜져 있던 것
   let st='ok';if(lm<=10)st='ok';else if(pcOff)st='stop';else if(pcWork()&&lm>180)st='chk';
   const lines=[];if(last)lines.push(kstStamp(last)+'  재고 반영 → 통합재고관리'+(d.n?' ('+d.n+'품목)':''));
   if(st==='stop')lines.push('— 사무실 PC 신호 없음');else if(st==='chk')lines.push('— 3시간 넘게 반영 없음: 동기화 창을 확인해 주세요');
