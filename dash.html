@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="dash-build" content="2026-10-19 14:00">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
@@ -222,6 +223,7 @@ body.night .pcs .scr{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 .seg.two{grid-template-columns:repeat(2,1fr)}
 .note.amb{background:var(--amber-bg);color:var(--amber)}
+.ib.again{border-color:var(--brand);color:var(--brand)}
 @container (max-width:300px){.kpis .pcw .kpi{padding:12px 10px 10px}.pcs .pt{font-size:.8rem;white-space:normal;word-break:keep-all;line-height:1.25;align-items:flex-start}.pcs .pt i{margin-top:5px}.pcs .ps{display:none}.pcs .pv{font-size:1.45rem}.pcs .pm{font-size:.72rem}.pcs .scr{font-size:.68rem}}
 </style>
 </head>
@@ -279,7 +281,19 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
   const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.salt),iterations:it,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))));}
 
+// ---------- 새 화면 자동 적용 (2026-10-19) ----------
+// dash.html 맨 위 dash-build 값이 바뀌면(새 화면을 올리면) 열려 있는 대시보드가 5분 안에 스스로 새로고침해요.
+// 화면 안 「새로고침」 버튼은 누를 때 바로 확인. 자세한 창을 보고 있을 때는 닫힌 뒤에 바꿔요.
+const BUILD=((document.querySelector('meta[name="dash-build"]')||{}).content)||'';
+let verAt=0;
+async function verCheck(force){if(!BUILD||(!force&&Date.now()-verAt<240e3))return false;verAt=Date.now();
+  try{const r=await fetch('dash.html?vc='+Date.now(),{cache:'no-store',headers:{Range:'bytes=0-2047'}});if(!r.ok)return false;
+    const m=(await r.text()).match(/name="dash-build" content="([^"]+)"/);
+    if(m&&m[1]&&m[1]!==BUILD){if(!force&&openKind)return false;let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}if(!force&&lt&&lt.to===m[1]&&Date.now()-lt.at<180e3)return false;try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:m[1],at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:m[1],at:Date.now()}));}catch(_){}location.reload();return true;}}catch(_){}
+  return false;}
+try{localStorage.setItem('dash_boot',JSON.stringify({b:BUILD,at:Date.now(),app:matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches,staff:STAFF}));}catch(_){}
 async function load(){
+  verCheck(false);
   if(window.__DASH_TEST){D=window.__DASH_TEST;lastLoad=Date.now();render();return;}
   if(STAFF){let fk=null;try{fk=localStorage.getItem(LS_FKEY);}catch(_){}fk=fk||f0;
     try{const r=await fetch('factory.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 오류 ('+r.status+')');D=await decrypt(await r.json(),fk);lastLoad=Date.now();loadErr='';try{localStorage.setItem(LS_DATA+'_f',JSON.stringify({at:lastLoad,d:D}));}catch(_){}}
@@ -560,7 +574,7 @@ function kpiHtml(x,w){
 function render(){
   if(!D){$('#main').innerHTML='<div class="note gray">불러오는 중…</div>';return;}
   const stale=Date.now()-new Date(D.built.replace(' ','T')+':00+09:00').getTime()>20*3600e3;
-  $('#main').innerHTML='<div class="bar"><h1>오늘의 현황</h1><span class="fresh'+(loadErr?' err':stale?' stale':'')+'" id="fresh"><i></i> </span>'+(loadErr?'<span class="hint" style="color:var(--red)">'+esc(loadErr)+'</span>':'')+'<span class="sp"></span><span class="hint">카드를 누르면 자세한 내용이 열려요</span></div>'+
+  $('#main').innerHTML='<div class="bar"><h1>오늘의 현황</h1><span class="fresh'+(loadErr?' err':stale?' stale':'')+'" id="fresh"><i></i> </span>'+(loadErr?'<span class="hint" style="color:var(--red)">'+esc(loadErr)+'</span>':'')+'<span class="sp"></span>'+(window.__UPD&&Date.now()-window.__UPD.at<120e3?'<span class="hint" style="color:var(--green);font-weight:700">새 화면으로 바뀌었어요</span>':'<span class="hint">카드를 누르면 자세한 내용이 열려요</span>')+'</div>'+
     nightBanner()+'<div class="kpis">'+kpiLayout()+'</div><div class="foot">5분마다 자동 갱신 · 사무실 PC 상태는 1분마다 · '+(STAFF?'직원용 공장 화면 · ':'')+'이카운트·K-HACCP 원본은 바꾸지 않아요</div>';
   if(STAFF){const t=document.querySelector('.brand .tt');if(t)t.textContent='공장 대시보드';}
   tick();
@@ -658,11 +672,11 @@ document.addEventListener('click',e=>{const nf=e.target.closest('[data-nf],[data
   if(t.hasAttribute('data-day'))ui.day=+t.dataset.day;
   saveUi();if(openKind)fillPanel(openKind);});
 
-$('#bRef').onclick=()=>{const f=$('#fresh');if(f)f.lastChild.textContent=' 확인 중…';load();};
+$('#bRef').onclick=async()=>{const f=$('#fresh');if(f)f.lastChild.textContent=' 확인 중…';if(await verCheck(true))return;load();pcPoll(true);};
 function applyNight(){document.body.classList.toggle('night',!!ui.night);$('#tNight').textContent=ui.night?'낮 화면':'밤 화면';document.querySelector('meta[name=theme-color]').content=ui.night?'#121826':'#ffffff';}
 $('#bNight').onclick=()=>{ui.night=!ui.night;saveUi();applyNight();};
 let wake=null;
-$('#bBoard').onclick=async()=>{const on=!document.body.classList.contains('board');document.body.classList.toggle('board',on);$('#tBoard').textContent=on?'전광판 끄기':'전광판';
+$('#bBoard').onclick=async()=>{$('#bBoard').classList.remove('again');const on=!document.body.classList.contains('board');document.body.classList.toggle('board',on);$('#tBoard').textContent=on?'전광판 끄기':'전광판';
   if(on){try{await document.documentElement.requestFullscreen();}catch(_){}try{wake=await navigator.wakeLock.request('screen');}catch(_){}}
   else{try{if(document.fullscreenElement)await document.exitFullscreen();}catch(_){}try{wake&&wake.release();}catch(_){}wake=null;}};
 document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){if(document.body.classList.contains('board')&&!wake){try{wake=await navigator.wakeLock.request('screen');}catch(_){}}if(Date.now()-lastLoad>120000)load();pcPoll(false);}});
@@ -672,6 +686,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;$(
 window.addEventListener('appinstalled',()=>{instEv=null;$('#bInst').style.display='none';});
 $('#bInst').onclick=async()=>{if(!instEv)return;instEv.prompt();try{await instEv.userChoice;}catch(_){}instEv=null;$('#bInst').style.display='none';};
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_){}}
+try{const up=JSON.parse(sessionStorage.getItem('dash_upd')||'null');if(up){sessionStorage.removeItem('dash_upd');window.__UPD=up;if(up.board){try{navigator.wakeLock.request('screen').then(w=>{wake=w;}).catch(()=>{});}catch(_){}$('#bBoard').classList.add('again');$('#tBoard').textContent='전광판 다시 켜기';}}}catch(_){}
 applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
