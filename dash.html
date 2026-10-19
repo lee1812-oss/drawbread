@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 16:50">
+<meta name="dash-build" content="2026-10-19 18:05">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -416,6 +416,12 @@ function nightBanner(){if(STAFF||ui.nfSeen)return '';return '<button class="nban
 // 전송기: 중계 hb(열쇠 없이 — 전송기가 20초마다 남기는 마지막 신호와 오늘 전표 수만, 품목·거래처 없음)
 // 재고 동기화: ../wonryo/data.json 마지막 반영 시각. 동기화는 재고가 바뀔 때만 올리므로 켜져 있는지는 같은 PC 전송기 신호로 함께 봄
 // (통합재고관리 v069와 같은 기준). 동기화 프로그램이 중계 syncBeat를 보내면 그 신호를 바로 씀.
+// 2026-10-19 18:10 재고 동기화 판단 고침 (Aside)
+//  · 새 동기화(10/19 16:05~, 잠긴 data.json)는 재고가 안 바뀌어도 5분마다 「확인 시각만 잠가서 올림」 → 마지막 반영 12분 넘으면 늦어짐, 20분 넘으면 멈춤
+//    마지막 반영 = GitHub 마지막 커밋(10분 캐시)과 /wonryo/ 배포 시각(data.json Last-Modified, 3분마다 새로 읽음) 중 늦은 것
+//    (예전에는 창을 못 찾으면 3시간 동안 「작동 중」으로 남아, 10/19 17:37에 동기화 창이 꺼졌는데도 작동 중으로 보였음)
+//  · 최소화된 창은 화면이 3줄쯤만 잡혀 [시각] 줄이 없을 수 있음 → 「다음 실행 HH:MM」 줄로 판단 (예전에는 이때 「확인 필요」로 잘못 뜸)
+//  · 창은 도는데 20분 넘게 반영이 없으면 「확인 필요」(올리기 오류)
 const RELAY_URL='https://script.google.com/macros/s/AKfycbwc4iYf-iUXLIkw_9mENM2nRyX5BNdz4TveLP5cKE-5CXd2hiTQ34kDxSanQFJk9O8S3g/exec';
 LOGO.pc='<svg viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
 const PC={hb:null,hbAt:0,hbOk:0,hbErr:'',dt:null,dtAt:0,dtErr:'',cm:null,cmAt:0,cmErr:''};
@@ -423,7 +429,7 @@ function hms(d){const k=kst(d);return [k.getHours(),k.getMinutes(),k.getSeconds(
 async function pcPoll(force){
   if(!force&&(document.hidden||!D))return;const now=Date.now(),js=[];
   if(force||now-PC.hbAt>17e3){PC.hbAt=now;js.push(fetch(RELAY_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'hb'})}).then(r=>r.json()).then(j=>{if(!j||!j.ok)throw new Error((j&&j.error)||'응답 오류');PC.hb=j;PC.hbOk=Date.now();PC.hbErr='';}).catch(e=>{PC.hbErr=String(e&&e.message||e);}));}
-  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);return r.json();}).then(d=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)||0,enc:!!d.enc};PC.dtErr='';if(!PC.dt.at)pcCommits();}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
+  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);const lm=Date.parse(r.headers.get('last-modified')||'')||0;return r.json().then(d=>[d,lm]);}).then(([d,lm])=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)||0,enc:!!d.enc,lm};PC.dtErr='';if(!PC.dt.at)pcCommits();}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
   if(!js.length)return;await Promise.all(js);pcPaint();}
 async function pcCommits(){if(PC.cmAt&&Date.now()-PC.cmAt<(PC.cm?600e3:120e3))return;PC.cmAt=Date.now();
   try{const r=await fetch('https://api.github.com/repos/lee1812-oss/wonryo/commits?path=data.json&per_page=8',{headers:{Accept:'application/vnd.github+json'}});if(!r.ok)throw new Error('GitHub '+r.status);const a=await r.json();PC.cm=a.map(c=>({at:(c.commit&&c.commit.committer&&c.commit.committer.date)||'',msg:(c.commit&&c.commit.message)||''}));PC.cmErr='';}catch(e){PC.cmErr=String(e&&e.message||e);}
@@ -432,7 +438,16 @@ const PCST={ok:['ok','작동 중','green'],late:['warn','늦어짐','amber'],chk
 // 2026-10-19 14:50: PC 화면 중계기(사무실 PC)가 보낸 실제 검은 창 글자(중계 hb.scr)를 카드 아래 미니 터미널에 그대로 보여 줌. 없으면 중계 기록으로 만든 줄.
 function pcScr(){const s=PC.hb&&PC.hb.scr;if(!s||!s.at)return null;const age=Date.now()-Date.parse(s.at);return {s,age,live:age<=120e3,stale:age>300e3};}
 const PC_TS=/^\[?(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})\]?\s*/;
-function pcLineTime(l){const m=String(l||'').match(PC_TS);if(!m)return 0;return Date.parse(m[1]+'-'+m[2]+'-'+m[3]+'T'+m[4]+':'+m[5]+':'+m[6]+'+09:00')||0;}
+const PC_TS2=/^\[(\d{1,2}):(\d{2}):(\d{2})\]\s*/;   // [HH:MM:SS] (날짜 없는 줄)
+const PC_NX=/다음\s*실행\s*(\d{1,2}):(\d{2})/;
+function pcTodayAt(h,mi,se){const k=kst(),p=n=>String(n).padStart(2,'0');let t=Date.parse(k.getFullYear()+'-'+p(k.getMonth()+1)+'-'+p(k.getDate())+'T'+p(h)+':'+p(mi)+':'+p(se||0)+'+09:00')||0;
+  if(t&&t-Date.now()>12*3600e3)t-=86400e3;else if(t&&Date.now()-t>12*3600e3)t+=86400e3;return t;}
+function pcLineTime(l){const s=String(l||'');let m=s.match(PC_TS);if(m)return Date.parse(m[1]+'-'+m[2]+'-'+m[3]+'T'+m[4]+':'+m[5]+':'+m[6]+'+09:00')||0;
+  m=s.match(PC_TS2);return m?pcTodayAt(+m[1],+m[2],+m[3]):0;}
+function pcNextRun(ls){for(let i=(ls||[]).length-1;i>=0;i--){const m=String(ls[i]||'').match(PC_NX);if(m)return pcTodayAt(+m[1],+m[2],0);}return 0;}
+// 마지막 반영: 평문 자료는 updatedAt(없으면 커밋), 잠긴 자료는 커밋·배포 시각 중 늦은 것 (같은 반영이면 커밋 시각으로 표시)
+function pcSyncLast(){const d=PC.dt;if(!d)return 0;const a=Date.parse(d.at||'')||0,c=(PC.cm&&PC.cm[0]&&Date.parse(PC.cm[0].at))||0,l=d.lm||0;
+  if(!d.enc)return a||c;if(c&&l>=c&&l-c<3*60e3)return c;return Math.max(a,c,l);}
 function pcLastTime(ls){for(let i=(ls||[]).length-1;i>=0;i--){const t=pcLineTime(ls[i]);if(t)return t;}return 0;}
 function kstStamp(t){const k=kst(t);const p=n=>String(n).padStart(2,'0');return k.getFullYear()+'-'+p(k.getMonth()+1)+'-'+p(k.getDate())+' '+p(k.getHours())+':'+p(k.getMinutes())+':'+p(k.getSeconds());}
 function pcLineHtml(l,short){let s=String(l==null?'':l),ts='';const m=s.match(PC_TS);
@@ -458,21 +473,36 @@ function pcSnd(){const h=PC.hb,sc=pcScr();
   return {st,sub,seen,j,lines,live,note,sc,tm,real:!!real};}
 function pcWork(){const k=kst();const d=k.getDay(),h=k.getHours();return d>0&&d<6&&h>=9&&h<19;}
 function pcSync(a){const d=PC.dt,sb=PC.hb&&PC.hb.sync,sc=pcScr();
-  const last=d?(Date.parse(d.at||'')||(PC.cm&&PC.cm[0]&&Date.parse(PC.cm[0].at))||0):0;
-  const sub0='반영 '+(last?(sameDay(last,Date.now())?hm(last):md(last)+' '+hm(last)):'–')+' · 5분마다';
+  const last=pcSyncLast(),fast=!!(d&&d.enc),age=last?(Date.now()-last)/60000:1e9;
+  const sub0=(fast&&age>12&&last?'마지막 반영 ':'반영 ')+(last?(sameDay(last,Date.now())?hm(last):md(last)+' '+hm(last)):'–')+' · 5분마다';
+  const upSt=!last?'chk':age<=12?'ok':age<=20?'late':'stop';   // 잠긴 자료(5분마다 올림) 기준
+  const pcOff=a&&a.st==='stop'&&!(last&&a.seen&&last>a.seen);   // 전송기 신호가 끊긴 뒤에도 재고 반영이 있었으면 PC는 켜져 있던 것
   const scrL=sc&&!sc.stale&&sc.s.sync&&sc.s.sync.l&&sc.s.sync.l.length?sc.s.sync.l:null;
-  if(scrL){const lt=pcLastTime(scrL);const m=lt?(Date.now()-lt)/60000:null;   // 실제 창: 마지막 [시각] 줄로 판단 (5분마다 돌므로 7분 이내면 작동 중)
-    const st=m==null?'chk':m<=7?'ok':m<=15?'late':'stop';const lines=scrL.slice();
-    if(st==='stop')lines.push('— '+Math.round(m)+'분째 새 줄 없음: 동기화 창을 확인해 주세요');
-    return {st,sub:lt?'확인 '+hm(lt)+' · 5분마다':sub0,lines,live:sc.live,note:sc.s.sync.e||'',sc,last,lt,tm:hms(Date.parse(sc.s.at)),real:true};}
+  if(scrL){const lt=pcLastTime(scrL),nx=pcNextRun(scrL);let st,why='';   // 실제 창: [시각] 줄 → 없으면 「다음 실행 HH:MM」 → 없으면 반영 시각
+    if(lt){const m=(Date.now()-lt)/60000;st=m<=7?'ok':m<=15?'late':'stop';if(st!=='ok')why='screen';}
+    else if(nx){const m=(Date.now()-nx)/60000;st=m<=3?'ok':m<=10?'late':'stop';if(st!=='ok')why='next';}
+    else if(fast&&last){st=upSt;if(st!=='ok')why='up';}
+    else st='chk';
+    if(st==='ok'&&fast&&last&&age>20){st='chk';why='upfail';}   // 창은 도는데 반영이 끊김 (올리기 오류 등)
+    const lines=scrL.slice();
+    if(why==='upfail')lines.push('— '+Math.round(age)+'분째 통합재고관리 반영 없음: 창에 빨간 오류 줄이 있는지 확인해 주세요');
+    else if(st==='stop')lines.push('— '+(why==='screen'?Math.round((Date.now()-lt)/60000)+'분째 새 줄 없음':why==='next'?'다음 실행 '+hm(nx)+'이 지났는데 새 줄 없음':Math.round(age)+'분째 반영 없음')+': 동기화 창을 확인해 주세요');
+    return {st,why,sub:lt?'확인 '+hm(lt)+' · 5분마다':nx&&st==='ok'?'다음 실행 '+hm(nx)+' · 5분마다':sub0,lines,live:sc.live,note:sc.s.sync.e||'',sc,last,age,lt,nx,fast,tm:hms(Date.parse(sc.s.at)),real:true};}
   if(sb&&sb.at){const t=Date.parse(sb.at)||0,m=(Date.now()-t)/60000;const st=m<=12?'ok':m<=30?'late':'stop';
     return {st,sub:(st==='ok'?'확인 ':'마지막 확인 ')+hm(t)+' · 5분마다',lines:[kstStamp(t)+'  '+(sb.msg||'재고 확인')+(sb.next?' · 다음 '+sb.next:'')],live:false,note:'동기화 프로그램 신호',sc,last,beat:sb,tm:hms(t)};}
   if(!d)return {st:PC.dtErr?'na':'wait',sub:PC.dtErr?'재고 자료를 못 읽었어요':'확인 중…',lines:[],live:false,note:PC.dtErr?'재고 자료를 읽지 못했어요':'확인 중…',sc,last:0};
-  const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop'&&!(last&&a.seen&&last>a.seen);   // 전송기 신호가 끊긴 뒤에도 재고 반영이 있었으면 PC는 켜져 있던 것
-  let st='ok';if(lm<=10)st='ok';else if(pcOff)st='stop';else if(pcWork()&&lm>180)st='chk';
-  const lines=[];if(last)lines.push(kstStamp(last)+'  재고 반영 → 통합재고관리'+(d.n?' ('+d.n+'품목)':''));
-  if(st==='stop')lines.push('— 사무실 PC 신호 없음');else if(st==='chk')lines.push('— 3시간 넘게 반영 없음: 동기화 창을 확인해 주세요');
-  return {st,sub:sub0,lines,live:false,note:sc&&!sc.stale?'동기화 창을 찾지 못했어요'+(sc.s.sync&&sc.s.sync.e?' ('+sc.s.sync.e+')':''):'PC 화면 연결 전 · 재고 자료로 표시',sc,last,tm:last?hm(last):''};}
+  const gone=!!(sc&&!sc.stale);   // PC 화면 중계기는 도는데 동기화 창을 못 찾음
+  let st='ok',why='';
+  if(fast){st=upSt;if(st!=='ok'){why=pcOff?'pcoff':gone?'gone':'up';if(pcOff)st='stop';}}
+  else{if(age<=10)st='ok';else if(pcOff){st='stop';why='pcoff';}else if(pcWork()&&age>180)st='chk';}
+  const lines=[];const cms=fast&&PC.cm&&PC.cm.length?PC.cm.slice(0,3).reverse():[];
+  if(cms.length&&last&&Math.abs(Date.parse(cms[cms.length-1].at)-last)<3*60e3)cms.forEach(c=>lines.push(kstStamp(c.at)+'  재고 반영 → 통합재고관리'));
+  else if(last)lines.push(kstStamp(last)+'  재고 반영 → 통합재고관리'+(d.n?' ('+d.n+'품목)':''));
+  if(why==='pcoff')lines.push('— 사무실 PC 신호 없음');
+  else if(fast&&st!=='ok')lines.push('— '+Math.round(age)+'분째 새 반영 없음'+(gone?' · PC에 동기화 창이 안 보여요':''));
+  else if(st==='chk')lines.push('— 3시간 넘게 반영 없음: 동기화 창을 확인해 주세요');
+  const e=sc&&!sc.stale&&sc.s.sync&&sc.s.sync.e;
+  return {st,why,sub:sub0,lines,live:false,note:gone?'동기화 창을 찾지 못했어요'+(e&&e!=='창을 찾지 못함'?' ('+e+')':''):'PC 화면 연결 전 · 재고 자료로 표시',sc,last,age,fast,gone,tm:last?hm(last):''};}
 function pcCard(key,nm,ps,s,title){const c=PCST[s.st]||PCST.wait;
   return '<button class="kpi pcs '+c[0]+'" data-open="pcmon" data-pc="'+key+'" title="'+esc(nm+' — '+c[1]+(s.sub?' · '+s.sub:''))+'"><div class="pt"><i></i>'+nm+'</div><div class="ps">'+ps+'</div><div class="pv sm2">'+c[1]+'</div>'+pcTerm(title,s.lines,{live:s.live,tm:s.tm,note:s.note},false)+'</button>';}
 function pcPair(){const a=pcSnd(),b=pcSync(a);
@@ -485,27 +515,36 @@ function pcSndBody(a){const j=a.j||{};let h;
   else if(a.st==='stop')h='<div class="note red">멈춘 것 같아요. 마지막 신호 '+(a.seen?md(a.seen)+' '+hm(a.seen)+' ('+ago(a.seen)+')':'없음')+'. 사무실 PC에서 「Ecount production sender」 검은 창이 떠 있는지 확인해 주세요.</div>';
   else h='<div class="note gray">'+(PC.hbErr?'중계에 연결하지 못했어요 ('+esc(PC.hbErr)+')':'신호 확인 중…')+'</div>';
   h+='<div style="margin-top:12px"></div>'+pcTerm('Ecount production sender',a.lines,{live:a.live,tm:a.real?'실시간 · '+a.tm+' 받음':(a.tm?a.tm+' 중계 기록':''),note:a.note},true);
-  if(!a.real)h+=PC_HELP;
+  if(!a.real&&!(a.sc&&!a.sc.stale))h+=PC_HELP;   // 중계기가 이미 연결돼 있으면 설치 안내는 빼기
   h+='<div class="box"><h3>오늘 처리 <span class="c">시험 전표 제외</span></h3><div class="stats">'+stat('생산입고 전표',j.prod||0)+stat('판매입력 전표',j.sale||0)+stat('실패',j.fail||0)+stat('보낼 건',j.wait||0)+stat('모아 두는 중',j.hold||0)+'</div></div>';
   const rec=(j.recent||[]).filter(r=>!r.t);
   if(rec.length)h+='<div class="box"><h3>최근 전표 <span class="c">중계 기록 '+rec.length+'건</span></h3><div class="rows">'+rec.map(r=>'<div class="row"><span class="mk '+(r.ok?'green':'red')+'"></span><div class="bd"><div class="t1">'+(r.k==='sale'?'판매입력':'생산입고')+' '+(r.ok?'전표 생성':'실패')+' <span class="tag">'+r.n+'품목</span>'+(r.m>1?' <span class="tag">'+r.m+'건 합침</span>':'')+'</div>'+(r.e?'<div class="t2" style="color:var(--red)">'+esc(r.e)+'</div>':'')+'</div><div class="rt"><span>'+md(r.at)+' '+hm(r.at)+'</span></div></div>').join('')+'</div></div>';
   h+='<div class="box"><h3>이 프로그램은</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">휴대폰·태블릿에서 넣은 생산일지·판매입력을 구글 중계에서 받아 이카운트에 전표로 넣어요. 이카운트는 등록된 사무실 PC에서만 받기 때문에, 이 창이 꺼지면 입력이 이카운트로 넘어가지 않고 중계에서 기다려요.</div><div class="meta" style="margin:10px 0 0">멈췄을 때: 사무실 PC에서 C:\\ecount_sender 폴더의 production_sender.bat을 더블클릭 → 검은 창이 뜨면 최소화해 두세요. 기다리던 건은 다시 켜지면 자동으로 보내져요.</div></div>';
   return h;}
 function pcSyncBody(b,a){const d=PC.dt,sb=b.beat;let h;
-  if(b.st==='ok')h='<div class="note ok">'+(b.real?'작동 중이에요. 화면의 마지막 확인 '+hms(b.lt)+' — 5분마다 이카운트 재고를 읽어요.':sb?'작동 중이에요. 마지막 확인 '+hms(sb.at)+(sb.next?' · 다음 확인 '+esc(sb.next):''):'정상으로 보여요. 사무실 PC가 켜져 있고'+(b.last?' 마지막 반영은 '+(sameDay(b.last,Date.now())?'':md(b.last)+' ')+hm(b.last)+'이에요.':' 반영 기록을 기다리고 있어요.'))+'</div>';
-  else if(b.st==='chk')h='<div class="note amb">'+(b.real?'화면에서 시각이 있는 줄을 찾지 못했어요. 사무실 PC의 동기화 창을 확인해 주세요.':'근무시간에 3시간 넘게 재고 반영이 없어요. 사무실 PC에서 재고 동기화 검은 창이 떠 있는지 확인해 주세요.')+'</div>';
-  else if(b.st==='late')h='<div class="note amb">동기화 화면이 늦어요. 마지막 확인 '+hm(b.lt||(sb&&Date.parse(sb.at))||0)+'.</div>';
-  else if(b.st==='stop')h='<div class="note red">'+(b.real?'동기화 화면에 '+Math.round((Date.now()-b.lt)/60000)+'분째 새 줄이 없어요. 창이 멈췄는지 확인해 주세요.':sb?'동기화 신호가 끊겼어요. 마지막 확인 '+md(sb.at)+' '+hm(sb.at)+'.':'사무실 PC 신호가 없어요. PC가 꺼졌거나 프로그램 창이 닫혔을 수 있어요.')+'</div>';
+  const lastT=b.last?(sameDay(b.last,Date.now())?'':md(b.last)+' ')+hm(b.last):'–',agoT=b.last?' ('+ago(b.last)+')':'';
+  if(b.st==='ok')h='<div class="note ok">'+(b.real&&b.lt?'작동 중이에요. 화면의 마지막 확인 '+hms(b.lt)+' — 5분마다 이카운트 재고를 읽어요.':b.real&&b.nx?'작동 중이에요. 다음 실행 '+hm(b.nx)+'을 기다리고 있어요'+(b.last?' (마지막 반영 '+lastT+')':'')+'.':sb?'작동 중이에요. 마지막 확인 '+hms(sb.at)+(sb.next?' · 다음 확인 '+esc(sb.next):''):b.fast?'작동 중이에요. 마지막 반영 '+lastT+agoT+' — 5분마다 올라와요.':'정상으로 보여요. 사무실 PC가 켜져 있고'+(b.last?' 마지막 반영은 '+lastT+'이에요.':' 반영 기록을 기다리고 있어요.'))+'</div>';
+  else if(b.st==='chk')h='<div class="note amb">'+(b.why==='upfail'?'동기화 창은 돌고 있지만 '+Math.round(b.age)+'분째 통합재고관리에 반영되지 않았어요 (마지막 반영 '+lastT+'). 창에 빨간 오류 줄이 있는지 확인해 주세요.':b.real?'화면에서 시각이 있는 줄을 찾지 못했어요. 사무실 PC의 동기화 창을 확인해 주세요.':'근무시간에 3시간 넘게 재고 반영이 없어요. 사무실 PC에서 재고 동기화 검은 창이 떠 있는지 확인해 주세요.')+'</div>';
+  else if(b.st==='late')h='<div class="note amb">'+(b.why==='screen'?'동기화 화면이 늦어요. 마지막 확인 '+hm(b.lt)+'.':b.why==='next'?'다음 실행 '+hm(b.nx)+'이 조금 지났어요. 잠시 뒤에도 그대로면 동기화 창을 확인해 주세요.':sb?'동기화 화면이 늦어요. 마지막 확인 '+hm(Date.parse(sb.at))+'.':'반영이 늦어요. 마지막 반영 '+lastT+agoT+'. 5분마다 올라와야 하니, 몇 분 뒤에도 그대로면 사무실 PC의 동기화 창을 확인해 주세요.'+(b.gone?' PC 화면 중계기도 동기화 창을 찾지 못하고 있어요.':''))+'</div>';
+  else if(b.st==='stop')h='<div class="note red">'+(b.why==='pcoff'?'사무실 PC 신호가 없어요. PC가 꺼졌거나 프로그램 창이 닫혔을 수 있어요.':b.why==='screen'?'동기화 화면에 '+Math.round((Date.now()-b.lt)/60000)+'분째 새 줄이 없어요. 창이 멈췄는지 확인해 주세요.':b.why==='next'?'다음 실행 '+hm(b.nx)+'이 '+Math.round((Date.now()-b.nx)/60000)+'분 지났는데 새 줄이 없어요. 창이 멈췄는지 확인해 주세요.':sb?'동기화 신호가 끊겼어요. 마지막 확인 '+md(sb.at)+' '+hm(sb.at)+'.':'멈춘 것 같아요. 마지막 반영 '+lastT+agoT+' 뒤로 새 반영이 없어요'+(b.gone?'. 사무실 PC에서 동기화 창도 보이지 않아요 (창이 닫혔을 수 있어요).':'.'))+'</div>';
   else h='<div class="note gray">'+(PC.dtErr?'재고 자료를 읽지 못했어요 ('+esc(PC.dtErr)+')':'확인 중…')+'</div>';
+  const howTop=b.fast&&b.st!=='ok'&&b.why!=='pcoff';if(howTop)h+='<div style="margin-top:12px"></div>'+PC_SYNC_HOW('top');
   h+='<div style="margin-top:12px"></div>'+pcTerm('재고 자동 동기화'+(b.sc&&b.sc.s.pc?' · '+b.sc.s.pc:''),b.lines,{live:b.live,tm:b.real?'실시간 · '+b.tm+' 받음':(b.tm?b.tm+' 기준':''),note:b.note},true);
-  if(!b.real)h+=PC_HELP;
-  h+='<div class="box"><h3>지금 상태</h3><div class="stats">'+stat('마지막 반영',b.last?hm(b.last):'–')+stat('기준일',d&&d.base?d.base.slice(5).replace('-','/'):'–')+stat('품목',d&&d.n?d.n:'–')+stat('사무실 PC',a.st==='ok'||a.st==='late'?'켜짐':a.st==='stop'?'신호 없음':'–')+'</div></div>';
+  if(!b.real&&!(b.sc&&!b.sc.stale))h+=PC_HELP;   // 중계기가 이미 연결돼 있으면 설치 안내는 빼기
+  const win=b.real?'보임':b.sc&&!b.sc.stale?'안 보임':'연결 전';
+  h+='<div class="box"><h3>지금 상태</h3><div class="stats">'+stat('마지막 반영',b.last?hm(b.last):'–')+(b.fast?stat('지난 시간',b.last?ago(b.last):'–')+stat('동기화 창',win):stat('기준일',d&&d.base?d.base.slice(5).replace('-','/'):'–')+stat('품목',d&&d.n?d.n:'–'))+stat('사무실 PC',a.st==='ok'||a.st==='late'?'켜짐':a.st==='stop'?'신호 없음':'–')+'</div></div>';
   const ls=[];
-  if(PC.cm&&PC.cm.length)PC.cm.slice().reverse().forEach(c=>{const m=c.msg.match(/\((\d+)품목\)/);ls.push(kstStamp(c.at)+'  재고 반영 → 통합재고관리 ('+(m?m[1]:'?')+'품목)');});
+  if(PC.cm&&PC.cm.length)PC.cm.slice().reverse().forEach(c=>{const m=c.msg.match(/\((\d+)품목\)/);ls.push(kstStamp(c.at)+'  재고 반영 → 통합재고관리'+(m?' ('+m[1]+'품목)':''));});
   else if(b.last)ls.push(kstStamp(b.last)+'  재고 반영 → 통합재고관리'+(d&&d.n?' ('+d.n+'품목)':''));
-  h+=pcTerm('재고가 바뀌어 올린 기록 (GitHub)',ls,{live:false,tm:PC.cmErr?'기록 조회 실패':'',note:ls.length?'':'기록 없음'},true);
-  h+='<div class="box"><h3>이 프로그램은</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">5분마다 이카운트 재고현황(약 800품목)을 읽어, 바뀐 게 있을 때만 통합재고관리로 올려요. 바뀐 게 없으면 「재고 변화 없음 → 깃허브 업로드 생략」이라고 쓰고 넘어가요.</div><div class="meta" style="margin:10px 0 0">멈췄을 때: 사무실 PC(COM-LEE)에서 재고 동기화 검은 창이 떠 있는지 확인하고, 없으면 다시 실행해 주세요.</div></div>';
+  h+=pcTerm('통합재고관리에 올린 기록 (GitHub)',ls,{live:false,tm:PC.cmErr?'기록 조회 실패':'',note:ls.length?'':'기록 없음'},true);
+  h+=b.fast?PC_SYNC_HOW(howTop?'about':'all'):'<div class="box"><h3>이 프로그램은</h3><div class="t2" style="font-size:.9rem;color:var(--ink2)">5분마다 이카운트 재고현황(약 800품목)을 읽어, 바뀐 게 있을 때만 통합재고관리로 올려요. 바뀐 게 없으면 「재고 변화 없음 → 깃허브 업로드 생략」이라고 쓰고 넘어가요.</div><div class="meta" style="margin:10px 0 0">멈췄을 때: 사무실 PC(COM-LEE)에서 재고 동기화 검은 창이 떠 있는지 확인하고, 없으면 다시 실행해 주세요.</div></div>';
   return h;}
+// 다시 켜는 법 (2026-10-19 18:10) — 폴더·명령은 10/19 16:05 Claude 안내 그대로 (사용자가 이 방법으로 켬)
+function PC_SYNC_HOW(mode){   // 'top' 다시 켜는 법만 · 'all' 설명+다시 켜는 법 · 'about' 설명만
+  const about='<div class="t2" style="font-size:.9rem;color:var(--ink2)">5분마다 이카운트 재고현황(약 800품목)을 읽어 잠근(암호화한) 자료로 통합재고관리에 올려요. 재고가 안 바뀌어도 「확인 시각만 잠가서 올림」으로 5분마다 올리기 때문에, 12분 넘게 반영이 없으면 「늦어짐」, 20분 넘으면 「멈춤」으로 보여요.</div>';
+  const how='<div class="t2" style="font-size:.95rem;color:var(--ink2);line-height:1.65">① 윈도우 키+R → <b>%LOCALAPPDATA%\\wonryo_sync</b> → Enter. 그 폴더에 <b>STOP.txt</b>가 있으면 다시 켜지 마세요. 이카운트 로그인이 계속 실패해 스스로 멈춘 것이라, 다시 켜면 IP 차단이 걸릴 수 있어요.<br>② STOP.txt가 없으면 <b>D:\\google drive_com2\\플랫폼\\플랫폼\\이카운트 연동 재고수불부</b> 폴더를 열고, 주소창에 <b>cmd</b> → Enter.<br>③ 검은 창에 <b>python ecount_sync.py --loop</b> → Enter. 「켜두기 모드」 줄이 뜨면 창을 최소화해 두세요. 창을 닫으면 멈춰요.</div>';
+  if(mode==='top')return '<div class="box"><h3>다시 켜는 법 <span class="c">사무실 PC (COM-LEE)</span></h3>'+how+'</div>';
+  return '<div class="box"><h3>이 프로그램은</h3>'+about+(mode==='all'?'<div class="t2" style="font-size:.9rem;font-weight:700;margin:12px 0 4px">멈췄을 때 (사무실 PC COM-LEE에서)</div>'+how:'')+'</div>';}
 function pPcmon(){const t=ui.pcTab==='sync'?'sync':'snd';const a=pcSnd(),b=pcSync(a);if(t==='sync')pcCommits();const sc=pcScr();
   const seg='<div class="seg two">'+[['snd','이카운트 전송기',a],['sync','재고 자동 동기화',b]].map(([k,l,s])=>'<button data-pctab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' · '+(PCST[s.st]||PCST.wait)[1]+'</button>').join('')+'</div>';
   return {s:'사무실 PC · 20초마다 확인'+(sc&&!sc.stale?' · 화면 '+hms(Date.parse(sc.s.at))+' 받음':' · PC 화면 중계기 연결 전'),h:seg+(t==='sync'?pcSyncBody(b,a):pcSndBody(a))};}
