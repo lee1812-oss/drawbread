@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 16:20">
+<meta name="dash-build" content="2026-10-19 16:30">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -711,7 +711,7 @@ function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab|
 const PANELS={night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 PANELS.pcmon=['사무실 PC 프로그램',pPcmon,'pc'];
 function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
-function openPanel(k){openKind=k;fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
+function openPanel(k){openKind=k;if(ui.sel&&ui.sel[k]){ui.sel[k]=0;saveUi();}fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
 window.addEventListener('popstate',()=>closePanel(true));
 $('#scrim').onclick=()=>closePanel();$('#pClose').onclick=()=>closePanel();
