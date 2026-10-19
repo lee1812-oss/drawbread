@@ -379,11 +379,11 @@ function hms(d){const k=kst(d);return [k.getHours(),k.getMinutes(),k.getSeconds(
 async function pcPoll(force){
   if(!force&&(document.hidden||!D))return;const now=Date.now(),js=[];
   if(force||now-PC.hbAt>55e3){PC.hbAt=now;js.push(fetch(RELAY_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'hb'})}).then(r=>r.json()).then(j=>{if(!j||!j.ok)throw new Error((j&&j.error)||'응답 오류');PC.hb=j;PC.hbOk=Date.now();PC.hbErr='';}).catch(e=>{PC.hbErr=String(e&&e.message||e);}));}
-  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);return r.json();}).then(d=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)};PC.dtErr='';}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
+  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);return r.json();}).then(d=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)||0,enc:!!d.enc};PC.dtErr='';if(!PC.dt.at)pcCommits();}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
   if(!js.length)return;await Promise.all(js);pcPaint();}
 async function pcCommits(){if(PC.cmAt&&Date.now()-PC.cmAt<(PC.cm?600e3:120e3))return;PC.cmAt=Date.now();
   try{const r=await fetch('https://api.github.com/repos/lee1812-oss/wonryo/commits?path=data.json&per_page=8',{headers:{Accept:'application/vnd.github+json'}});if(!r.ok)throw new Error('GitHub '+r.status);const a=await r.json();PC.cm=a.map(c=>({at:(c.commit&&c.commit.committer&&c.commit.committer.date)||'',msg:(c.commit&&c.commit.message)||''}));PC.cmErr='';}catch(e){PC.cmErr=String(e&&e.message||e);}
-  if(openKind==='pcmon')fillPanel('pcmon');}
+  pcPaint();}
 const PCST={ok:['ok','작동 중','green'],late:['warn','늦어짐','amber'],chk:['warn','확인 필요','amber'],stop:['alert','멈춤','red'],wait:['','확인 중',''],na:['','연결 안 됨','']};
 function pcSnd(){const h=PC.hb;
   if(!h)return {st:PC.hbErr?'na':'wait',sub:PC.hbErr?'중계 연결 안 됨':'신호 확인 중…',line:PC.hbErr?'중계에 연결하지 못했어요':'',lc:PC.hbErr?'bad':''};
@@ -404,8 +404,8 @@ function pcSync(a){const d=PC.dt,sb=PC.hb&&PC.hb.sync;
   if(sb&&sb.at){const t=Date.parse(sb.at)||0,m=(Date.now()-t)/60000;const st=m<=12?'ok':m<=30?'late':'stop';
     return {st,sub:(st==='ok'?'확인 ':'마지막 확인 ')+hm(t)+' · 5분마다',line:st==='stop'?'동기화 신호가 끊겼어요':(sb.msg||'재고 확인'),lc:st==='stop'?'bad':'',lt:st==='stop'?0:t,beat:sb};}
   if(!d)return {st:PC.dtErr?'na':'wait',sub:PC.dtErr?'재고 자료를 못 읽었어요':'확인 중…',line:'',lc:''};
-  const last=Date.parse(d.at||'')||0;const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop';
-  let st='ok',line='재고 반영 '+(d.n||0)+'품목',lc='',lt=last;
+  const last=Date.parse(d.at||'')||(PC.cm&&PC.cm[0]&&Date.parse(PC.cm[0].at))||0;const lm=last?(Date.now()-last)/60000:1e9;const pcOff=a&&a.st==='stop';
+  let st='ok',line='재고 반영'+(d.n?' '+d.n+'품목':''),lc='',lt=last;
   if(lm<=10)st='ok';
   else if(pcOff){st='stop';line='사무실 PC 신호 없음';lc='bad';lt=0;}
   else if(pcWork()&&lm>180){st='chk';line='3시간 넘게 반영 없음';lc='warn';lt=0;}
@@ -433,7 +433,7 @@ function pcSyncBody(b,a){const d=PC.dt,sb=b.beat;let h;
   else if(b.st==='late')h='<div class="note amb">동기화 신호가 늦어요. 마지막 확인 '+hm(sb.at)+'.</div>';
   else if(b.st==='stop')h='<div class="note red">'+(sb?'동기화 신호가 끊겼어요. 마지막 확인 '+md(sb.at)+' '+hm(sb.at)+'.':'사무실 PC 신호가 없어요. PC가 꺼졌거나 프로그램 창이 닫혔을 수 있어요.')+'</div>';
   else h='<div class="note gray">'+(PC.dtErr?'재고 자료를 읽지 못했어요 ('+esc(PC.dtErr)+')':'확인 중…')+'</div>';
-  h+='<div class="box" style="margin-top:12px"><h3>지금 상태</h3><div class="stats">'+stat('마지막 반영',d&&d.at?hm(d.at):'–')+stat('기준일',d&&d.base?d.base.slice(5).replace('-','/'):'–')+stat('품목',d?d.n:'–')+stat('사무실 PC',a.st==='ok'||a.st==='late'?'켜짐':a.st==='stop'?'신호 없음':'–')+'</div></div>';
+  h+='<div class="box" style="margin-top:12px"><h3>지금 상태</h3><div class="stats">'+stat('마지막 반영',b.last?hm(b.last):'–')+stat('기준일',d&&d.base?d.base.slice(5).replace('-','/'):'–')+stat('품목',d&&d.n?d.n:'–')+stat('사무실 PC',a.st==='ok'||a.st==='late'?'켜짐':a.st==='stop'?'신호 없음':'–')+'</div></div>';
   const ls=[];
   if(PC.cm&&PC.cm.length)PC.cm.slice().reverse().forEach(c=>{const m=c.msg.match(/\((\d+)품목\)/);ls.push('<div><span class="t">'+md(c.at)+' '+hm(c.at)+'</span>  <span class="g">재고 반영</span> → 통합재고관리 ('+(m?m[1]:'?')+'품목)</div>');});
   else if(d&&d.at)ls.push('<div><span class="t">'+md(d.at)+' '+hm(d.at)+'</span>  <span class="g">재고 반영</span> → 통합재고관리 ('+d.n+'품목)</div>');
