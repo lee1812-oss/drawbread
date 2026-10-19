@@ -2,7 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 14:00">
+<meta name="dash-build" content="2026-10-19 14:20">
+<!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
@@ -285,13 +286,24 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
 // dash.html 맨 위 dash-build 값이 바뀌면(새 화면을 올리면) 열려 있는 대시보드가 5분 안에 스스로 새로고침해요.
 // 화면 안 「새로고침」 버튼은 누를 때 바로 확인. 자세한 창을 보고 있을 때는 닫힌 뒤에 바꿔요.
 const BUILD=((document.querySelector('meta[name="dash-build"]')||{}).content)||'';
-let verAt=0;
-async function verCheck(force){if(!BUILD||(!force&&Date.now()-verAt<240e3))return false;verAt=Date.now();
-  try{const r=await fetch('dash.html?vc='+Date.now(),{cache:'no-store',headers:{Range:'bytes=0-2047'}});if(!r.ok)return false;
-    const m=(await r.text()).match(/name="dash-build" content="([^"]+)"/);
-    if(m&&m[1]&&m[1]!==BUILD){if(!force&&openKind)return false;let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}if(!force&&lt&&lt.to===m[1]&&Date.now()-lt.at<180e3)return false;try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:m[1],at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:m[1],at:Date.now()}));}catch(_){}location.reload();return true;}}catch(_){}
+let verAt=0,verTag=null,verHash=null;
+async function srvPage(){const r=await fetch('dash.html?vh='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('dash.html '+r.status);const t=await r.text();
+  const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));
+  return {h:Array.from(new Uint8Array(d).slice(0,8)).map(x=>x.toString(16).padStart(2,'0')).join(''),b:(t.match(/name="dash-build" content="([^"]+)"/)||[])[1]||'',tag:r.headers.get('etag')||''};}
+async function verCheck(force){if(!force&&Date.now()-verAt<240e3)return false;verAt=Date.now();
+  try{let to='';
+    if(verHash===null){const p=await srvPage();verHash=p.h;verTag=p.tag;if(p.b&&BUILD&&p.b!==BUILD)to=p.b;}   // 처음 한 번: 지금 서버 화면 내용을 기준으로 기억
+    else{const r=await fetch('dash.html?vc='+Date.now(),{cache:'no-store',headers:{Range:'bytes=0-2047'}});if(!r.ok)return false;
+      const nb=((await r.text()).match(/name="dash-build" content="([^"]+)"/)||[])[1]||'',tag=r.headers.get('etag')||'';
+      if(nb&&BUILD&&nb!==BUILD)to=nb;
+      else if(tag&&tag!==verTag){const p=await srvPage();verTag=p.tag||tag;if(p.h!==verHash)to='#'+p.h;}}   // 표시 값 없이 고친 경우: 내용으로 비교 (자료만 올린 날은 내용이 같아서 그대로)
+    if(!to||(!force&&openKind))return false;
+    let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}
+    if(!force&&lt&&lt.to===to&&Date.now()-lt.at<180e3)return false;
+    try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:to,at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:to,at:Date.now()}));}catch(_){}
+    location.reload();return true;}catch(_){}
   return false;}
-try{localStorage.setItem('dash_boot',JSON.stringify({b:BUILD,at:Date.now(),app:matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches,staff:STAFF}));}catch(_){}
+try{const app=matchMedia('(display-mode: standalone),(display-mode: fullscreen)').matches;localStorage.setItem('dash_boot_'+(app?'app':'tab'),JSON.stringify({b:BUILD,at:Date.now(),staff:STAFF}));}catch(_){}
 async function load(){
   verCheck(false);
   if(window.__DASH_TEST){D=window.__DASH_TEST;lastLoad=Date.now();render();return;}
