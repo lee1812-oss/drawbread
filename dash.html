@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-19 18:05">
+<meta name="dash-build" content="2026-10-20 09:30">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -429,7 +429,7 @@ function hms(d){const k=kst(d);return [k.getHours(),k.getMinutes(),k.getSeconds(
 async function pcPoll(force){
   if(!force&&(document.hidden||!D))return;const now=Date.now(),js=[];
   if(force||now-PC.hbAt>17e3){PC.hbAt=now;js.push(fetch(RELAY_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'hb'})}).then(r=>r.json()).then(j=>{if(!j||!j.ok)throw new Error((j&&j.error)||'응답 오류');PC.hb=j;PC.hbOk=Date.now();PC.hbErr='';}).catch(e=>{PC.hbErr=String(e&&e.message||e);}));}
-  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);const lm=Date.parse(r.headers.get('last-modified')||'')||0;return r.json().then(d=>[d,lm]);}).then(([d,lm])=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)||0,enc:!!d.enc,lm};PC.dtErr='';if(!PC.dt.at)pcCommits();}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
+  if(force||now-PC.dtAt>170e3){PC.dtAt=now;js.push(fetch('../wonryo/data.json?t='+now,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('재고 자료 '+r.status);const lm=Date.parse(r.headers.get('last-modified')||'')||0;return r.json().then(d=>[d,lm]);}).then(([d,lm])=>{PC.dt={at:d.checkedAt||d.updatedAt||'',base:d.baseDate||'',n:d.count||((d.items||[]).length)||0,enc:!!d.enc,lm,sig:d.iv||''};PC.dtErr='';if(!PC.dt.at)pcCommits();}).catch(e=>{PC.dtErr=String(e&&e.message||e);}));}
   if(!js.length)return;await Promise.all(js);pcPaint();}
 async function pcCommits(){if(PC.cmAt&&Date.now()-PC.cmAt<(PC.cm?600e3:120e3))return;PC.cmAt=Date.now();
   try{const r=await fetch('https://api.github.com/repos/lee1812-oss/wonryo/commits?path=data.json&per_page=8',{headers:{Accept:'application/vnd.github+json'}});if(!r.ok)throw new Error('GitHub '+r.status);const a=await r.json();PC.cm=a.map(c=>({at:(c.commit&&c.commit.committer&&c.commit.committer.date)||'',msg:(c.commit&&c.commit.message)||''}));PC.cmErr='';}catch(e){PC.cmErr=String(e&&e.message||e);}
@@ -446,7 +446,15 @@ function pcLineTime(l){const s=String(l||'');let m=s.match(PC_TS);if(m)return Da
   m=s.match(PC_TS2);return m?pcTodayAt(+m[1],+m[2],+m[3]):0;}
 function pcNextRun(ls){for(let i=(ls||[]).length-1;i>=0;i--){const m=String(ls[i]||'').match(PC_NX);if(m)return pcTodayAt(+m[1],+m[2],0);}return 0;}
 // 마지막 반영: 평문 자료는 updatedAt(없으면 커밋), 잠긴 자료는 커밋·배포 시각 중 늦은 것 (같은 반영이면 커밋 시각으로 표시)
-function pcSyncLast(){const d=PC.dt;if(!d)return 0;const a=Date.parse(d.at||'')||0,c=(PC.cm&&PC.cm[0]&&Date.parse(PC.cm[0].at))||0,l=d.lm||0;
+// 2026-10-20 09:30: wonryo에 다른 파일만 커밋돼도 사이트가 다시 배포되어 data.json Last-Modified가 바뀜 → 「반영」으로 잘못 보지 않게,
+//   같은 내용(암호문 iv 그대로)이면 처음 본 시각을 계속 쓰고, 이 화면이 이어서 지켜보지 못한 새 내용은 GitHub 커밋 시각과 3분 넘게 차이 나면 커밋 시각을 믿음
+function pcLmOf(d,c){const l=d.lm||0;if(!d.sig||!l)return l;const K='dash_dt_seen',now=Date.now();let s=null;try{s=JSON.parse(localStorage.getItem(K)||'null');}catch(e){}
+  const put=v=>{try{localStorage.setItem(K,JSON.stringify({sig:d.sig,lm:v,seen:now}));}catch(e){}return v;};
+  if(s&&s.sig===d.sig&&s.lm)return put(Math.min(s.lm,l));
+  if(s&&s.seen&&now-s.seen<15*60e3)return put(l);   // 직전까지 지켜보다가 내용이 바뀜 = 새 반영
+  if(!c)return l;                                    // 커밋 시각을 아직 모르면 저장하지 않고 기다림
+  return put(l-c>=3*60e3?c:l);}
+function pcSyncLast(){const d=PC.dt;if(!d)return 0;const a=Date.parse(d.at||'')||0,c=(PC.cm&&PC.cm[0]&&Date.parse(PC.cm[0].at))||0,l=d.enc?pcLmOf(d,c):(d.lm||0);
   if(!d.enc)return a||c;if(c&&l>=c&&l-c<3*60e3)return c;return Math.max(a,c,l);}
 function pcLastTime(ls){for(let i=(ls||[]).length-1;i>=0;i--){const t=pcLineTime(ls[i]);if(t)return t;}return 0;}
 function kstStamp(t){const k=kst(t);const p=n=>String(n).padStart(2,'0');return k.getFullYear()+'-'+p(k.getMonth()+1)+'-'+p(k.getDate())+' '+p(k.getHours())+':'+p(k.getMinutes())+':'+p(k.getSeconds());}
@@ -542,7 +550,7 @@ function pcSyncBody(b,a){const d=PC.dt,sb=b.beat;let h;
 // 다시 켜는 법 (2026-10-19 18:10) — 폴더·명령은 10/19 16:05 Claude 안내 그대로 (사용자가 이 방법으로 켬)
 function PC_SYNC_HOW(mode){   // 'top' 다시 켜는 법만 · 'all' 설명+다시 켜는 법 · 'about' 설명만
   const about='<div class="t2" style="font-size:.9rem;color:var(--ink2)">5분마다 이카운트 재고현황(약 800품목)을 읽어 잠근(암호화한) 자료로 통합재고관리에 올려요. 재고가 안 바뀌어도 「확인 시각만 잠가서 올림」으로 5분마다 올리기 때문에, 12분 넘게 반영이 없으면 「늦어짐」, 20분 넘으면 「멈춤」으로 보여요.</div>';
-  const how='<div class="t2" style="font-size:.95rem;color:var(--ink2);line-height:1.65">① 윈도우 키+R → <b>%LOCALAPPDATA%\\wonryo_sync</b> → Enter. 그 폴더에 <b>STOP.txt</b>가 있으면 다시 켜지 마세요. 이카운트 로그인이 계속 실패해 스스로 멈춘 것이라, 다시 켜면 IP 차단이 걸릴 수 있어요.<br>② STOP.txt가 없으면 <b>D:\\google drive_com2\\플랫폼\\플랫폼\\이카운트 연동 재고수불부</b> 폴더를 열고, 주소창에 <b>cmd</b> → Enter.<br>③ 검은 창에 <b>python ecount_sync.py --loop</b> → Enter. 「켜두기 모드」 줄이 뜨면 창을 최소화해 두세요. 창을 닫으면 멈춰요.</div>';
+  const how='<div class="t2" style="font-size:.95rem;color:var(--ink2);line-height:1.65"><b>가장 쉬운 방법</b>: 구글 드라이브 <b>어사이드_Aside\\빵을그리다\\앱개발\\사무실PC_화면중계기\\PC화면_중계기.bat</b>을 더블클릭 → Enter. 꺼진 동기화를 바로 켜 주고, 그 뒤로는 꺼져도 2분쯤 뒤 저절로 다시 켜요(지킴이 v3). STOP.txt가 있으면 켜지 않아요.<br><b>직접 켤 때</b><br>① 윈도우 키+R → <b>%LOCALAPPDATA%\\wonryo_sync</b> → Enter. 그 폴더에 <b>STOP.txt</b>가 있으면 다시 켜지 마세요. 이카운트 로그인이 계속 실패해 스스로 멈춘 것이라, 다시 켜면 IP 차단이 걸릴 수 있어요.<br>② STOP.txt가 없으면 <b>D:\\google drive_com2\\플랫폼\\플랫폼\\이카운트 연동 재고수불부</b> 폴더를 열고, 주소창에 <b>cmd</b> → Enter.<br>③ 검은 창에 <b>python ecount_sync.py --loop</b> → Enter. 「켜두기 모드」 줄이 뜨면 창을 최소화해 두세요. 창을 닫으면 멈춰요.</div>';
   if(mode==='top')return '<div class="box"><h3>다시 켜는 법 <span class="c">사무실 PC (COM-LEE)</span></h3>'+how+'</div>';
   return '<div class="box"><h3>이 프로그램은</h3>'+about+(mode==='all'?'<div class="t2" style="font-size:.9rem;font-weight:700;margin:12px 0 4px">멈췄을 때 (사무실 PC COM-LEE에서)</div>'+how:'')+'</div>';}
 function pPcmon(){const t=ui.pcTab==='sync'?'sync':'snd';const a=pcSnd(),b=pcSync(a);if(t==='sync')pcCommits();const sc=pcScr();
