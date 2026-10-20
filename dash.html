@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-20 18:31">
+<meta name="dash-build" content="2026-10-20 18:45">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -83,6 +83,8 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 .kpi .trio .tc span{display:block;margin-top:6px;font-size:.85rem;font-weight:600;color:var(--sub);white-space:nowrap}
 .kpi .trio .tc.t-red{background:var(--red-bg);border-color:transparent}.kpi .trio .tc.t-red b,.kpi .trio .tc.t-red span{color:var(--red)}
 .kpi .trio .tc.t-amber{background:var(--amber-bg);border-color:transparent}.kpi .trio .tc.t-amber b,.kpi .trio .tc.t-amber span{color:var(--amber)}
+.kpi .trio .tc.t-green{background:var(--green-bg);border-color:transparent}.kpi .trio .tc.t-green b,.kpi .trio .tc.t-green span{color:var(--green)}
+.kpi.sm .trio .tc b{font-size:clamp(1.5rem,4.6vh,2.3rem)}.kpi .trio .tc span{overflow:hidden;text-overflow:ellipsis}
 .kpi .trio .tc.t-blue{background:var(--blue-bg);border-color:transparent}.kpi .trio .tc.t-blue b,.kpi .trio .tc.t-blue span{color:var(--blue)}
 .kpi .val{margin:auto 0;padding:14px 0 6px;display:flex;align-items:baseline;gap:8px}
 .kpi .val b{font-size:clamp(2.8rem,10vh,5.2rem);font-weight:700;line-height:1;letter-spacing:-.03em}
@@ -422,17 +424,24 @@ const fmtN=v=>v==null?'–':Math.round(v).toLocaleString();
 const ROLE_C={'생산':'blue','구매':'amber','품질':'red','결재':'blue','사무':'','재고':'amber'};
 function facKpis(){const f=F_();const out=[];if(!f)return out;
   const w=f.week||{};const top=(w.rows||[]).filter(r=>r.per&&r.tw).slice(0,3).map(r=>r.nm+' '+r.tw).join(' · ');
-  out.push({k:'fprod',logo:'ecount',lb:'이번 주 생산',src:md(w.mon+'T00:00:00+09:00')+'~',v:fmtN(w.twBox),u:'박스',cls:'info',badge:['blue','생산일 '+(w.twDays||0)+'일'],ft:'지난주 같은 기간 '+fmtN(w.lwBox)+'박스'+(top?' · '+top:'')});
+  out.push({k:'fprod',logo:'ecount',lb:'이번 주 생산',src:md(w.mon+'T00:00:00+09:00')+'~',v:fmtN(w.twBox),u:'박스',cls:'info',
+    trio:[['이번 주 박스',fmtN(w.twBox),'blue'],['생산일',(w.twDays||0)+'일',''],['지난주',fmtN(w.lwBox),'']],badge:['blue','지난주는 같은 요일까지'],ft:top||'이번 주 생산 기록 없음'});
   const sh=((f.need&&f.need.own)||[]).filter(x=>x.shortEa>0);
-  out.push({k:'fneed',logo:'ecount',lb:'출고 대비 재고',src:'앞으로 14일',v:sh.length,u:'품목 부족',cls:sh.length?'alert':'ok',badge:sh.length?['red','생산 필요']:['green','부족 없음'],ft:sh.length?sh.map(x=>x.nm+' '+Math.ceil(x.shortEa/x.per)+'박스').join(' · '):'입력된 출고를 모두 낼 수 있어요'});
+  const own=((f.need&&f.need.own)||[]),shBox=sh.reduce((s,x)=>s+Math.ceil(x.shortEa/(x.per||1)),0);
+  out.push({k:'fneed',logo:'ecount',lb:'출고 대비 재고',src:'앞으로 14일',v:sh.length,u:'품목 부족',cls:sh.length?'alert':'ok',
+    trio:[['부족 품목',sh.length,'red'],['필요 박스',fmtN(shBox),'red'],['충분',own.length-sh.length,'green']],badge:sh.length?['red','생산 필요']:['green','부족 없음'],ft:sh.length?sh.map(x=>x.nm+' '+Math.ceil(x.shortEa/x.per)+'박스').join(' · '):'입력된 출고를 모두 낼 수 있어요'});
   const rr=((f.raw&&f.raw.rows)||[]);const red=rr.filter(r=>r.lv==='red'),amb=rr.filter(r=>r.lv==='amber');
-  out.push({k:'fraw',logo:'ecount',lb:'원료 남은 기간',src:'최근 8주 사용 기준',v:red.length,u:'종 발주 필요',cls:red.length?'alert':amb.length?'warn':'ok',badge:red.length?['red','발주 필요']:amb.length?['amber','다음 입고에 포함 '+amb.length]:['green','여유 있음'],ft:red.concat(amb).slice(0,3).map(r=>r.nm+' '+r.weeks+'주').join(' · ')||'모든 원료 3주 이상'});
+  out.push({k:'fraw',logo:'ecount',lb:'원료 남은 기간',src:'최근 8주 사용 기준',v:red.length,u:'종 발주 필요',cls:red.length?'alert':amb.length?'warn':'ok',
+    trio:[['발주 필요',red.length,'red'],['다음 입고 때',amb.length,'amber'],['여유',rr.length-red.length-amb.length,'green']],badge:red.length?['red','발주 필요']:amb.length?['amber','다음 입고에 포함 '+amb.length]:['green','여유 있음'],ft:red.concat(amb).slice(0,3).map(r=>r.nm+' '+r.weeks+'주').join(' · ')||'모든 원료 3주 이상'});
   // 2026-10-19: 「생산량 대조」 카드는 빼고, 그 자리에 사무실 PC 프로그램 두 화면(pcPair)을 둠. 대조 상세(pFmatch)는 지우지 않고 남겨 둠
   return out;}
 function refKpis(staff){const f=F_();const out=[];if(!f)return out;
-  const ng=f.neg||{};out.push({k:'fstock',logo:'ecount',lb:'재고 이상',src:'이카운트',v:ng.own||0,u:'자사 마이너스',cls:ng.own?'warn':'ok',badge:['gray','전체 마이너스 '+(ng.total||0)],ft:'최근 30일 움직인 품목 '+(ng.active||0)+' · 조정 '+((f.adj&&f.adj.n)||0)+'줄(14일)'});
-  const a=f.analysis;if(a&&a.prodMatch)out.push({k:'fana',logo:'haccp',lb:'4~10월 대조 분석',src:a.period.replace(/2026-/g,'').replace(' ~ ','~'),v:a.prodMatch.rate,u:'% 일치',cls:'info',badge:['blue','제품·날짜 '+a.prodMatch.total+'건'],ft:'다름 '+(a.prodMatch.cnt.diff||0)+' · 한쪽만 '+((a.prodMatch.cnt.kh_none||0)+(a.prodMatch.cnt.ec_none||0))+' · 소비기한 다름 '+((a.expiry&&a.expiry.diff||[]).length)});
-  if(!staff&&f.sales){const s=f.sales;const d=s.lw?Math.round((s.tw-s.lw)/s.lw*100):null;out.push({k:'fsales',logo:'ecount',lb:'이번 주 매출',src:'공급가액',v:fmtN(s.tw/10000),u:'만원',cls:'info',badge:d==null?['gray','비교 없음']:[d>=0?'green':'amber','지난주 같은 기간 '+(d>=0?'+':'')+d+'%'],ft:'입력된 앞으로 매출 '+fmtN(s.fut/10000)+'만원'});}
+  const ng=f.neg||{};out.push({k:'fstock',logo:'ecount',lb:'재고 이상',src:'이카운트',v:ng.own||0,u:'자사 마이너스',cls:ng.own?'warn':'ok',
+    trio:[['자사 마이너스',ng.own||0,'amber'],['전체 마이너스',ng.total||0,''],['조정 줄(14일)',(f.adj&&f.adj.n)||0,'']],badge:['gray','전체 마이너스 '+(ng.total||0)],ft:'최근 30일 움직인 품목 '+(ng.active||0)+' · 조정 '+((f.adj&&f.adj.n)||0)+'줄(14일)'});
+  const a=f.analysis;if(a&&a.prodMatch)out.push({k:'fana',logo:'haccp',lb:'4~10월 대조 분석',src:a.period.replace(/2026-/g,'').replace(' ~ ','~'),v:a.prodMatch.rate,u:'% 일치',cls:'info',
+    trio:[['일치율',a.prodMatch.rate+'%','blue'],['수량 다름',a.prodMatch.cnt.diff||0,'amber'],['한쪽만 기록',(a.prodMatch.cnt.kh_none||0)+(a.prodMatch.cnt.ec_none||0),'amber']],badge:['blue','제품·날짜 '+a.prodMatch.total+'건'],ft:'다름 '+(a.prodMatch.cnt.diff||0)+' · 한쪽만 '+((a.prodMatch.cnt.kh_none||0)+(a.prodMatch.cnt.ec_none||0))+' · 소비기한 다름 '+((a.expiry&&a.expiry.diff||[]).length)});
+  if(!staff&&f.sales){const s=f.sales;const d=s.lw?Math.round((s.tw-s.lw)/s.lw*100):null;out.push({k:'fsales',logo:'ecount',lb:'이번 주 매출',src:'공급가액',v:fmtN(s.tw/10000),u:'만원',cls:'info',
+    trio:[['이번 주(만원)',fmtN(s.tw/10000),'blue'],['지난주 대비',d==null?'–':(d>=0?'+':'')+d+'%',d==null?'':d>=0?'green':'amber'],['앞으로(만원)',fmtN(s.fut/10000),'']],badge:d==null?['gray','비교 없음']:[d>=0?'green':'amber','지난주 같은 기간 '+(d>=0?'+':'')+d+'%'],ft:'입력된 앞으로 매출 '+fmtN(s.fut/10000)+'만원'});}
   return out;}
 function todoWide(){const f=F_();if(!f||!f.todo)return '';const t=f.todo;const c={red:0,amber:0,blue:0};t.forEach(x=>c[x.lv]++);
   return '<div class="kpi todow '+(c.red?'alert':'')+'" data-open="ftodo" role="button" tabindex="0"><div class="top"><span class="ic">'+svg('alert')+'</span><span class="lb">오늘 할 일 · 담당별 자동 정리</span><span class="src">이카운트 · K-HACCP · 대조</span></div>'+
@@ -706,10 +715,15 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   // 2 이카운트
   if(!a)out.push({k:'audit',logo:'ecount',ic:'alert',lb:'이카운트 경고',v:'–',u:'',cls:'',badge:['gray','기록 없음'],ft:'매일 06:30 점검'});
   else{const d=a2?(ac.경고||0)-(aCnt(a2).경고||0):null;
-    out.push({k:'audit',logo:'ecount',ic:'alert',lb:'이카운트 경고',src:a.label.split(' (')[0],v:ac.경고||0,u:'건',dl:d,cls:ac.경고?'warn':'ok',badge:ac.경고?['amber','점검 필요']:['green','이상 없음'],ft:'확인 '+(ac.확인||0)+' · 참고 '+(ac.참고||0)});}
+    const st=a.stat||{};
+    out.push({k:'audit',logo:'ecount',ic:'alert',lb:'이카운트 경고',src:a.label.split(' (')[0],v:ac.경고||0,u:'건',dl:d,cls:ac.경고?'warn':'ok',
+      trio:[['경고',ac.경고||0,'red'],['확인',ac.확인||0,'amber'],['참고',ac.참고||0,'']],
+      badge:ac.경고?['amber','점검 필요']:['green','이상 없음'],ft:(d?'전일 대비 '+(d>0?'+':'')+d+' · ':'')+'새 입력 판매 '+(st.판매||0)+' · 생산 '+(st.생산||0)+' · 구매 '+(st.구매||0)});}
   // 3 출고
   out.push(!td?{k:'delivery',logo:'dongseon',ic:'truck',lb:'오늘 출고',v:'–',u:'',cls:'',badge:['gray','자료 없음'],ft:''}:
-    {k:'delivery',logo:'dongseon',ic:'truck',lb:'오늘 출고',src:md(td.date),v:td.custs.length,u:'곳',cls:'info',badge:td.custs.length?['blue','총 '+td.qty.toLocaleString()+'개']:['gray','출고 없음'],ft:nx?'다음 '+md(nx.date)+' · '+nx.custs.length+'곳':''});
+    {k:'delivery',logo:'dongseon',ic:'truck',lb:'오늘 출고',src:md(td.date),v:td.custs.length,u:'곳',cls:'info',
+      trio:[['오늘 거래처',td.custs.length,'blue'],['오늘 수량',fmtN(td.qty),''],[dd[1]?'내일 거래처':'다음',dd[1]?dd[1].custs.length:(nx?nx.custs.length:0),'']],
+      badge:td.custs.length?['blue','총 '+td.qty.toLocaleString()+'개']:['gray','출고 없음'],ft:nx?'다음 출고 '+md(nx.date)+' · '+nx.custs.length+'곳 · '+fmtN(nx.qty)+'개':''});
   // 4 네이버
   out.push(!n?{k:'naver',logo:'naver',ic:'inbox',lb:'네이버 메일',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'07:00 · 22:00 확인'}:
     {k:'naver',logo:'naver',ic:'inbox',lb:'네이버 메일',src:whenShort(n),v:n.total||0,u:'건',cls:na?'alert':'',badge:na?['red','확인 필요 '+na]:['green','확인 필요 없음'],ft:'참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0)});
@@ -728,7 +742,9 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   // 6 알림 현황
   const ss=SLOTS.map(slot),done=ss.filter(x=>x.st==='done').length,miss=ss.filter(x=>x.st==='miss').length;
   const pl=D.play&&!/모든 인증 완료/.test(D.play.status||'')?D.play.status:'';
-  out.push({k:'sched',logo:'kakao',ic:'clock',lb:'오늘 자동 알림',v:done,u:'/ '+SLOTS.length+' 완료',cls:miss?'alert':'',badge:miss?['red','누락 '+miss]:['green','정상 작동'],ft:pl?'구글 플레이: '+pl:''});
+  const waitN=ss.filter(x=>x.st==='wait').length;
+  out.push({k:'sched',logo:'kakao',ic:'clock',lb:'오늘 자동 알림',v:done,u:'/ '+SLOTS.length+' 완료',cls:miss?'alert':'',
+    trio:[['완료',done,'green'],['남음',waitN,''],['누락',miss,'red']],badge:miss?['red','누락 '+miss]:['green','정상 작동'],ft:pl?'구글 플레이: '+pl:''});
   return out;
 }
 function staffLayout(){const by={};kpis().forEach(x=>by[x.k]=x);const f=F_();
@@ -751,7 +767,7 @@ function mailWide(){
 function kpiHtml(x,w){
   const dl=x.dl==null||x.dl===0?(x.dl===0?'<span class="dl">전일과 같음</span>':''):'<span class="dl '+(x.dl>0?'up':'down')+'">전일 대비 '+(x.dl>0?'+':'')+x.dl+'</span>';
   return '<button class="kpi '+(x.cls||'')+' '+(w||'')+'" data-open="'+x.k+'"><div class="top">'+logoHtml(x.logo)+'<span class="lb">'+x.lb+'</span>'+(x.src?'<span class="src">'+esc(x.src)+'</span>':'')+'</div>'+
-    (x.trio?'<div class="trio">'+x.trio.map(t=>'<div class="tc'+(t[1]?' t-'+t[2]:'')+'"><b class="num">'+t[1]+'</b><span>'+t[0]+'</span></div>').join('')+'</div>':'<div class="val"><b class="num">'+x.v+'</b><span>'+x.u+'</span>'+dl+'</div>')+
+    (x.trio?'<div class="trio">'+x.trio.map(t=>{const on=t[2]&&!/^(0|0일|0%|–|-)$/.test(String(t[1]));return '<div class="tc'+(on?' t-'+t[2]:'')+'"><b class="num">'+t[1]+'</b><span>'+esc(t[0])+'</span></div>';}).join('')+'</div>':'<div class="val"><b class="num">'+x.v+'</b><span>'+x.u+'</span>'+dl+'</div>')+
     '<div class="ft"><span class="badge b-'+x.badge[0]+'">'+esc(x.badge[1])+'</span>'+(x.ft?'<span>'+esc(x.ft)+'</span>':'')+'<span class="go">자세히'+chev+'</span></div></button>';
 }
 function render(){
