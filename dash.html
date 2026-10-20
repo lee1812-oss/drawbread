@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-20 11:15">
+<meta name="dash-build" content="2026-10-20 18:30">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -243,6 +243,31 @@ body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 .pb .term .tx div{white-space:pre-wrap;word-break:break-all;overflow:visible}
 @container (max-width:300px){.term .tb{font-size:.5rem}.term .tx{font-size:.46rem}}
 @container (max-width:300px){.kpis .pcw .kpi{padding:12px 10px 10px}.pcs .pt{font-size:.8rem;white-space:normal;word-break:keep-all;line-height:1.25;align-items:flex-start}.pcs .pt i{margin-top:5px}.pcs .ps{display:none}.pcs .pv{font-size:1.45rem}.pcs .pm{font-size:.72rem}.pcs .scr{font-size:.68rem}}
+/* 2026-10-20 원료 남은 기간: 육쪽마늘빵 만들 양(＋/−) · 부족 점검 · 발주 넘기기 */
+.rp h3 .c b{color:var(--ink)}
+.rp-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rp-step{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.rp-step button{width:56px;height:56px;font-size:1.6rem;font-weight:800;color:var(--ink);background:var(--soft)}
+.rp-step input{width:92px;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);text-align:center;font:inherit;font-size:1.5rem;font-weight:800;color:var(--ink);background:var(--card);-moz-appearance:textfield;appearance:textfield}
+.rp-step input::-webkit-outer-spin-button,.rp-step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rp-u{font-weight:800;color:var(--ink2);font-size:1.05rem}
+.rp-quick{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.rp-quick button{min-width:56px;height:48px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-weight:800;font-size:1rem;background:var(--card);color:var(--ink2)}
+.rp-quick button.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.rp-list{display:flex;flex-direction:column;gap:8px}
+.rp-r{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:6px 12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}
+.rp-r.bad{border-color:var(--red);background:var(--red-bg)}
+.rp-r.warn{border-color:var(--amber)}
+.rp-ck{width:44px;height:44px;border-radius:10px;border:2px solid var(--faint);font-size:1.3rem;font-weight:900;color:transparent;background:var(--card)}
+.rp-ck.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.rp-nm b{font-size:1.02rem}.rp-nm small{display:block;color:var(--sub);font-size:.82rem;margin-top:2px}
+.rp-st{font-size:.9rem;font-weight:700;text-align:right;line-height:1.35;white-space:nowrap}.rp-st small{font-weight:600}
+.rp-q{grid-column:2/4;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.82rem;color:var(--sub);word-break:keep-all}
+.rp-step.sm button{width:46px;height:46px;font-size:1.3rem}
+.rp-qv{min-width:84px;padding:0 6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;color:var(--ink);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.rp-red{color:var(--red)}.rp-amb{color:var(--amber)}.rp-ok{color:var(--green)}.rp-na{color:var(--faint)}
+.rp-go{width:100%;min-height:56px;margin-top:12px;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;font-size:1.05rem}
+.rp-go[disabled]{background:var(--gray-bg);color:var(--sub);cursor:default}
 </style>
 </head>
 <body>
@@ -572,8 +597,60 @@ function pFneed(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아�
   for(const x of n.own.filter(x=>x.shortEa>0))h+='<div class="box"><h3>'+esc(x.nm)+' 출고 예정 <span class="c">'+x.n+'건 · '+x.custs+'곳</span></h3><div class="rows">'+x.lines.map(l=>'<div class="row"><span class="mk"></span><div class="bd"><div class="t1">'+esc(ddMd(l.d))+' '+esc(l.c)+'</div><div class="t2">'+esc(l.it)+' '+l.q+'</div></div></div>').join('')+'</div></div>';
   if(n.buy.length)h+='<div class="box"><h3>출고가 잡혔는데 재고가 마이너스인 매입 상품 <span class="c">'+n.buyN+'개</span></h3>'+tbl(['품목','출고 예정','이카운트 재고','첫 출고'],n.buy.map(x=>'<tr><td>'+esc(x.nm)+'</td><td class="r">'+x.due+'</td><td class="r neg">'+fmtN(x.stock)+'</td><td>'+ddMd(x.first)+'</td></tr>'))+'<div class="meta" style="margin-top:8px">구매(입고) 입력이 빠졌는지, 실제로 발주가 필요한지 확인하세요.</div></div>';
   h+=srcMeta(f);return {s:'이카운트 판매전표(미래 날짜)와 재고 기준',h};}
+// ===== 2026-10-20 원료 남은 기간: 육쪽마늘빵 생산 가능 박스 · 만들 양(＋/−)으로 부족 점검 · 고른 원료 발주 넘기기 (Aside) =====
+// 1박스(36개) 원료 g = 통합재고관리 「원료 발주」 RB_PROD0 'DBA12'(낱개당 g, 2026-04~10 이카운트 생산 기록 중앙값) × 36.
+// 매입 단위·거래처·안전재고 = 같은 앱 RB_RAW0. 발주는 통합재고관리로 넘겨(localStorage 'dash_rbuy_hand' + #rbuy-dash) 거기서 보냄 → 발주 기록·발주 중 수량이 한곳에 남음.
+const YJ={code:'DBA12',nm:'육쪽마늘빵',pack:36,quick:[16,26,30,36],bom:{'LH.1_0':36.061,'CH.123_0':23.283,'LH.2_0':17.778,'CH.A10_0':16.667,'CH.05_0':7.833,'CH.000_0':5.841,'SC02_0':4.127,'LH.5_0':3.429,'CH.08_0':1.657,'CH.27_0':0.19}};
+const RPK={'LH.1_0':['스미스필드 크림치즈 13.6kg',13600,'박스',1,'(주)한국내츄럴치즈',59840],'LH.2_0':['스마트 베이커 마가린 10kg',10000,'박스',1,'(주)한국내츄럴치즈',32480],'LH.5_0':['건국연유 24kg',24000,'통',1,'(주)한국내츄럴치즈',6264],
+  'CH.123_0':['에버휩 생크림 1030ml',1000,'팩',12,'철은인터내셔날',38400],'CH.000_0':['마요네즈스파우트 3.2kg',3180,'개',4,'철은인터내셔날',10672],'CH.08_0':['머스타드소스 모아하우스 3.628kg',3600,'개',1,'철은인터내셔날',2750],
+  'CH.A10_0':['하얀설탕(큐원) 15kg',15000,'포',1,'철은인터내셔날',29160],'CH.05_0':['냉동마늘(황보) 1kg',1000,'봉',10,'철은인터내셔날',13120],'CH.27_0':['파슬리(선인) 250g',250,'봉',1,'철은인터내셔날',348],
+  'SC02_0':['에그앤리치 냉동전란 1kg×10',10000,'박스',1,'주식회사 사우스코어',11212],'CH.1225_0':['미로와데코젤 3kg',3000,'통',1,'철은인터내셔날',3000],'CH.B23_0':['펄솔트 500g',500,'봉',1,'철은인터내셔날',500]};   // [매입품목, 포장 g, 단위, 주문단위, 거래처, 안전재고 g]
+const RP=(()=>{const d={box:0,pick:{},qty:{}};try{const o=JSON.parse(localStorage.getItem('dash_rawplan')||'{}');return {box:+o.box||0,pick:o.pick&&typeof o.pick==='object'?o.pick:{},qty:o.qty&&typeof o.qty==='object'?o.qty:{}};}catch(_){return d;}})();
+function rpSave(){try{localStorage.setItem('dash_rawplan',JSON.stringify(RP));}catch(_){}}
+function rpB(){return Math.max(0,Math.min(999,Math.round(+RP.box||0)));}
+function rpPer(c){const g=YJ.bom[c];return g?g*YJ.pack:0;}                                   // 1박스 g
+function rpCan(x){const p=rpPer(x.code);return p&&x.stock!=null?Math.max(0,Math.floor(x.stock/p)):null;}   // 이 원료 재고만으로 만들 수 있는 박스
+function rpRows(f){const B=rpB();return ((f&&f.raw&&f.raw.rows)||[]).filter(x=>rpPer(x.code)).map(x=>{const K=RPK[x.code]||[x.nm,1000,'g',1,'',0],per=rpPer(x.code),nd=per*B,st=x.stock,after=st==null?null:st-nd,ss=K[5]||0;
+  const lv=after==null?'na':after<0?'bad':after<ss?'warn':'ok',short=after==null?0:Math.max(0,ss-after),calc=short>0?Math.ceil(short/K[1]/K[3])*K[3]:0;
+  const pick=RP.pick[x.code]!=null?!!RP.pick[x.code]:lv==='bad',q=RP.qty[x.code]!=null?Math.max(0,+RP.qty[x.code]||0):calc;
+  return {x,K,per,nd,st,after,ss,lv,calc,pick,q};});}
+const rpG=g=>fmtN(Math.round(g))+'g';
+function rpRowHtml(r){const c=esc(r.x.code),K=r.K;
+  const stt=r.lv==='bad'?'<b class="rp-red">부족 '+rpG(-r.after)+'</b>':r.lv==='warn'?'<span class="rp-amb">만든 뒤 '+rpG(r.after)+'<br><small>안전재고 '+rpG(r.ss)+' 아래</small></span>':r.lv==='ok'?'<span class="rp-ok">만든 뒤 '+rpG(r.after)+' 남음</span>':'<span class="rp-na">재고 자료 없음</span>';
+  const q=r.pick?'<div class="rp-q"><div class="rp-step sm"><button data-rp="qpm" data-c="'+c+'" data-v="-1" aria-label="주문 줄이기">−</button><span class="rp-qv">'+fmtN(r.q)+esc(K[2])+'</span><button data-rp="qpm" data-c="'+c+'" data-v="1" aria-label="주문 늘리기">＋</button></div><small>'+esc(K[0])+(K[3]>1?' · '+K[3]+esc(K[2])+'씩':'')+' · '+esc(K[4]||'거래처 미정')+(r.calc&&r.q!==r.calc?' · 추천 '+r.calc+esc(K[2]):'')+'</small></div>'
+    :(r.calc?'<div class="rp-q"><small>추천 주문 '+r.calc+esc(K[2])+' ('+esc(K[0])+') · 왼쪽 칸을 누르면 발주에 넣어요</small></div>':'');
+  return '<div class="rp-r '+r.lv+'"><button class="rp-ck'+(r.pick?' on':'')+'" data-rp="pick" data-c="'+c+'" aria-pressed="'+(r.pick?'true':'false')+'" aria-label="'+esc(r.x.nm)+' 발주에 넣기">✓</button><div class="rp-nm"><b>'+esc(r.x.nm)+'</b><small>필요 '+rpG(r.nd)+' · 재고 '+rpG(r.st||0)+'</small></div><div class="rp-st">'+stt+'</div>'+q+'</div>';}
+function rpRes(f){const B=rpB();
+  if(!B)return '<div class="meta" style="margin-top:10px">만들 박스 수를 넣거나 ＋ 를 누르면, 원료마다 필요한 양과 모자라는 양이 나와요. 숫자 버튼은 최근 1년 자주 만든 양이에요.</div>';
+  const rows=rpRows(f),ord={bad:0,warn:1,ok:2,na:3};rows.sort((a,b)=>ord[a.lv]-ord[b.lv]||((a.after||0)-(b.after||0)));
+  const bad=rows.filter(r=>r.lv==='bad'),warn=rows.filter(r=>r.lv==='warn'),picked=rows.filter(r=>r.pick&&r.q>0);
+  const at=f.src&&f.src.stockAt?String(f.src.stockAt).slice(5,16).replace('T',' '):'오늘 아침';
+  return '<div class="note '+(bad.length?'red':warn.length?'amb':'ok')+'" style="margin:12px 0">'+(bad.length?fmtN(B)+'박스를 만들기엔 '+bad.length+'종이 모자라요 · '+bad.map(r=>esc(r.x.nm)).join(', '):warn.length?fmtN(B)+'박스 만들 수 있어요 · 만든 뒤 안전재고 아래 '+warn.length+'종':fmtN(B)+'박스 만들어도 모든 원료가 여유 있어요')+'</div>'+
+    '<div class="rp-list">'+rows.map(rpRowHtml).join('')+'</div>'+
+    '<button class="rp-go" data-rp="go"'+(picked.length?'':' disabled')+'>'+(picked.length?'고른 '+picked.length+'종 발주하기 ▶':'발주할 원료를 골라 주세요')+'</button>'+
+    '<div class="meta" style="margin-top:8px">「발주하기」를 누르면 통합재고관리 「원료 발주 → ③ 발주 보내기」가 고른 원료·수량으로 열려요. 거기서 거래처별 발주서를 보내면 발주 기록과 발주 중 수량이 함께 남아요. 필요량 = 박스 × 36개 × 낱개당 원료(이카운트 4~10월 생산 기록 중앙값), 추천 주문 = 만든 뒤 안전재고까지 채우는 양을 매입 단위로 올린 값. 재고는 '+esc(at)+' 이카운트 기준이고, 이미 발주한 양은 빠져 있어요.</div>';}
+function rpHtml(f){const B=rpB();const cans=((f.raw&&f.raw.rows)||[]).map(x=>({x,can:rpCan(x)})).filter(o=>o.can!=null).sort((a,b)=>a.can-b.can),lim=cans[0];
+  return '<div class="box rp" id="rpWrap"><h3>육쪽마늘빵 만들 양 <span class="c">1박스 36개 · 지금 재고로 최대 <b>'+(lim?fmtN(lim.can)+'박스':'–')+'</b>'+(lim?' · 먼저 떨어지는 원료 '+esc(lim.x.nm):'')+'</span></h3>'+
+    '<div class="rp-in"><div class="rp-step"><button data-rp="pm" data-v="-1" aria-label="1박스 빼기">−</button><input id="rpBox" type="number" min="0" max="999" inputmode="numeric" data-rp="box" value="'+(B||'')+'" placeholder="0" aria-label="만들 박스 수"><button data-rp="pm" data-v="1" aria-label="1박스 더하기">＋</button></div><span class="rp-u">박스</span>'+
+    '<div class="rp-quick">'+YJ.quick.map(v=>'<button data-rp="set" data-v="'+v+'" class="'+(B===v?'on':'')+'">'+v+'</button>').join('')+(B?'<button data-rp="set" data-v="0">비우기</button>':'')+'</div></div>'+
+    '<div id="rpRes">'+rpRes(f)+'</div></div>';}
+function rpPaint(){const w=document.getElementById('rpWrap'),f=F_();if(w&&f)w.outerHTML=rpHtml(f);}
+function rpGo(){const f=F_();if(!f)return;const rows=rpRows(f).filter(r=>r.pick&&r.q>0);if(!rows.length)return;
+  const hand={v:1,at:Date.now(),src:'업무 대시보드 · 원료 남은 기간',plan:{},pick:{}};hand.plan[YJ.code]=rpB();rows.forEach(r=>{hand.pick[r.x.code]=r.q;});
+  try{localStorage.setItem('dash_rbuy_hand',JSON.stringify(hand));}catch(_){}
+  const u='https://lee1812-oss.github.io/wonryo/index.html#rbuy-dash';const w=window.open(u,'_blank');if(!w)location.href=u;}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-rp]');if(!b||b.tagName==='INPUT')return;const a=b.dataset.rp,f=F_();if(!f)return;
+  if(a==='pm'||a==='set'){RP.box=a==='pm'?Math.max(0,Math.min(999,rpB()+(+b.dataset.v||0))):Math.max(0,+b.dataset.v||0);RP.pick={};RP.qty={};}
+  else if(a==='pick'){const r=rpRows(f).find(o=>o.x.code===b.dataset.c);if(!r)return;RP.pick[r.x.code]=!r.pick;if(!r.pick&&!(r.q>0))RP.qty[r.x.code]=r.calc||r.K[3];}
+  else if(a==='qpm'){const r=rpRows(f).find(o=>o.x.code===b.dataset.c);if(!r)return;RP.qty[r.x.code]=Math.max(0,r.q+(+b.dataset.v||0)*r.K[3]);}
+  else if(a==='go'){rpGo();return;}
+  else return;
+  rpSave();rpPaint();});
+document.addEventListener('input',e=>{const t=e.target;if(!t||!t.dataset||t.dataset.rp!=='box')return;RP.box=Math.max(0,Math.min(999,Math.round(+t.value||0)));RP.pick={};RP.qty={};rpSave();
+  clearTimeout(rpPaint.t);rpPaint.t=setTimeout(()=>{const r=document.getElementById('rpRes'),f=F_();if(r&&f)r.innerHTML=rpRes(f);document.querySelectorAll('#rpWrap .rp-quick button[data-v]').forEach(q=>q.classList.toggle('on',rpB()>0&&+q.dataset.v===rpB()));},250);});
 function pFraw(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const r=f.raw;const LV={red:['red','발주'],amber:['amber','다음 입고에'],green:['green','여유'],blue:['blue','많음'],gray:['','자료 없음']};
-  let h='<div class="box"><h3>원료 남은 기간 <span class="c">최근 8주('+ddMd(r.since)+'~) 평균 사용량 ÷ 이카운트 재고</span></h3>'+tbl(['원료','남은 기간','주 사용량','재고'],r.rows.map(x=>'<tr><td><span class="tag '+LV[x.lv][0]+'">'+LV[x.lv][1]+'</span> '+esc(x.nm)+'</td><td class="r"><b>'+(x.weeks==null?'–':x.weeks+'주')+'</b></td><td class="r">'+fmtN(x.weekly)+x.unit+'</td><td class="r">'+fmtN(x.stock)+x.unit+'</td></tr>'))+'<div class="meta" style="margin-top:8px">빨강 1.5주 미만 · 주황 3주 미만 · 파랑 12주 넘음(많음). 실제 발주는 통합재고관리 「원료 발주」에서 해요.</div></div>';
+  let h=rpHtml(f);
+  h+='<div class="box"><h3>원료 남은 기간 <span class="c">최근 8주('+ddMd(r.since)+'~) 평균 사용량 ÷ 이카운트 재고</span></h3>'+tbl(['원료','육쪽 박스분','남은 기간','주 사용량','재고'],r.rows.map(x=>{const can=rpCan(x);return '<tr><td><span class="tag '+LV[x.lv][0]+'">'+LV[x.lv][1]+'</span> '+esc(x.nm)+'</td><td class="r">'+(can==null?'<span class="rp-na" title="육쪽마늘빵에 안 쓰는 원료">–</span>':'<b>'+fmtN(can)+'</b>박스')+'</td><td class="r"><b>'+(x.weeks==null?'–':x.weeks+'주')+'</b></td><td class="r">'+fmtN(x.weekly)+x.unit+'</td><td class="r">'+fmtN(x.stock)+x.unit+'</td></tr>';}))+'<div class="meta" style="margin-top:8px">육쪽 박스분 = 그 원료 재고만으로 만들 수 있는 육쪽마늘빵 박스(36개입), 「–」는 육쪽마늘빵에 안 쓰는 원료. 빨강 1.5주 미만 · 주황 3주 미만 · 파랑 12주 넘음(많음). 발주는 위 「발주하기」나 통합재고관리 「원료 발주」에서 해요.</div></div>';
   h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (원료 발주)</a>';
   h+=srcMeta(f);return {s:'원료수불부 · 이카운트 생산소모 기준',h};}
 function pFmatch(){const f=F_();if(!f||!f.match)return {s:'',h:empty('대조 자료가 아직 없어요 (K-HACCP 로그인 필요)')};const m=f.match;
@@ -760,7 +837,8 @@ function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab|
   return {s:r.s,h:seg+r.h};}
 const PANELS={night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 PANELS.pcmon=['사무실 PC 프로그램',pPcmon,'pc'];
-function fillPanel(k){const p=PANELS[k];if(!p)return;const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
+function fillPanel(k){const p=PANELS[k];if(!p)return;const ae=document.activeElement;if(ae&&ae.id==='rpBox'&&k==='fraw'&&k===openKind)return;   // 2026-10-20: 만들 양을 입력하는 중이면 자동 갱신으로 지우지 않음
+  const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
 function openPanel(k){openKind=k;if(ui.sel&&ui.sel[k]){ui.sel[k]=0;saveUi();}fillPanel(k);$('#pB').scrollTop=0;document.body.classList.add('open');$('#panel').setAttribute('aria-hidden','false');try{history.pushState({p:k},'');}catch(_){}}
 function closePanel(fromPop){if(!openKind)return;openKind=null;document.body.classList.remove('open');$('#panel').setAttribute('aria-hidden','true');if(!fromPop){try{history.back();}catch(_){}}}
 window.addEventListener('popstate',()=>closePanel(true));
