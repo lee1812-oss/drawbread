@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-20 18:30">
+<meta name="dash-build" content="2026-10-20 18:31">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -77,6 +77,13 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 .ph .lg.app img,.ph .lg.app svg{width:38px;height:38px;border-radius:10px}
 .kpi .lb{font-size:1rem;font-weight:700;color:var(--ink2)}
 .kpi .src{margin-left:auto;font-size:.75rem;color:var(--faint);white-space:nowrap}
+.kpi .trio{margin:auto 0;padding:14px 0 6px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi .trio .tc{border:1px solid var(--line);border-radius:12px;padding:12px 4px 10px;text-align:center;background:var(--card);min-width:0}
+.kpi .trio .tc b{display:block;font-size:clamp(1.9rem,6.5vh,3rem);font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.kpi .trio .tc span{display:block;margin-top:6px;font-size:.85rem;font-weight:600;color:var(--sub);white-space:nowrap}
+.kpi .trio .tc.t-red{background:var(--red-bg);border-color:transparent}.kpi .trio .tc.t-red b,.kpi .trio .tc.t-red span{color:var(--red)}
+.kpi .trio .tc.t-amber{background:var(--amber-bg);border-color:transparent}.kpi .trio .tc.t-amber b,.kpi .trio .tc.t-amber span{color:var(--amber)}
+.kpi .trio .tc.t-blue{background:var(--blue-bg);border-color:transparent}.kpi .trio .tc.t-blue b,.kpi .trio .tc.t-blue span{color:var(--blue)}
 .kpi .val{margin:auto 0;padding:14px 0 6px;display:flex;align-items:baseline;gap:8px}
 .kpi .val b{font-size:clamp(2.8rem,10vh,5.2rem);font-weight:700;line-height:1;letter-spacing:-.03em}
 .kpi .val span{font-size:clamp(1rem,2.4vh,1.25rem);color:var(--sub);font-weight:600}
@@ -715,8 +722,9 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   if(!kh)out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'미작성 · 미결재 · 이탈'});
   else{const c=kh.counts||{};const tot=(c.unwritten||0)+(c.unapproved||0)+(c.deviation||0);
     out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:khSrc(kh.label),v:tot,u:'건',cls:c.deviation?'alert':tot?'warn':'ok',
+      trio:[['이탈',c.deviation||0,'red'],['미작성',c.unwritten||0,'amber'],['미결재',c.unapproved||0,'blue']],
       badge:c.deviation?['red','이탈 '+c.deviation]:c.unwritten?['amber','미작성 '+c.unwritten]:c.unapproved?['blue','미결재 '+c.unapproved]:['green','모두 정상'],
-      ft:'미작성 '+(c.unwritten||0)+' · 미결재 '+(c.unapproved||0)+' · 이탈 '+(c.deviation||0)+(kh.appr&&kh.appr.counts?' · 오늘 자동 승인 '+(kh.appr.counts.todayAuto||0)+(kh.appr.counts.held?' · 보류 '+kh.appr.counts.held:''):'')});}
+      ft:(kh.appr&&kh.appr.counts?'오늘 자동 승인 '+(kh.appr.counts.todayAuto||0)+(kh.appr.counts.held?' · 보류 '+kh.appr.counts.held:''):'')});}
   // 6 알림 현황
   const ss=SLOTS.map(slot),done=ss.filter(x=>x.st==='done').length,miss=ss.filter(x=>x.st==='miss').length;
   const pl=D.play&&!/모든 인증 완료/.test(D.play.status||'')?D.play.status:'';
@@ -743,7 +751,7 @@ function mailWide(){
 function kpiHtml(x,w){
   const dl=x.dl==null||x.dl===0?(x.dl===0?'<span class="dl">전일과 같음</span>':''):'<span class="dl '+(x.dl>0?'up':'down')+'">전일 대비 '+(x.dl>0?'+':'')+x.dl+'</span>';
   return '<button class="kpi '+(x.cls||'')+' '+(w||'')+'" data-open="'+x.k+'"><div class="top">'+logoHtml(x.logo)+'<span class="lb">'+x.lb+'</span>'+(x.src?'<span class="src">'+esc(x.src)+'</span>':'')+'</div>'+
-    '<div class="val"><b class="num">'+x.v+'</b><span>'+x.u+'</span>'+dl+'</div>'+
+    (x.trio?'<div class="trio">'+x.trio.map(t=>'<div class="tc'+(t[1]?' t-'+t[2]:'')+'"><b class="num">'+t[1]+'</b><span>'+t[0]+'</span></div>').join('')+'</div>':'<div class="val"><b class="num">'+x.v+'</b><span>'+x.u+'</span>'+dl+'</div>')+
     '<div class="ft"><span class="badge b-'+x.badge[0]+'">'+esc(x.badge[1])+'</span>'+(x.ft?'<span>'+esc(x.ft)+'</span>':'')+'<span class="go">자세히'+chev+'</span></div></button>';
 }
 function render(){
