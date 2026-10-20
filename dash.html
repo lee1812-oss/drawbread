@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-20 09:30">
+<meta name="dash-build" content="2026-10-20 11:15">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -633,10 +633,11 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   out.push(!u?{k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'07:00 · 21:00 확인'}:
     {k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',src:whenShort(u),v:(u.stats&&u.stats.total)||0,u:'건',cls:ua?'alert':'',badge:ua?['red','확인 필요 '+ua]:['green','확인 필요 없음'],ft:u.empty?'새 메일 없음':'안 읽음 '+((u.stats&&u.stats.unread)||0)});
   // 7 K-HACCP
+  // 2026-10-20 11:15: K-HACCP는 Aside가 07~21시 매시 40분에 점검해 올린 자료라 「새로고침」으로는 바로 안 바뀜 → 카드에 다음 점검 시각을 같이 보여 줌
   const kh=latest(D.khaccp);
   if(!kh)out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'미작성 · 미결재 · 이탈'});
   else{const c=kh.counts||{};const tot=(c.unwritten||0)+(c.unapproved||0)+(c.deviation||0);
-    out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:kh.label||'',v:tot,u:'건',cls:c.deviation?'alert':tot?'warn':'ok',
+    out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:khSrc(kh.label),v:tot,u:'건',cls:c.deviation?'alert':tot?'warn':'ok',
       badge:c.deviation?['red','이탈 '+c.deviation]:c.unwritten?['amber','미작성 '+c.unwritten]:c.unapproved?['blue','미결재 '+c.unapproved]:['green','모두 정상'],
       ft:'미작성 '+(c.unwritten||0)+' · 미결재 '+(c.unapproved||0)+' · 이탈 '+(c.deviation||0)+(kh.appr&&kh.appr.counts?' · 오늘 자동 승인 '+(kh.appr.counts.todayAuto||0)+(kh.appr.counts.held?' · 보류 '+kh.appr.counts.held:''):'')});}
   // 6 알림 현황
@@ -749,7 +750,9 @@ function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP �
   h+=sec('미결재','blue','blue',k.unapproved,x=>'<div class="t2">'+esc([x.writer?'작성 '+x.writer:'',x.step||'승인 대기'].filter(Boolean).join(' · '))+'</div>','결재 대기 없음');
   if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
   h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
-  return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):''),h};}
+  return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):'')+' · 매시 40분 점검(07~21시), '+khNextTxt(),h};}
+function khNextTxt(){const k=kst(Date.now()),h=k.getHours(),m=k.getMinutes(),nh=m<40?h:h+1;return nh<7?'다음 07:40':nh>21?'내일 07:40':'다음 '+String(nh).padStart(2,'0')+':40';}
+function khSrc(lb){const k=kst(Date.now());let s=String(lb||'');if(s.indexOf((k.getMonth()+1)+'/'+k.getDate()+'(')===0)s=s.replace(/^\d+\/\d+\([^)]*\)\s*/,'');return (s?s+' · ':'')+khNextTxt();}
 function pFaudit(){const a=F_()&&F_().audit;if(!a)return {s:'',h:empty('점검 기록이 없어요')};return {s:esc(a.label),h:(a.findings.length?'<div class="box"><div class="rows">'+a.findings.map(fRow).join('')+'</div></div>':'<div class="note ok">이상 없음</div>')};}
 function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab||'act';
   const seg='<div class="seg">'+[['act','확인 필요',(n||u)?nAct(n).length+uAct(u).length:'–'],['naver','네이버 메일',n?(n.total||0):'–'],['utca','UTCA 메일',u?((u.stats&&u.stats.total)||0):'–']].map(([k,l,c])=>'<button data-mtab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' <b class="num">'+c+'</b></button>').join('')+'</div>';
