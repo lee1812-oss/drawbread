@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-20 18:45">
+<meta name="dash-build" content="2026-10-21 20:40">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -162,6 +162,8 @@ body.open .scrim{opacity:1;pointer-events:auto} body.open .panel{transform:none}
 .row .rt{text-align:right;flex:none}
 .row .rt b{display:block;font-size:1.05rem}
 .row .rt span{font-size:.75rem;color:var(--sub)}
+.khcap-r{cursor:pointer;border-radius:10px}.khcap-r:hover{background:var(--soft)}.khcap-b{margin-top:8px;min-height:44px;padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}.khcap-b:hover{border-color:var(--amber)}
+.khcap-m{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}.khcap-w{background:var(--card);color:var(--ink);border-radius:14px;max-width:1160px;width:100%;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.4)}.khcap-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:1.1rem}.khcap-x{min-height:48px;padding:8px 18px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}.khcap-i{display:block;width:100%;height:auto;border-radius:8px;background:#fff;cursor:zoom-in}.khcap-i.big{width:auto;max-width:none;cursor:zoom-out}
 .tag{display:inline-flex;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--gray-bg);color:var(--sub);white-space:nowrap}
 .tag.red{background:var(--red-bg);color:var(--red)} .tag.amber{background:var(--amber-bg);color:var(--amber)} .tag.blue{background:var(--blue-bg);color:var(--blue)} .tag.green{background:var(--green-bg);color:var(--green)}
 .note{padding:12px 14px;border-radius:10px;font-size:.9rem;font-weight:600}
@@ -389,7 +391,7 @@ function uRef(u){if(!u||!u.sections)return [];const s=u.sections.find(x=>x.kind=
 const nAct=n=>(n&&n.action)||[];
 const aCnt=a=>(a&&a.count)||{경고:0,확인:0,참고:0};
 const whenShort=x=>x?(x.when||md(x.at)).replace(' 정기확인',''):'';
-const SLOTS_KH=1;const SLOTS=[{t:'06:30',h:6.5,kind:'audit',nm:'이카운트 입력값 점검'},{t:'07:00',h:7,kind:'naver',nm:'네이버 메일 중요 전달사항'},{t:'07:00',h:7,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'매시 40분',h:7.67,kind:'khaccp',nm:'K-HACCP 점검·승인 (07~21시)',hourly:true},{t:'21:00',h:21,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'22:00',h:22,kind:'naver',nm:'네이버 메일 중요 전달사항'}];
+const SLOTS_KH=1;const SLOTS=[{t:'06:00',h:6,kind:'khaccp',nm:'K-HACCP 점검·자동 승인'},{t:'06:30',h:6.5,kind:'audit',nm:'이카운트 입력값 점검'},{t:'07:00',h:7,kind:'naver',nm:'네이버 메일 중요 전달사항'},{t:'07:00',h:7,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'18:00',h:18,kind:'khaccp',nm:'K-HACCP 점검·자동 승인'},{t:'21:00',h:21,kind:'utca',nm:'UTCA 메일 브리핑'},{t:'22:00',h:22,kind:'naver',nm:'네이버 메일 중요 전달사항'}];
 function slot(s){const now=kst(),nh=now.getHours()+now.getMinutes()/60;
   if(s.hourly){const today=(D[s.kind]||[]).filter(x=>sameDay(x.at,Date.now()));const last=today[0];if(nh<s.h)return {st:'wait',txt:'예정'};if(last&&(Date.now()-new Date(last.at).getTime()<80*60000||nh>=22))return {st:'done',txt:'완료 '+hm(last.at)};if(nh<s.h+1&&!last)return {st:'wait',txt:'진행 중'};return {st:'miss',txt:last?'지연 (마지막 '+hm(last.at)+')':'기록 없음'};}
   const hit=(D[s.kind]||[]).find(x=>{if(!sameDay(x.at,Date.now()))return false;const k=kst(x.at),h=k.getHours()+k.getMinutes()/60;return h>=s.h-0.2&&h<s.h+2.5;});
@@ -734,10 +736,10 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   // 2026-10-20 11:15: K-HACCP는 Aside가 07~21시 매시 40분에 점검해 올린 자료라 「새로고침」으로는 바로 안 바뀜 → 카드에 다음 점검 시각을 같이 보여 줌
   const kh=latest(D.khaccp);
   if(!kh)out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'미작성 · 미결재 · 이탈'});
-  else{const c=kh.counts||{};const tot=(c.unwritten||0)+(c.unapproved||0)+(c.deviation||0);
-    out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:khSrc(kh.label),v:tot,u:'건',cls:c.deviation?'alert':tot?'warn':'ok',
-      trio:[['이탈',c.deviation||0,'red'],['미작성',c.unwritten||0,'amber'],['미결재',c.unapproved||0,'blue']],
-      badge:c.deviation?['red','이탈 '+c.deviation]:c.unwritten?['amber','미작성 '+c.unwritten]:c.unapproved?['blue','미결재 '+c.unapproved]:['green','모두 정상'],
+  else{const c=kh.counts||{};const pd=khPendDev(kh).length,dv=(c.deviation||0)+pd;const tot=(c.unwritten||0)+(c.unapproved||0)+dv;
+    out.push({k:'khaccp',logo:'haccp',lb:'K-HACCP',src:khSrc(kh.label),v:tot,u:'건',cls:dv?'alert':tot?'warn':'ok',
+      trio:[['이탈',dv,'red'],['미작성',c.unwritten||0,'amber'],['미결재',c.unapproved||0,'blue']],
+      badge:dv?['red','이탈 '+dv+(pd?' · 결재 전 '+pd:'')]:c.unwritten?['amber','미작성 '+c.unwritten]:c.unapproved?['blue','미결재 '+c.unapproved]:['green','모두 정상'],
       ft:(kh.appr&&kh.appr.counts?'오늘 자동 승인 '+(kh.appr.counts.todayAuto||0)+(kh.appr.counts.held?' · 보류 '+kh.appr.counts.held:''):'')});}
   // 6 알림 현황
   const ss=SLOTS.map(slot),done=ss.filter(x=>x.st==='done').length,miss=ss.filter(x=>x.st==='miss').length;
@@ -839,20 +841,34 @@ function pSched(){
   if(D.play)h+='<div class="box"><h3>구글 플레이 개발자 계정</h3><div class="t1" style="font-weight:700">'+esc(D.play.status)+'</div><div class="t2" style="font-size:.88rem;color:var(--sub);margin-top:4px">'+esc(D.play.detail||'')+(D.play.at?' · '+md(D.play.at)+' '+hm(D.play.at)+' 확인':'')+'</div></div>';
   h+='<div class="meta">알림이 끝날 때마다 이 화면 자료도 함께 갱신돼요. 「기록 없음」이 계속되면 Aside에 알려 주세요.</div>';
   return {s:'카톡 알림과 같은 시각에 자동으로 확인해요',h};}
+function khDevWhy(w){return /\(기준 [^)]*\)/.test(w)&&!/소비기한/.test(w);}
+function khPendDev(k){const ap=k&&k.appr;if(!ap)return [];return (ap.held||[]).filter(x=>(x.why||[]).some(khDevWhy)).map(x=>Object.assign({},x,{devWhy:(x.why||[]).filter(khDevWhy),devKind:/^Y/.test(String(x.lCode||''))?'한계기준 이탈':'관리기준 이탈'}));}
 function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP 점검 기록이 없어요.<br>첫 자동 점검 후 보여요.')};
-  const c=k.counts||{};let h=hist('khaccp');
-  h+='<div class="box"><div class="stats">'+stat('이탈',c.deviation||0)+stat('미작성',c.unwritten||0)+stat('미결재',c.unapproved||0)+'</div></div>';
-  const sec=(title,tag,mk,arr,fn,okTxt)=>'<div class="box"><h3><span class="tag '+tag+'">'+title+'</span> <span class="c">'+(arr||[]).length+'건</span></h3>'+((arr||[]).length?'<div class="rows">'+arr.map(x=>'<div class="row"><span class="mk '+mk+'"></span><div class="bd"><div class="t1">'+(x.date?'<span class="tag">'+esc(x.date)+'</span>':'')+esc(x.title||'')+'</div>'+fn(x)+'</div></div>').join('')+'</div>':'<div class="note ok">'+okTxt+'</div>')+'</div>';
-  h+=sec('이탈','red','red',k.deviation,x=>'<div class="t2">'+rich(x.item||'')+'</div>'+(x.action?'<div class="t2" style="color:var(--sub)">'+esc(x.action)+'</div>':''),'한계기준 이탈 없음');
+  const c=k.counts||{};let h=hist('khaccp');const pdv=khPendDev(k);const capBtn=x=>x.recNo?'<button class="khcap-b" data-khcap="'+esc(x.recNo)+'">일지 캡처 보기 ›</button>':'';
+  h+='<div class="box"><div class="stats">'+stat('이탈'+(pdv.length?' (결재 전 '+pdv.length+')':''),(c.deviation||0)+pdv.length)+stat('미작성',c.unwritten||0)+stat('미결재',c.unapproved||0)+'</div></div>';
+  const sec=(title,tag,mk,arr,fn,okTxt,click)=>'<div class="box"><h3><span class="tag '+tag+'">'+title+'</span> <span class="c">'+(arr||[]).length+'건</span></h3>'+((arr||[]).length?'<div class="rows">'+arr.map(x=>'<div class="row'+(click&&x.recNo?' khcap-r" data-khcap="'+esc(x.recNo):'')+'"><span class="mk '+(x._mk||mk)+'"></span><div class="bd"><div class="t1">'+(x.date?'<span class="tag">'+esc(x.date)+'</span>':'')+esc(x.title||'')+'</div>'+fn(x)+'</div></div>').join('')+'</div>':'<div class="note ok">'+okTxt+'</div>')+'</div>';
+  const devAll=(k.deviation||[]).concat(pdv.map(x=>Object.assign({},x,{_pend:1})));
+  h+=sec('이탈','red','red',devAll,x=>x._pend?'<div class="t2"><span class="tag red">결재 전</span> <span class="tag amber">'+esc(x.devKind)+'</span> 자동 점검에서 발견 · 아직 승인 안 됨</div>'+x.devWhy.map(w=>'<div class="t2" style="color:var(--red);font-weight:700">· '+esc(w)+'</div>').join('')+'<div class="t2">'+esc('작성 '+(x.writer||'')+' · 승인자 '+(x.appr||''))+'</div>'+capBtn(x):'<div class="t2"><span class="tag">개선조치 「유」 기록</span></div><div class="t2">'+rich(x.item||'')+'</div>'+(x.action?'<div class="t2" style="color:var(--sub)">'+esc(x.action)+'</div>':''),'한계기준 이탈 없음 (결재 전 일지 포함)',true);
   h+=sec('미작성','amber','amber',k.unwritten,x=>x.note?'<div class="t2">'+esc(x.note)+'</div>':'','빠진 일지 없음');
   const ap=k.appr;if(ap){const held=ap.held||[],fail=ap.failed||[],td=(ap.today||[]);const autoN=td.filter(x=>x.auto).length;
-    if(held.length||fail.length)h+=sec('자동 승인 보류 · 직접 확인','amber','amber',held.concat(fail),x=>'<div class="t2">'+esc('작성 '+(x.writer||'')+' · 승인자 '+(x.appr||''))+'</div>'+(x.why||[]).map(w=>'<div class="t2" style="color:var(--amber)">· '+esc(w)+'</div>').join(''),'');
-    h+='<div class="box"><h3><span class="tag green">오늘 승인</span> <span class="c">'+td.length+'건 · 자동 '+autoN+' · 직접 '+(td.length-autoN)+'</span></h3>'+(td.length?'<div class="rows">'+td.slice(0,30).map(x=>'<div class="row"><span class="mk green"></span><div class="bd"><div class="t1"><span class="tag">'+esc(x.date)+'</span>'+esc(x.title)+'</div><div class="t2">'+esc(x.dt+' '+x.who+(x.auto?' · 자동 점검 후 승인':' · 직접 승인'))+'</div></div></div>').join('')+'</div>':'<div class="note gray">오늘 승인한 일지가 없어요</div>')+'<div class="meta" style="margin:10px 0 0">이혜영 결재 일지는 07~21시 매시 40분에 점검해 기준 안이면 자동 승인해요. 한계기준 밖 측정값·증상 표시·개선조치 「유」·오래된 일지·승인 취소 이력은 보류해요. 박태일·황정기 결재 일지는 각자 승인해요.</div></div>';}
-  h+=sec('미결재','blue','blue',k.unapproved,x=>'<div class="t2">'+esc([x.writer?'작성 '+x.writer:'',x.step||'승인 대기'].filter(Boolean).join(' · '))+'</div>','결재 대기 없음');
+    if(held.length||fail.length)h+=sec('자동 승인 보류 · 직접 확인','amber','amber',held.concat(fail).map(x=>Object.assign({},x,{_mk:(x.why||[]).some(khDevWhy)?'red':''})),x=>'<div class="t2">'+esc('작성 '+(x.writer||'')+' · 승인자 '+(x.appr||''))+((x.why||[]).some(khDevWhy)?' <span class="tag red">'+(/^Y/.test(String(x.lCode||''))?'한계기준 이탈':'관리기준 이탈')+'</span>':'')+'</div>'+(x.why||[]).map(w=>'<div class="t2" style="color:'+(khDevWhy(w)?'var(--red);font-weight:700':'var(--amber)')+'">· '+esc(w)+'</div>').join('')+capBtn(x),'',true);
+    h+='<div class="box"><h3><span class="tag green">오늘 승인</span> <span class="c">'+td.length+'건 · 자동 '+autoN+' · 직접 '+(td.length-autoN)+'</span></h3>'+(td.length?'<div class="rows">'+td.slice(0,30).map(x=>'<div class="row"><span class="mk green"></span><div class="bd"><div class="t1"><span class="tag">'+esc(x.date)+'</span>'+esc(x.title)+'</div><div class="t2">'+esc(x.dt+' '+x.who+(x.auto?' · 자동 점검 후 승인':' · 직접 승인'))+'</div></div></div>').join('')+'</div>':'<div class="note gray">오늘 승인한 일지가 없어요</div>')+'<div class="meta" style="margin:10px 0 0">이혜영·황정기·박태일 결재 일지는 매일 06:00·18:00에 각자 계정으로 점검해 기준 안이면 자동 승인해요. 한계기준 밖 측정값·증상 표시·개선조치 「유」·오래된 일지·승인 취소 이력은 보류해요. 보류 줄을 누르면 그 일지 캡처가 열려요(걸린 줄은 빨간 테두리).</div></div>';}
+  const hk=x=>(ap&&ap.held||[]).find(y=>y.d===x.d&&y.title===x.title&&('승인자 '+y.appr)===String(x.step||'').split(' · ')[0]);
+  h+=sec('미결재','blue','blue',(k.unapproved||[]).map(x=>{const y=hk(x);return y?Object.assign({},x,{recNo:y.recNo,_dev:(y.why||[]).some(khDevWhy),_lc:y.lCode,_mk:(y.why||[]).some(khDevWhy)?'red':''}):x;}),x=>'<div class="t2">'+esc([x.writer?'작성 '+x.writer:'',x.step||'승인 대기'].filter(Boolean).join(' · '))+(x._dev?' <span class="tag red">'+(/^Y/.test(String(x._lc||''))?'한계기준 이탈':'관리기준 이탈')+'</span>':'')+'</div>'+(x.recNo?capBtn(x):''),'결재 대기 없음',true);
   if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
   h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
-  return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):'')+' · 매시 40분 점검(07~21시), '+khNextTxt(),h};}
-function khNextTxt(){const k=kst(Date.now()),h=k.getHours(),m=k.getMinutes(),nh=m<40?h:h+1;return nh<7?'다음 07:40':nh>21?'내일 07:40':'다음 '+String(nh).padStart(2,'0')+':40';}
+  return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):'')+' · 매일 06:00·18:00 점검, '+khNextTxt(),h};}
+function khNextTxt(){const k=kst(Date.now()),h=k.getHours();return h<6?'다음 06:00':h<18?'다음 18:00':'내일 06:00';}
+// 2026-10-21: 자동 승인 보류 일지 캡처 보기 (khcap.enc.json, 대표 열쇠로 암호화 · 누를 때만 받음)
+let KHCAP=null;
+async function khCapGet(force){if(KHCAP&&!force&&Date.now()-KHCAP.t<5*60e3)return KHCAP.d;let k=null;try{k=localStorage.getItem(LS_KEY);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('열쇠가 없어요');const r=await fetch('khcap.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status===404?'캡처 파일이 아직 없어요':'캡처 파일 오류 ('+r.status+')');const d=await decrypt(await r.json(),k);KHCAP={t:Date.now(),d};return d;}
+function khCapClose(){const m=document.getElementById('khcapM');if(m)m.remove();}
+async function khCapOpen(id){khCapClose();const m=document.createElement('div');m.id='khcapM';m.className='khcap-m';m.innerHTML='<div class="khcap-w"><div class="khcap-h"><b>자동 승인 보류 · 일지 캡처</b><button class="khcap-x" data-khcapx="1">닫기 ✕</button></div><div class="khcap-c"><div class="note gray">불러오는 중…</div></div></div>';document.body.appendChild(m);
+  const c=m.querySelector('.khcap-c');try{const d=await khCapGet();const x=d&&d.caps&&d.caps[id];if(!x){c.innerHTML='<div class="note amb">이 일지 캡처가 아직 없어요. 다음 K-HACCP 점검(매일 06:00·18:00) 때 만들어져요.</div>';return;}
+    c.innerHTML='<div class="meta" style="margin:0 0 8px">'+esc((x.date||'')+' '+(x.title||''))+' · 캡처 '+esc(String(x.at?new Date(new Date(x.at).getTime()+9*3600e3).toISOString().slice(5,16).replace('T',' '):''))+' · 그림을 누르면 크게/작게</div><img class="khcap-i" src="'+x.img+'" alt="일지 캡처">';}
+  catch(err){c.innerHTML='<div class="note red">캡처를 불러오지 못했어요: '+esc(String(err&&err.message||err))+'</div>';}}
+document.addEventListener('click',e=>{if(e.target.closest('[data-khcapx]')||e.target.id==='khcapM'){khCapClose();return;}const im=e.target.closest('.khcap-i');if(im){im.classList.toggle('big');return;}const t=e.target.closest('[data-khcap]');if(t){e.preventDefault();e.stopPropagation();khCapOpen(t.dataset.khcap);}},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('khcapM')){khCapClose();e.stopPropagation();}},true);
 function khSrc(lb){const k=kst(Date.now());let s=String(lb||'');if(s.indexOf((k.getMonth()+1)+'/'+k.getDate()+'(')===0)s=s.replace(/^\d+\/\d+\([^)]*\)\s*/,'');return (s?s+' · ':'')+khNextTxt();}
 function pFaudit(){const a=F_()&&F_().audit;if(!a)return {s:'',h:empty('점검 기록이 없어요')};return {s:esc(a.label),h:(a.findings.length?'<div class="box"><div class="rows">'+a.findings.map(fRow).join('')+'</div></div>':'<div class="note ok">이상 없음</div>')};}
 function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab||'act';
