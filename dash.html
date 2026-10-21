@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-21 20:40">
+<meta name="dash-build" content="2026-10-21 21:55">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -930,6 +930,45 @@ window.addEventListener('appinstalled',()=>{instEv=null;$('#bInst').style.displa
 $('#bInst').onclick=async()=>{if(!instEv)return;instEv.prompt();try{await instEv.userChoice;}catch(_){}instEv=null;$('#bInst').style.display='none';};
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_){}}
 try{const up=JSON.parse(sessionStorage.getItem('dash_upd')||'null');if(up){sessionStorage.removeItem('dash_upd');window.__UPD=up;if(up.board){try{navigator.wakeLock.request('screen').then(w=>{wake=w;}).catch(()=>{});}catch(_){}$('#bBoard').classList.add('again');$('#tBoard').textContent='전광판 다시 켜기';}}}catch(_){}
+// ===== 2026-10-21 원료 발주 일정 · 육쪽마늘빵 100박스 기준 (Aside 사무실 PC) =====
+// 기존 코드는 고치지 않고 아래만 덧붙임. 자료(D.factory.rawbuy)는 공장 운영 자료 갱신 때 rawbuy_build.js가 만든다. 자료가 없으면 아무것도 안 보임.
+const RB_LV={red:['red','바로 발주'],amber:['amber','100박스 아래'],green:['green','기준 이상'],gray:['','자료 없음']};
+function rbMd(d){if(!d)return '–';const W='일월화수목금토';const t=new Date(d+'T00:00:00+09:00');return (t.getMonth()+1)+'/'+t.getDate()+'('+W[t.getDay()]+')';}
+function rbBox(r,v){if(v==null||!r.perBox)return null;return Math.round(v/r.perBox);}
+function rbDelta(r,v){if(v==null)return '<span class="rp-na">–</span>';if(!v)return '0';const b=rbBox(r,v);return '<span class="'+(v<0?'neg':'')+'">'+(v>0?'+':'')+fmtN(Math.round(v))+'g</span>'+(b?'<br><small>'+(b>0?'+':'')+b+'박스분</small>':'');}
+function rbItems(s){return (s.items||[]).map(i=>i.nm+' '+i.packs+i.unit).join(', ');}
+function rbWide(){const f=F_();const rb=f&&f.rawbuy;if(!rb||!rb.rows)return '';
+  const red=rb.rows.filter(r=>r.lv==='red'),amb=rb.rows.filter(r=>r.lv==='amber');
+  const L=[];
+  (rb.sups||[]).filter(s=>s.nextOrder).forEach(s=>L.push([s.urgent?'red':'amber',s.name.replace(/\(주\)|주식회사 /g,''),rbMd(s.nextOrder)+'까지 발주'+(s.deliv?' → '+rbMd(s.deliv)+' 입고':'')+' · '+rbItems(s)]));
+  if(!L.length)L.push(['green','발주','2주 안에 발주할 원료 없음 (100박스분 기준)']);
+  L.push([red.length?'red':'blue','재고','지금 재고로 육쪽마늘빵 최대 '+fmtN(rb.maxBox)+'박스 · 먼저 떨어지는 원료 '+(rb.firstOut||[]).join(', ')]);
+  const ch=rb.rows.filter(r=>r.d7&&r.stock!=null&&(r.stock-r.d7)>0).map(r=>({nm:r.nm,p:Math.round(r.d7/(r.stock-r.d7)*100)})).filter(x=>x.p).sort((a,b)=>a.p-b.p).slice(0,3);
+  L.push(['blue','변화','지난 1주 재고 '+(ch.length?ch.map(x=>x.nm+' '+(x.p>0?'+':'')+x.p+'%').join(' · '):'변화 없음')]);
+  const p=rb.prod||{};const o=(rb.orders&&rb.orders.list)||[];
+  L.push(['blue','생산','육쪽 최근 8주 평균 주 '+fmtN(p.avg8)+'박스 · 마지막 생산 '+rbMd(p.lastDay)+(o.length?' · 철은 마지막 발주 '+rbMd(o[o.length-1].d):'')]);
+  return '<div class="kpi todow '+(red.length?'alert':amb.length?'warn':'')+'" data-open="fbuy" role="button" tabindex="0"><div class="top">'+logoHtml('ecount')+'<span class="lb">원료 발주 일정 · 육쪽마늘빵 100박스 기준</span><span class="src">이카운트 '+esc((rb.snap||'').slice(5).replace('-','/'))+' 06:30 재고</span></div>'+
+   '<div class="tw">'+L.slice(0,6).map(x=>'<div class="trow"><span class="mk '+x[0]+'"></span><span class="tag '+(x[0]==='red'?'red':x[0]==='amber'?'amber':x[0]==='green'?'green':'blue')+'">'+esc(x[1])+'</span><div class="tt">'+esc(x[2])+'</div></div>').join('')+'</div>'+
+   '<div class="ft"><span class="badge b-'+(red.length?'red':amb.length?'amber':'green')+'">바로 발주 '+red.length+' · 100박스 아래 '+amb.length+' · 기준 이상 '+rb.rows.filter(r=>r.lv==='green').length+'</span><span class="go">자세히'+chev+'</span></div></div>';}
+function pFbuy(){const f=F_();const rb=f&&f.rawbuy;if(!rb||!rb.rows)return {s:'',h:empty('원료 발주 자료가 아직 없어요 (아침 07:50 갱신 때 만들어져요)')};
+  let h='';
+  const sp=(rb.sups||[]);
+  h+='<div class="box"><h3>다음 발주 <span class="c">거래처별 · 같이 주문할 원료</span></h3>'+tbl(['거래처','발주할 날짜','입고 예상','같이 주문할 원료','마지막 입고'],sp.map(s=>'<tr><td><b>'+esc(s.name)+'</b><br><small>'+esc(s.rule||'')+'</small></td><td class="r">'+(s.nextOrder?'<span class="tag '+(s.urgent?'red':'amber')+'">'+rbMd(s.nextOrder)+'</span>':'<span class="tag green">2주 안 없음</span>')+'</td><td class="r">'+(s.deliv?rbMd(s.deliv):'–')+'</td><td>'+esc(rbItems(s)||'–')+'</td><td class="r">'+rbMd(s.lastIn)+'</td></tr>'))+
+    '<div class="meta" style="margin-top:8px">'+esc(rb.rule&&rb.rule.text||'')+'. 발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인·승인 요청 → 황정기 전무 최종 승인 → 서재우 차장 거래처 발주(통합재고관리 「원료 발주」). 「발주 중」 수량은 아직 빼지 않았어요.</div></div>';
+  h+='<div class="box"><h3>육쪽마늘빵 100박스 기준 <span class="c">1박스 36개 · 지금 재고로 최대 '+fmtN(rb.maxBox)+'박스</span></h3>'+tbl(['원료','지금 재고','100박스 기준','통합재고관리 안전재고(지금)','추천 주문','발주할 날짜'],rb.rows.map(r=>{const lv=RB_LV[r.lv]||RB_LV.gray;return '<tr><td><span class="tag '+lv[0]+'">'+lv[1]+'</span> '+esc(r.nm)+'<br><small>'+esc(r.sup)+'</small></td><td class="r">'+(r.boxes!=null?'<span style="white-space:nowrap"><b>'+fmtN(r.boxes)+'</b>박스분</span><br><small>'+fmtN(Math.round(r.stock))+'g</small>':'<b>'+fmtN(Math.round(r.stock||0))+'</b>g<br><small>'+(Math.round((r.stock||0)/r.packG*10)/10)+'통</small>')+'</td><td class="r">'+(r.tBox?fmtN(r.target)+'g':'3통 ('+fmtN(r.target)+'g)')+'</td><td class="r">'+(r.ssBox!=null?fmtN(r.ssNow)+'g<br><small>약 '+r.ssBox+'박스분</small>':fmtN(r.ssNow)+'g<br><small>1통</small>')+'</td><td class="r">'+(r.packs?'<b>'+r.packs+'</b>'+esc(r.unit):'–')+'</td><td class="r">'+(r.lv==='green'?'–':rbMd(r.orderBy))+'</td></tr>';}))+
+    '<div class="meta" style="margin-top:8px">통합재고관리에 지금 들어 있는 원료 안전재고는 대부분 육쪽 약 50박스분이에요. 100박스분으로 바꾸는 것은 확인 뒤에 해요(화면 계산만 100박스 기준). 미로와데코젤은 육쪽에 안 써서 3통(9kg) 기준이고, 철은 쪽 입고가 자주 늦어(9·10월 1개만 출고) 여유 있게 주문해요.</div></div>';
+  h+='<div class="box"><h3>재고 변화 <span class="c">이카운트 06:30 재고 · 어제('+rbMd(rb.s1)+') · 1주 전('+rbMd(rb.s7)+') 대비</span></h3>'+tbl(['원료','지금 재고','어제 대비','1주 전 대비','마지막 입고'],rb.rows.map(r=>'<tr><td>'+esc(r.nm)+'</td><td class="r">'+fmtN(Math.round(r.stock||0))+'g</td><td class="r">'+rbDelta(r,r.d1)+'</td><td class="r">'+rbDelta(r,r.d7)+'</td><td class="r">'+rbMd(r.lastIn)+(r.lastQty?'<br><small>'+fmtN(r.lastQty)+esc(r.unit)+'</small>':'')+'</td></tr>'))+'</div>';
+  const p=rb.prod||{};const wk=p.weeks||[];const mx=Math.max(36,...wk.map(w=>w.box));
+  h+='<div class="box"><h3>육쪽마늘빵 주간 생산 <span class="c">최근 8주 평균 '+fmtN(p.avg8)+'박스 · 12주 평균 '+fmtN(p.avg12)+' · 최대 '+fmtN(p.max)+'</span></h3><div style="display:flex;align-items:flex-end;gap:6px;height:150px;padding-top:6px">'+wk.map(w=>'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0"><b style="font-size:.85rem">'+(w.box||'')+'</b><div style="width:100%;max-width:38px;height:'+Math.round(w.box/mx*110)+'px;background:'+(w.partial?'var(--line)':'#8a5a3c')+';border-radius:6px 6px 0 0"></div><small style="white-space:nowrap">'+(+w.mon.slice(5,7))+'/'+(+w.mon.slice(8,10))+(w.partial?' 이번 주':'')+'</small></div>').join('')+'</div>'+
+    '<div class="meta" style="margin-top:8px">보통 일주일에 한 번, 화·수요일에 만들어요 (최근 12주 생산일: '+Object.entries(p.dow||{}).map(([k,v])=>k+' '+v+'번').join(' · ')+'). 최근 생산: '+(p.days||[]).map(d=>rbMd(d.d)+' '+d.q+'박스').join(' · ')+'</div></div>';
+  const o=rb.orders||{};const ol=o.list||[];
+  h+='<div class="box"><h3>철은인터내셔날 발주 이력 <span class="c">카톡 「'+esc(o.room||'')+'」'+(o.avgGap?' · 평균 '+o.avgGap+'일 간격':'')+'</span></h3>'+(ol.length?'<div class="stats">'+ol.slice().reverse().map(x=>stat(rbMd(x.d),esc(x.who||''))).join('')+'</div>':empty('카톡 내보내기 파일이 없어요'))+'<div class="meta" style="margin-top:8px">납품은 화·목, 납품 전날 16시까지 주문방에 발주해요. 실제로는 발주 뒤 2~6일 걸려 들어왔어요. 카톡 내보내기 '+esc(o.at||'')+' 기준.</div></div>';
+  h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (원료 발주)</a>';
+  h+=srcMeta(f);return {s:'이카운트 재고·생산·구매 + 카톡 철은 주문방 · '+esc(rb.built||'')+' 계산',h};}
+PANELS.fbuy=['원료 발주 일정 · 100박스 기준',pFbuy,'ecount'];
+facLayout=(orig=>function(staff){const h=orig(staff);try{if(!h||!nfOn('fac'))return h;const w=rbWide();if(!w)return h;let i=h.indexOf('<div class="kpi todow');if(i<0)i=h.indexOf('<div class="grp">참고');return i<0?h+w:h.slice(0,i)+w+h.slice(i);}catch(_){return h;}})(facLayout);
+// ===== 2026-10-21 덧붙임 끝 =====
+
 applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
