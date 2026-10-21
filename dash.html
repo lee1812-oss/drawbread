@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 08:46">
+<meta name="dash-build" content="2026-10-22 08:55">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -340,6 +340,34 @@ body.fit1 .pcs .term{flex:1 1 0;height:0;min-height:52px;margin-top:6px}
 body.fit1 .pcs .pv{padding:4px 0 0}
 @media (max-width:1180px){.kpis .c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.kpis .c4{grid-template-columns:1fr}}
+</style>
+<style id="calm">
+/* 2026-10-22 차분한 업무 테마 (사용자 요청: 색이 많아 복잡함 → 깔끔·신뢰감). 색은 「빨강=지금 조치 필요」, 「주황=주의」 글자에만 쓰고, 정상·참고는 회색·남색으로 통일 */
+:root{--blue:#1e3a5f;--blue-bg:#f1f3f6;--green:#1f2937;--green-bg:#f1f3f6;--amber:#a15c07;--amber-bg:#f1f3f6;--red:#b42318;--red-bg:#fbf1f0}
+body.night{--bg:#0e1420;--card:#151c2a;--soft:#1a2232;--line:#263043;--gray-bg:#1c2433;--blue:#c7d2e3;--blue-bg:#1c2433;--green:#e5e7eb;--green-bg:#1c2433;--amber:#f2b84b;--amber-bg:#1c2433;--red:#f2867d;--red-bg:#2a1c22}
+.kpi.alert,body.night .kpi.alert,.kpi.warn{border-color:var(--line)!important}
+.kpi.alert .ic,.kpi.warn .ic{background:var(--gray-bg);color:var(--sub)}
+.kpi .trio .tc,.kpi .trio .tc.t-green,.kpi .trio .tc.t-blue,.kpi .trio .tc.t-amber{background:var(--card)!important;border:1px solid var(--line)!important}
+.kpi .trio .tc.t-red{background:var(--red-bg)!important;border-color:transparent!important}
+.kpi .trio .tc.t-green b,.kpi .trio .tc.t-blue b,.kpi .trio .tc.t-green span,.kpi .trio .tc.t-blue span{color:var(--ink)!important}
+.kpi .trio .tc span{color:var(--sub)!important}.kpi .trio .tc.t-red span{color:var(--red)!important}
+.badge.b-green,.badge.b-blue,.badge.b-gray,.b-green,.b-blue{background:var(--gray-bg)!important;color:var(--sub)!important}
+.b-amber{background:var(--gray-bg)!important;color:var(--amber)!important}.b-red{background:var(--red-bg)!important;color:var(--red)!important}
+.tag,.tag.green,.tag.blue{background:var(--gray-bg)!important;color:var(--sub)!important}
+.tag.amber{background:var(--gray-bg)!important;color:var(--amber)!important}.tag.red{background:var(--red-bg)!important;color:var(--red)!important}
+.trow .mk,.row .mk,.trow .mk.green,.trow .mk.blue,.row .mk.green,.row .mk.blue{background:var(--line)!important}
+.trow .mk.amber,.row .mk.amber{background:var(--amber)!important;opacity:.7}.trow .mk.red,.row .mk.red{background:var(--red)!important}
+.kpi.c4k,.kpi.c4k.lv-green,.kpi.c4k.lv-amber,.kpi.c4k.lv-gray{border-top:1px solid var(--line)!important}
+.kpi.c4k.lv-red{border-top:3px solid var(--red)!important}
+.c4k .c4bh{background:var(--red-bg)!important}
+.lg{background:var(--soft)!important;border-color:var(--line)!important}
+.lg img,.lg svg{filter:grayscale(1) contrast(1.05);opacity:.9}
+body.night .lg img{filter:grayscale(1) brightness(1.6);opacity:.85}
+.pcs.ok .pv{color:var(--ink)!important}.pcs .pt i,.pcs.ok .pt i{background:var(--sub)!important}.pcs.alert .pt i{background:var(--red)!important}
+.note.ok{background:var(--gray-bg)!important;color:var(--ink2)!important}
+.stk-t.pulled{background:var(--gray-bg)!important;color:var(--sub)!important}
+.kpi .trio .tc.t-amber b{color:var(--ink)!important}.kpi .trio .tc.t-amber span{color:var(--amber)!important}
+.tag.amber{color:var(--sub)!important}
 </style>
 </head>
 <body>
