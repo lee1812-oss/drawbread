@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 07:17">
+<meta name="dash-build" content="2026-10-22 07:48">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -296,7 +296,46 @@ body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 .c4k .trow{padding:6px 0;align-items:flex-start}.c4k .trow .mk{height:auto;align-self:stretch}.c4k .trow .tag{font-size:.82rem;min-width:74px;justify-content:center}
 .c4k .trow .tt{font-size:1rem;white-space:normal;overflow:visible;line-height:1.35;word-break:keep-all}
 .c4cal td,.c4cal th{text-align:center!important;white-space:nowrap}.c4cal td:first-child,.c4cal th:first-child{text-align:left!important}.c4cal .bigc{background:var(--red-bg);color:var(--red);font-weight:800;border-radius:6px;padding:1px 6px}
-.kpis:has(.c4) .kg5>.kpi{min-height:210px}
+
+/* 2026-10-22 PC 한 화면 맞춤 (가로 1100px 이상): 핵심 4품목 + 생산·품질·출고 + 공장 운영 줄이 스크롤 없이 보이게 */
+body.fit1 main{padding-top:10px}
+body.fit1 .bar{margin-bottom:6px}
+body.fit1 .kpis{gap:10px}
+body.fit1 .grp{margin:0 0 -5px}
+body.fit1 .kpis .kpi{min-height:0!important}
+body.fit1 .kpis .c4>.kpi.c4k{padding:10px 14px 8px;border-top-width:5px}
+body.fit1 .c4k .c4n{margin:2px 0 0}
+body.fit1 .c4k .c4n b{font-size:clamp(2rem,5.4vh,2.9rem)}
+body.fit1 .c4k .c4s{margin:0 0 4px;font-size:.92rem}
+body.fit1 .c4k .c4big{padding:3px 8px;margin-bottom:2px;font-size:.9rem}
+body.fit1 .c4k .trow{padding:4px 0}
+body.fit1 .c4k .trow .tt{font-size:.9rem;line-height:1.3;letter-spacing:-.02em}
+body.fit1 .c4k .c4n{flex-wrap:nowrap}
+body.fit1 .c4k .trow .tag{font-size:.74rem;min-width:66px;padding:1px 5px}
+body.fit1 .kpis .kg5>.kpi{padding-top:12px;padding-bottom:10px}
+body.fit1 .kpi .trio{margin-top:0;margin-bottom:0}
+body.fit1 .kpi .trio .tc{padding:6px 4px 6px}
+body.fit1 .kpi .trio .tc b{font-size:clamp(1.6rem,4.4vh,2.3rem)}
+body.fit1 .kpi .trio .tc span{margin-top:2px}
+body.fit1 .kpis .kpi.sm{padding:12px 16px 10px}
+body.fit1 .kpi.sm .val{padding:4px 0 2px}
+body.fit1 .kpi.sm .val b{font-size:clamp(1.9rem,5vh,2.6rem)}
+body.fit1 .c4k .c4s{display:none}
+.c4k .c4h .lb{flex:none}.c4k .c4h .c4bh{font-size:.76rem;font-weight:800;color:var(--red);background:var(--red-bg);border-radius:999px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+body.fit1 header .hd{padding-top:4px;padding-bottom:4px}
+body.fit1 .kpi .trio .tc b,body.fit1 .kpis .kg5 .kpi .trio .tc b,body.fit1 .kpi.sm .trio .tc b{font-size:clamp(1.4rem,4vh,2rem)}
+body.fit1 .kpi .trio .tc span{white-space:nowrap!important;font-size:.74rem;letter-spacing:-.04em;overflow:hidden!important;text-overflow:ellipsis}
+body.fit1 .kpis .kg5 .kpi .lb{flex:none}
+.c4k .c4n em{margin-left:auto;font-style:normal;font-size:1.05rem;font-weight:800;color:var(--ink2);white-space:nowrap}
+body.fit1 .c4k .trow .tt,body.fit1 .c4k .c4big{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.fit1 .kpis .kpi .lg{width:34px;height:34px;border-radius:10px}body.fit1 .kpis .kpi .lg img,body.fit1 .kpis .kpi .lg svg{width:22px;height:22px}
+body.fit1 .kpis .kg5 .kpi .src{flex-basis:auto;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+body.fit1 .kpis .kg5 .kpi .top{flex-wrap:nowrap}
+body.fit1 .kpi .trio{padding:8px 0 4px}
+body.fit1 .kpis .kg5 .kpi .trio .tc b{font-size:clamp(1.5rem,4.2vh,2.2rem)}
+body.fit1 .kpi .ft{padding-top:8px}
+body.fit1 .pcs .term{flex:1 1 0;height:0;min-height:52px;margin-top:6px}
+body.fit1 .pcs .pv{padding:4px 0 0}
 @media (max-width:1180px){.kpis .c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.kpis .c4{grid-template-columns:1fr}}
 </style>
@@ -994,25 +1033,25 @@ function c4Core(){return D&&D.stock&&D.stock.core&&D.stock.core.items?D.stock.co
 function c4Cust(c){return String(c||'').replace(/^\([^)]*\)\s*/,'').replace(/^SD_[^_]+_/,'').replace(/_N\d+$/,'').replace(/_.*$/,'').trim();}
 function c4D(d){return d==null?'–':d<=0?'0':d<10?String(Math.round(d*10)/10):String(Math.round(d));}
 function c4N(v){return v==null?'–':fmtN(Math.round(v*10)/10);}
+function c4Sd(d){return d?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'–';}
 function c4Roles(x){const L=[];
   if(x.unit==='봉'){
-    const o=x.outLines||[];L.push([x.out?'amber':'green','출고 김명우',x.out?'생지 출고 예정 '+c4N(x.out)+'봉'+(o.length?' ('+o.map(l=>rbMd(l.d)).filter((v,i,a)=>a.indexOf(v)===i).join('·')+')':''):'생지 출고 예정 없음']);
-    L.push([x.use?'amber':'green','생산 박태일',x.use?'몽블랑·빅몽블랑에 '+c4N(x.use)+'봉 쓸 예정':'생산에 쓸 생지 없음']);
-    L.push([x.lv==='red'?'red':x.order?'amber':'green','매입 서재우',x.order?'다음 입고분 '+fmtN(x.order)+'봉 발주 (목표 '+fmtN(x.target)+'봉)':'목표 '+fmtN(x.target)+'봉 이상']);
+    const o=x.outLines||[];L.push([x.out?'amber':'green','출고 김명우','실물 '+c4N(x.phys)+'봉 · '+(x.out?'출고 '+c4N(x.out)+'봉 ('+o.map(l=>c4Sd(l.d)).filter((v,i,a)=>a.indexOf(v)===i).join('·')+')':'출고 없음')]);
+    L.push([x.use?'amber':'green','생산 박태일',x.use?'생산에 '+c4N(x.use)+'봉 사용':'생산에 쓸 생지 없음']);
+    L.push([x.lv==='red'?'red':x.order?'amber':'green','매입 서재우',x.order?fmtN(x.order)+'봉 발주 (목표 '+fmtN(x.target)+')':'목표 '+fmtN(x.target)+'봉 이상']);
     return L;}
-  L.push([x.next&&x.next.st==='wait'?'amber':'blue','출고 김명우',x.next?rbMd(x.next.d)+' '+c4Cust(x.next.c)+' '+c4N(x.next.box)+'박스'+(x.next.st==='pulled'?' (미리 뺌)':' (아직 안 뺌)')+(x.nOpen>1?' 외 '+(x.nOpen-1)+'건':''):'잡힌 출고 없음']);
-  L.push([x.needBox?(x.lv==='red'?'red':'amber'):'green','생산 박태일',x.needBox?fmtN(x.needBox)+'박스 더 만들기 (안전 '+fmtN(x.safety)+'박스까지)':'여유 (안전 '+fmtN(x.safety)+'박스 이상)']);
-  if(x.raw)L.push([x.raw.short?'amber':'green','매입 서재우',x.raw.nm+' '+c4N(x.raw.avail)+'박스 (안전 '+fmtN(x.raw.safety)+')'+(x.raw.short?' → '+x.raw.short+'박스 더 입고':' 여유')]);
-  else L.push([x.doughNeed?'amber':'green','매입 서재우',x.doughNeed?'생지 '+c4N(x.doughNeed)+'봉 필요 ('+fmtN(x.needBox)+'박스분)':'생지 추가 필요 없음']);
+  L.push([x.next&&x.next.st==='wait'?'amber':'blue','출고 김명우',x.next?c4Sd(x.next.d)+' '+c4Cust(x.next.c)+' '+c4N(x.next.box)+'박스'+(x.nOpen>1?' 외 '+(x.nOpen-1)+'건':''):'잡힌 출고 없음']);
+  L.push([x.needBox?(x.lv==='red'?'red':'amber'):'green','생산 박태일',x.needBox?fmtN(x.needBox)+'박스 더 만들기':'생산 여유']);
+  if(x.raw)L.push([x.raw.short?'amber':'green','매입 서재우',x.raw.short?x.raw.nm+' '+x.raw.short+'박스 더 입고':x.raw.nm+' 여유']);
+  else L.push([x.doughNeed?'amber':'green','매입 서재우',x.doughNeed?'생지 '+c4N(x.doughNeed)+'봉 필요':'생지 추가 필요 없음']);
   return L;}
 function c4Card(x,big){const lv=C4_LV[x.lv]||C4_LV.gray;
   if(x.none)return '<button class="kpi c4k lv-gray" data-open="core4"><div class="c4h"><span class="lb">'+esc(x.nm)+'</span><span class="badge b-gray">자료 없음</span></div><div class="c4s">김 대리 실물 입력이 없어요</div></button>';
   const dough=x.unit==='봉';const n=dough?x.left:x.avail;
   const bg=(big||[]).filter(b=>b.nm===x.nm);
-  return '<button class="kpi c4k lv-'+x.lv+'" data-open="core4"><div class="c4h"><span class="lb">'+esc(x.nm)+'</span><span class="badge b-'+lv[0]+'">'+lv[1]+'</span></div>'+
-    '<div class="c4n"><b class="num">'+c4N(n)+'</b><span>'+x.unit+(dough?' 남음':' 가용')+'</span></div>'+
-    '<div class="c4s">'+(dough?'실물 '+c4N(x.phys)+'봉 · 약 '+(x.days==null?'–':Math.max(0,x.days))+'일치':'약 '+c4D(x.days)+'일치 · 하루 평균 '+c4N(x.daily)+'박스')+'</div>'+
-    bg.map(b=>'<div class="c4big">큰 주문 '+rbMd(b.d)+' '+esc(c4Cust(b.c))+' '+c4N(b.box)+'박스</div>').join('')+
+  return '<button class="kpi c4k lv-'+x.lv+'" data-open="core4"><div class="c4h"><span class="lb">'+esc(x.nm)+'</span>'+bg.map(b=>'<span class="c4bh" title="'+esc(c4Cust(b.c))+'">큰 주문 '+c4Sd(b.d)+' '+c4N(b.box)+'박스</span>').join('')+'<span class="badge b-'+lv[0]+'">'+lv[1]+'</span></div>'+
+    '<div class="c4n"><b class="num">'+c4N(n)+'</b><span>'+x.unit+(dough?' 남음':' 가용')+'</span><em>'+(dough?'실물 '+c4N(x.phys)+' · ':'')+c4D(x.days)+'일치</em></div>'+
+    '<div class="c4s">'+(dough?'주 평균 '+fmtN(x.weekly)+'봉 사용':'하루 평균 '+c4N(x.daily)+'박스 판매')+'</div>'+
     '<div class="tw">'+c4Roles(x).map(r=>'<div class="trow"><span class="mk '+r[0]+'"></span><span class="tag '+r[0]+'">'+r[1]+'</span><div class="tt">'+esc(r[2])+'</div></div>').join('')+'</div></button>';}
 function c4Row(){const c=c4Core();if(!c)return '';const s=D.stock;
   return '<div class="grp">핵심 4품목 · 세 사람이 같이 보는 재고 <span class="gsub">김 대리 실물 '+esc(s.at||'')+(s.date<s.today?' (오늘 입력 전)':'')+' · 초록 7일치 이상 · 주황 3~7일 · 빨강 3일 미만</span></div><div class="c4">'+c.items.map(x=>c4Card(x,c.big)).join('')+'</div>';}
@@ -1041,6 +1080,7 @@ function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 �
   h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (김 대리 실물 입력)</a>';
   return {s:'김 대리 실물 '+esc(s.at||'')+' · 이카운트 출고 예정 · '+esc(s.built||'')+' 계산',h};}
 PANELS.core4=['핵심 4품목 · 세 사람이 같이 보는 재고',pCore4,'wonryo'];
+function c4Fit(){document.body.classList.toggle('fit1',innerWidth>=1100);}c4Fit();addEventListener('resize',c4Fit);
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
 // ===== 2026-10-22 덧붙임 끝 =====
 applyNight();
