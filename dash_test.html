@@ -58,7 +58,7 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 /* KPI */
 .kpis{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
 .kpis .kpi{grid-column:span 3}.kpis .kpi.w4{grid-column:span 4}
-.kpis .kg5{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.kpis .kg5>.kpi{grid-column:auto!important;min-width:0}
+.kpis .kg5{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.kpis .kg5>.kpi{grid-column:auto!important;min-width:0;padding-left:16px;padding-right:16px}.kpis .kg5 .kpi .top{flex-wrap:wrap;row-gap:4px}.kpis .kg5 .kpi .lb{flex:1 1 auto}.kpis .kg5 .kpi .src{flex-basis:100%;margin-left:0;white-space:normal}.kpis .kg5 .kpi .trio{gap:6px}.kpis .kg5 .kpi .trio .tc b{font-size:clamp(1.5rem,5vh,2.5rem)}.kpis .kg5 .kpi .trio .tc span{white-space:normal;word-break:keep-all;line-height:1.2;overflow:visible}
 @media (max-width:1180px){.kpis .kg5{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:980px){.kpis .kg5{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:560px){.kpis .kg5{grid-template-columns:1fr}}
 .stk-t{font-size:.78rem;font-weight:800;border-radius:6px;padding:1px 7px;white-space:nowrap}.stk-t.done{background:#eef0f3;color:#5b6573}.stk-t.pulled{background:#e7f6ec;color:#1d7a3e}.stk-t.wait{background:#fdecea;color:#c62828}
 .grp{grid-column:1/-1;font-size:.8rem;font-weight:800;color:var(--sub);letter-spacing:.02em;margin:2px 0 -4px;display:flex;align-items:center;gap:8px}
@@ -751,7 +751,7 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   if(!sk||!sk.rows)out.push({k:'stock',logo:'wonryo',lb:'가용 재고',v:'–',u:'',cls:'',badge:['gray','자료 대기'],ft:'김명우 대리 실물 − 출고 예정'});
   else{const c=sk.cnt||{},nd=(c.short||0)+(c.need||0),old=sk.date<sk.today,top=sk.rows.find(r=>(r.lvl==='short'||r.lvl==='need')&&r.avail);
     out.push({k:'stock',logo:'wonryo',lb:'가용 재고',src:(sk.at||'')+' '+String(sk.by||'').replace(/ 대리$/,''),v:nd,u:'품목',cls:c.short?'alert':nd?'warn':'ok',
-      trio:[['출고분 부족',c.short||0,'red'],['생산 필요',c.need||0,'amber'],['여유',c.ok||0,'green']],
+      trio:[['출고 부족',c.short||0,'red'],['생산 필요',c.need||0,'amber'],['여유',c.ok||0,'green']],
       badge:old?['amber','오늘 실물 입력 전']:c.short?['red','출고분 부족 '+c.short]:nd?['amber','생산 필요 '+nd]:['green','모두 여유'],
       ft:top?top.nm+' 가용 '+top.avail.txt+(top.lvl==='short'&&top.shortDate?' · '+md(top.shortDate)+' 출고분부터 모자람':' → '+top.needBox+'박스 더'):'모두 안전재고 이상'});}
   // 7 K-HACCP
