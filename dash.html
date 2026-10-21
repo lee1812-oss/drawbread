@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 07:48">
+<meta name="dash-build" content="2026-10-22 08:46">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -310,7 +310,7 @@ body.fit1 .c4k .c4s{margin:0 0 4px;font-size:.92rem}
 body.fit1 .c4k .c4big{padding:3px 8px;margin-bottom:2px;font-size:.9rem}
 body.fit1 .c4k .trow{padding:4px 0}
 body.fit1 .c4k .trow .tt{font-size:.9rem;line-height:1.3;letter-spacing:-.02em}
-body.fit1 .c4k .c4n{flex-wrap:nowrap}
+body.fit1 .c4k .c4n{flex-wrap:nowrap}.c4k .c4n span,.c4k .c4n em{white-space:nowrap}
 body.fit1 .c4k .trow .tag{font-size:.74rem;min-width:66px;padding:1px 5px}
 body.fit1 .kpis .kg5>.kpi{padding-top:12px;padding-bottom:10px}
 body.fit1 .kpi .trio{margin-top:0;margin-bottom:0}
@@ -326,6 +326,8 @@ body.fit1 header .hd{padding-top:4px;padding-bottom:4px}
 body.fit1 .kpi .trio .tc b,body.fit1 .kpis .kg5 .kpi .trio .tc b,body.fit1 .kpi.sm .trio .tc b{font-size:clamp(1.4rem,4vh,2rem)}
 body.fit1 .kpi .trio .tc span{white-space:nowrap!important;font-size:.74rem;letter-spacing:-.04em;overflow:hidden!important;text-overflow:ellipsis}
 body.fit1 .kpis .kg5 .kpi .lb{flex:none}
+.c4k .c4pic{width:52px;height:52px;flex:none;align-self:center;border-radius:12px;object-fit:cover;background:#fff;border:1px solid var(--line);margin-right:4px}.c4pic.sm{width:28px;height:28px;border-radius:7px;vertical-align:middle;margin:0 4px 0 0;object-fit:cover;background:#fff;border:1px solid var(--line)}
+body.fit1 .c4k .c4pic{width:46px;height:46px}
 .c4k .c4n em{margin-left:auto;font-style:normal;font-size:1.05rem;font-weight:800;color:var(--ink2);white-space:nowrap}
 body.fit1 .c4k .trow .tt,body.fit1 .c4k .c4big{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.fit1 .kpis .kpi .lg{width:34px;height:34px;border-radius:10px}body.fit1 .kpis .kpi .lg img,body.fit1 .kpis .kpi .lg svg{width:22px;height:22px}
@@ -1028,6 +1030,8 @@ facLayout=(orig=>function(staff){const h=orig(staff);try{if(!h||!nfOn('fac'))ret
 
 // ===== 2026-10-22 핵심 4품목 현황판 · 몽블랑·빅몽블랑·육쪽마늘빵·데니쉬 200생지 (Aside 사무실 PC) =====
 // 기존 코드는 고치지 않고 아래만 덧붙임. 자료(D.stock.core)는 stock_build.js가 대시보드 갱신 때 만든다. 자료가 없으면 아무것도 안 보임.
+const C4_PIC={i020:'https://lee1812-oss.github.io/wonryo/cat/F02.jpg',i019:'https://lee1812-oss.github.io/wonryo/cat/F02.jpg',i022:'https://lee1812-oss.github.io/wonryo/cat/F01.jpg'};   // 2026-10-22 제품 사진 (주문서 카탈로그 사진). 생지 200(i018)은 실제 사진이 없어 비워 둠
+function c4Pic(k,s){const u=C4_PIC[k];return u?'<img class="c4pic'+(s?' sm':'')+'" src="'+u+'" alt="" loading="lazy" onerror="this.remove()">':'';}
 const C4_LV={red:['red','부족'],amber:['amber','주의'],green:['green','여유'],gray:['gray','자료 없음']};
 function c4Core(){return D&&D.stock&&D.stock.core&&D.stock.core.items?D.stock.core:null;}
 function c4Cust(c){return String(c||'').replace(/^\([^)]*\)\s*/,'').replace(/^SD_[^_]+_/,'').replace(/_N\d+$/,'').replace(/_.*$/,'').trim();}
@@ -1050,7 +1054,7 @@ function c4Card(x,big){const lv=C4_LV[x.lv]||C4_LV.gray;
   const dough=x.unit==='봉';const n=dough?x.left:x.avail;
   const bg=(big||[]).filter(b=>b.nm===x.nm);
   return '<button class="kpi c4k lv-'+x.lv+'" data-open="core4"><div class="c4h"><span class="lb">'+esc(x.nm)+'</span>'+bg.map(b=>'<span class="c4bh" title="'+esc(c4Cust(b.c))+'">큰 주문 '+c4Sd(b.d)+' '+c4N(b.box)+'박스</span>').join('')+'<span class="badge b-'+lv[0]+'">'+lv[1]+'</span></div>'+
-    '<div class="c4n"><b class="num">'+c4N(n)+'</b><span>'+x.unit+(dough?' 남음':' 가용')+'</span><em>'+(dough?'실물 '+c4N(x.phys)+' · ':'')+c4D(x.days)+'일치</em></div>'+
+    '<div class="c4n">'+c4Pic(x.k)+'<b class="num">'+c4N(n)+'</b><span>'+x.unit+(dough?' 남음':' 가용')+'</span><em>'+c4D(x.days)+'일치</em></div>'+
     '<div class="c4s">'+(dough?'주 평균 '+fmtN(x.weekly)+'봉 사용':'하루 평균 '+c4N(x.daily)+'박스 판매')+'</div>'+
     '<div class="tw">'+c4Roles(x).map(r=>'<div class="trow"><span class="mk '+r[0]+'"></span><span class="tag '+r[0]+'">'+r[1]+'</span><div class="tt">'+esc(r[2])+'</div></div>').join('')+'</div></button>';}
 function c4Row(){const c=c4Core();if(!c)return '';const s=D.stock;
@@ -1059,7 +1063,7 @@ function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 �
   const s=D.stock;const old=s.date<s.today;let h='';
   h+='<div class="note '+(c.items.some(x=>x.lv==='red')?'red':c.items.some(x=>x.lv==='amber')?'amb':'ok')+'" style="margin-bottom:12px"><b>세 사람이 같은 숫자를 봐요</b><br>완제품은 「가용 재고 = 김 대리 실물 − 아직 안 뺀 출고」가 평소 판매 며칠치인지로 색을 정해요 (7일치 이상 초록 · 3~7일 주황 · 3일 미만 빨강). 생지는 생산·출고에 쓰고 남는 봉 수로 정해요 (0 미만 빨강 · 170봉 미만 주황).'+(old?'<br><b>오늘 실물 입력 전이에요 — '+esc(md(s.date))+' 숫자 기준</b>':'')+'</div>';
   const P=c.items.filter(x=>x.unit==='박스'&&!x.none);
-  h+='<div class="box"><h3>완제품 3품목 <span class="c">김 대리 '+esc(s.at)+' 입력</span></h3>'+tbl(['제품','김 대리 실물','아직 안 뺀 출고','가용 재고','며칠치','더 만들 양'],P.map(x=>{const lv=C4_LV[x.lv];return '<tr><td><span class="tag '+lv[0]+'">'+lv[1]+'</span> <b>'+esc(x.nm)+'</b><br><small>평소 주 '+fmtN(x.weekly)+'박스'+(x.note?' · '+esc(x.note):'')+'</small></td><td class="r">'+c4N(x.phys)+'박스</td><td class="r">'+(x.wait?'−'+c4N(x.wait)+'박스':'–')+'</td><td class="r"><b>'+c4N(x.avail)+'박스</b></td><td class="r"><b>'+Math.max(0,x.days)+'일</b></td><td class="r">'+(x.needBox?'<b style="color:var(--amber)">'+fmtN(x.needBox)+'박스</b><br><small>안전 '+fmtN(x.safety)+'까지</small>':'<span style="color:var(--green)">여유</span>')+'</td></tr>';}))+'</div>';
+  h+='<div class="box"><h3>완제품 3품목 <span class="c">김 대리 '+esc(s.at)+' 입력</span></h3>'+tbl(['제품','김 대리 실물','아직 안 뺀 출고','가용 재고','며칠치','더 만들 양'],P.map(x=>{const lv=C4_LV[x.lv];return '<tr><td>'+c4Pic(x.k,1)+'<span class="tag '+lv[0]+'">'+lv[1]+'</span> <b>'+esc(x.nm)+'</b><br><small>평소 주 '+fmtN(x.weekly)+'박스'+(x.note?' · '+esc(x.note):'')+'</small></td><td class="r">'+c4N(x.phys)+'박스</td><td class="r">'+(x.wait?'−'+c4N(x.wait)+'박스':'–')+'</td><td class="r"><b>'+c4N(x.avail)+'박스</b></td><td class="r"><b>'+Math.max(0,x.days)+'일</b></td><td class="r">'+(x.needBox?'<b style="color:var(--amber)">'+fmtN(x.needBox)+'박스</b><br><small>안전 '+fmtN(x.safety)+'까지</small>':'<span style="color:var(--green)">여유</span>')+'</td></tr>';}))+'</div>';
   const g=c.items.find(x=>x.unit==='봉');
   if(g){h+='<div class="box"><h3>데니쉬스틱 생지 200 <span class="c">봉 기준 · 주 평균 '+fmtN(g.weekly)+'봉 사용</span></h3>'+tbl(['계산','봉'],[
     '<tr><td>김 대리 실물</td><td class="r"><b>'+c4N(g.phys)+'</b></td></tr>',
