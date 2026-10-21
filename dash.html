@@ -58,6 +58,9 @@ main{max-width:1400px;margin:0 auto;padding:20px 24px 28px}
 /* KPI */
 .kpis{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
 .kpis .kpi{grid-column:span 3}.kpis .kpi.w4{grid-column:span 4}
+.kpis .kg5{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.kpis .kg5>.kpi{grid-column:auto!important;min-width:0;padding-left:16px;padding-right:16px}.kpis .kg5 .kpi .top{flex-wrap:wrap;row-gap:4px}.kpis .kg5 .kpi .lb{flex:1 1 auto}.kpis .kg5 .kpi .src{flex-basis:100%;margin-left:0;white-space:normal}.kpis .kg5 .kpi .trio{gap:6px}.kpis .kg5 .kpi .trio .tc b{font-size:clamp(1.5rem,5vh,2.5rem)}.kpis .kg5 .kpi .trio .tc span{white-space:normal;word-break:keep-all;line-height:1.2;overflow:visible}
+@media (max-width:1180px){.kpis .kg5{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:980px){.kpis .kg5{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:560px){.kpis .kg5{grid-template-columns:1fr}}
+.stk-t{font-size:.78rem;font-weight:800;border-radius:6px;padding:1px 7px;white-space:nowrap}.stk-t.done{background:#eef0f3;color:#5b6573}.stk-t.pulled{background:#e7f6ec;color:#1d7a3e}.stk-t.wait{background:#fdecea;color:#c62828}
 .grp{grid-column:1/-1;font-size:.8rem;font-weight:800;color:var(--sub);letter-spacing:.02em;margin:2px 0 -4px;display:flex;align-items:center;gap:8px}
 .grp::after{content:"";flex:1;height:1px;background:var(--line)}
 @media (max-width:980px){.kpis .kpi,.kpis .kpi.w4{grid-column:span 6}.kpi{min-height:180px}}
@@ -408,7 +411,8 @@ const IC={
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
 const KAKAO='<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="9" fill="#FEE500"/><path d="M20 9C12.8 9 7 13.6 7 19.2c0 3.6 2.4 6.8 6 8.6l-1.2 4.6c-.1.4.3.7.7.5l5.4-3.6c.7.1 1.4.1 2.1.1 7.2 0 13-4.6 13-10.2S27.2 9 20 9z" fill="#3C1E1E"/><text x="20" y="22.3" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="7.2" fill="#FEE500">TALK</text></svg>';
 const LOGO={naver:'<img src="logo_naver.png" alt="네이버">',gmail:'<img src="logo_gmail.png" alt="Gmail">',ecount:'<img src="logo_ecount.png" alt="이카운트">',dongseon:'<img src="logo_dongseon.png" alt="내 동선">',haccp:'<img src="logo_haccp.png" alt="HACCP">',kakao:KAKAO};
-const APP={naver:1,dongseon:1,kakao:1,haccp:1};
+const APP={naver:1,dongseon:1,kakao:1,haccp:1,wonryo:1};
+LOGO.wonryo='<img src="icon-192.png" alt="통합재고관리">';   // 2026-10-21 가용 재고 카드
 const one=x=>'<span class="lg'+(APP[x]?' app':'')+'">'+LOGO[x]+'</span>';
 const logoHtml=l=>Array.isArray(l)?'<span class="duo">'+l.map(one).join('')+'</span>':one(l);
 const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';
@@ -609,6 +613,16 @@ function pFprod(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아�
   const KS={ok:['green','일치'],ok_ea:['green','일치(정상품)'],diff:['amber','수량 다름'],kh_none:['red','K-HACCP 없음'],ec_none:['red','이카운트 없음'],'':['','']};
   h+='<div class="box"><h3>최근 생산일 <span class="c">이카운트 생산입고 · K-HACCP 생산작업일지 대조</span></h3><div class="rows">'+f.days.map(d=>'<div class="row"><span class="mk blue"></span><div class="bd"><div class="t1">'+esc(d.md)+'</div>'+d.items.map(i=>'<div class="t2">'+esc(i.nm)+' <b>'+(i.box?i.box+'박스':'')+(i.ea?' 낱개 '+i.ea:'')+(i.np?' 비상품 '+i.np:'')+(i.kg?i.kg+(i.u||'배합'):'')+'</b>'+(i.kh&&KS[i.kh]?' <span class="tag '+KS[i.kh][0]+'">'+KS[i.kh][1]+'</span>':'')+'</div>').join('')+'</div></div>').join('')+'</div></div>';
   h+=srcMeta(f);return {s:'이카운트 생산입고 기준 · 박스 수 (배합은 배합 단위)',h};}
+// ===== 2026-10-21 가용 재고 (Aside): 김명우 대리 실물 − 아직 안 뺀 출고 예정. 자료 = ~/.aside/u/0/dashboard/stock_build.js → D.stock =====
+function pStock(){const s=D&&D.stock;if(!s||!s.rows)return {s:'',h:empty('가용 재고 자료가 아직 없어요.<br>다음 대시보드 갱신 때 김명우 대리 실물을 읽어 와요.')};
+  const old=s.date<s.today,ST={done:'나감',pulled:'미리 뺌',wait:'아직 안 뺌'};
+  let h='<div class="note '+(s.cnt.short?'red':old||s.cnt.need?'amb':'ok')+'" style="margin-bottom:12px"><b>가용 재고 = 김 대리 실물 − 아직 안 뺀 출고 예정</b><br>김명우 대리는 출고 준비가 끝나면 실물에서 미리 빼요. 그래서 아직 안 뺀 출고만 더 빼면 지금 쓸 수 있는 재고가 나와요.'+(old?'<br><b>오늘 실물 입력 전이에요 — '+esc(md(s.date))+' 숫자 기준</b>':'')+'</div>';
+  h+='<div class="box"><div class="stats">'+stat('출고분 부족',s.cnt.short)+stat('생산 필요',s.cnt.need)+stat('여유',s.cnt.ok)+'</div></div>';
+  const cell=x=>x?esc(x.txt):'<span class="neg">입력 없음</span>';
+  h+='<div class="box"><h3>자사 완제품 <span class="c">김 대리 '+esc(s.at)+' 입력 · 급한 순서</span></h3>'+tbl(['제품','김 대리 실물','아직 안 뺀 출고','가용 재고','안전재고','더 만들 양'],s.rows.map(r=>'<tr><td><b>'+esc(r.nm)+'</b></td><td class="r">'+cell(r.phys)+(r.prevBox!=null&&r.phys&&r.prevBox!==r.phys.box?'<br><small>전일 '+r.prevBox+'</small>':'')+'</td><td class="r">'+(r.waitBox?'−'+r.waitBox+'박스':'–')+'</td><td class="r '+(r.avail&&r.avail.ea<0?'neg':'')+'"><b>'+cell(r.avail)+'</b></td><td class="r">'+(r.safety||'–')+'</td><td class="r">'+(r.lvl==='short'?'<b class="neg">'+r.needBox+'박스</b><br><small>'+esc(md(r.shortDate))+' 출고분부터 모자람</small>':r.needBox?'<b style="color:var(--amber)">'+r.needBox+'박스</b>':'<span style="color:var(--green)">여유</span>')+'</td></tr>'))+'</div>';
+  for(const r of s.rows.filter(r=>r.lines&&r.lines.some(l=>l.st!=='done')))h+='<div class="box"><h3>'+esc(r.nm)+' 출고 예정 <span class="c">가용 '+(r.avail?esc(r.avail.txt):'–')+'</span></h3><div class="rows">'+r.lines.map(l=>'<div class="row"><span class="mk '+(l.st==='wait'?'red':l.st==='pulled'?'green':'')+'"></span><div class="bd"><div class="t1"><span class="stk-t '+l.st+'">'+ST[l.st]+'</span> '+esc(md(l.d))+' '+esc(l.c)+'</div><div class="t2">'+l.box+'박스'+(l.h?' · 앱 「출고 예정」에 적힘':'')+'</div></div></div>').join('')+'</div></div>';
+  h+='<div class="meta">「미리 뺌」 판단: 이카운트 기준 냉동고 수량에서 김 대리 실물을 뺀 차이만큼, 가까운 출고부터 미리 뺀 것으로 봐요. 틀리면 김 대리가 통합재고관리 「출고 예정」에 아직 안 뺀 출고를 적으면 그대로 반영돼요(이카운트와 같은 출고면 한 번만 빼요). 실물 '+esc(s.at)+' · '+esc(s.ecAt)+' · 대시보드 갱신 때마다 다시 읽어요.</div>';
+  return {s:'김명우 대리 실물 × 이카운트 출고 예정 · 상무님 생산 계획용',h};}
 function pFneed(){const f=F_();if(!f)return {s:'',h:empty('공장 자료가 아직 없어요')};const n=f.need;
   let h='<div class="note '+(n.own.some(x=>x.shortEa>0)?'red':'ok')+'" style="margin-bottom:12px">'+esc(n.rule)+'</div>';
   h+='<div class="box"><h3>자사 제품 <span class="c">'+ddMd(n.from)+' ~ '+ddMd(n.to)+' 출고</span></h3>'+tbl(['제품','출고 예정','이카운트 재고','더 필요','모자라는 날'],n.own.map(x=>'<tr><td>'+esc(x.nm)+'</td><td class="r">'+x.dueBox+'박스</td><td class="r '+(x.stockEa<0?'neg':'')+'">'+fmtN(x.stockEa)+'개<br><small>'+x.stockBox+'박스</small></td><td class="r">'+(x.shortEa?'<b class="neg">'+Math.ceil(x.shortEa/x.per)+'박스</b>':'<span class="okc">없음</span>')+'</td><td class="r">'+(x.shortDate?'<b class="neg">'+ddMd(x.shortDate)+'</b><br><small>그 전날까지 생산</small>':'—')+'</td></tr>'))+'</div>';
@@ -732,6 +746,14 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
   // 5 UTCA
   out.push(!u?{k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',v:'–',u:'',cls:'',badge:['gray','기록 대기'],ft:'07:00 · 21:00 확인'}:
     {k:'utca',logo:'gmail',ic:'brief',lb:'UTCA 메일',src:whenShort(u),v:(u.stats&&u.stats.total)||0,u:'건',cls:ua?'alert':'',badge:ua?['red','확인 필요 '+ua]:['green','확인 필요 없음'],ft:u.empty?'새 메일 없음':'안 읽음 '+((u.stats&&u.stats.unread)||0)});
+  // 0 가용 재고 (2026-10-21 Aside · 사용자 요청: K-HACCP 앞) 김명우 대리 실물 − 아직 안 뺀 출고 예정 → 상무님 생산 계획용. 자료 = stock_build.js
+  const sk=D.stock;
+  if(!sk||!sk.rows)out.push({k:'stock',logo:'wonryo',lb:'가용 재고',v:'–',u:'',cls:'',badge:['gray','자료 대기'],ft:'김명우 대리 실물 − 출고 예정'});
+  else{const c=sk.cnt||{},nd=(c.short||0)+(c.need||0),old=sk.date<sk.today,top=sk.rows.find(r=>(r.lvl==='short'||r.lvl==='need')&&r.avail);
+    out.push({k:'stock',logo:'wonryo',lb:'가용 재고',src:(sk.at||'')+' '+String(sk.by||'').replace(/ 대리$/,''),v:nd,u:'품목',cls:c.short?'alert':nd?'warn':'ok',
+      trio:[['출고 부족',c.short||0,'red'],['생산 필요',c.need||0,'amber'],['여유',c.ok||0,'green']],
+      badge:old?['amber','오늘 실물 입력 전']:c.short?['red','출고분 부족 '+c.short]:nd?['amber','생산 필요 '+nd]:['green','모두 여유'],
+      ft:top?top.nm+' '+(top.lvl==='short'&&top.shortDate?md(top.shortDate)+' 부족':top.needBox+'박스 더'):'안전재고 이상'});}
   // 7 K-HACCP
   // 2026-10-20 11:15: K-HACCP는 Aside가 07~21시 매시 40분에 점검해 올린 자료라 「새로고침」으로는 바로 안 바뀜 → 카드에 다음 점검 시각을 같이 보여 줌
   const kh=latest(D.khaccp);
@@ -752,10 +774,10 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
 function staffLayout(){const by={};kpis().forEach(x=>by[x.k]=x);const f=F_();
   const a=f&&f.audit;const c=a?a.count||{}:{};const ws=a?(a.findings||[]).filter(x=>x.level==='경고').length:0;
   const au=a?{k:'faudit',logo:'ecount',lb:'이카운트 입력 점검',src:a.label.split(' (')[0],v:ws,u:'건',cls:ws?'warn':'ok',badge:ws?['amber','생산·재고 경고']:['green','이상 없음'],ft:'생산·재고·구매 항목만 · 매일 06:30'}:null;
-  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'w4')).join('')+facLayout(true);}
+  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.stock,by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'')).join('')+facLayout(true);}
 function kpiLayout(){if(STAFF)return staffLayout();const by={};kpis().forEach(x=>by[x.k]=x);
-  const g1=['khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean),g2=1;
-  return '<div class="grp">생산 · 품질 · 출고</div>'+g1.map(x=>kpiHtml(x,'')).join('')+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
+  const g1=['stock','khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean);
+  return '<div class="grp">생산 · 품질 · 출고</div><div class="kg5">'+g1.map(x=>kpiHtml(x,'')).join('')+'</div>'+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
 function acctLine(n){if(n.byAcct){const e=Object.entries(n.byAcct).filter(([k,v])=>v);return e.length?e.map(([k,v])=>k+' '+v).join(' · '):'새 메일 없음';}return '참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0);}
 function mailWide(){
   const n=latest(D.naver),u=latest(D.utca),na=nAct(n).length,ua=uAct(u).length,tot=na+ua,none=!n&&!u;
@@ -875,7 +897,7 @@ function pMailAll(){const n=latest(D.naver),u=latest(D.utca);const t=ui.mailTab|
   const seg='<div class="seg">'+[['act','확인 필요',(n||u)?nAct(n).length+uAct(u).length:'–'],['naver','네이버 메일',n?(n.total||0):'–'],['utca','UTCA 메일',u?((u.stats&&u.stats.total)||0):'–']].map(([k,l,c])=>'<button data-mtab="'+k+'" class="'+(t===k?'on':'')+'">'+l+' <b class="num">'+c+'</b></button>').join('')+'</div>';
   const r=t==='naver'?pNaver():t==='utca'?pUtca():pMail();
   return {s:r.s,h:seg+r.h};}
-const PANELS={night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
+const PANELS={stock:['가용 재고 · 생산 필요',pStock,'wonryo'],night:['🌙 밤사이 새로 생긴 기능',pNight,'kakao'],ftodo:['오늘 할 일 · 담당별',pFtodo,'ecount'],fprod:['생산 실적',pFprod,'ecount'],fneed:['출고 대비 재고',pFneed,'ecount'],fraw:['원료 남은 기간',pFraw,'ecount'],fmatch:['생산 ↔ K-HACCP 대조',pFmatch,'haccp'],fstock:['재고 이상',pFstock,'ecount'],fana:['4~10월 이카운트 × K-HACCP 분석',pFana,'haccp'],fsales:['매출 흐름 (대표 전용)',pFsales,'ecount'],faudit:['이카운트 입력 점검 (생산·재고)',pFaudit,'ecount'],khaccp:['K-HACCP 일지 점검',pKhaccp,'haccp'],mail:['메일 통합',pMailAll,['naver','gmail']],audit:['이카운트 입력값 점검',pAudit,'ecount'],delivery:['출고 · 배송',pDelivery,'dongseon'],naver:['네이버 메일 중요 전달사항',pNaver,'naver'],utca:['UTCA 메일 브리핑',pUtca,'gmail'],sched:['오늘 자동 알림 (카카오톡)',pSched,'kakao']};
 PANELS.pcmon=['사무실 PC 프로그램',pPcmon,'pc'];
 function fillPanel(k){const p=PANELS[k];if(!p)return;const ae=document.activeElement;if(ae&&ae.id==='rpBox'&&k==='fraw'&&k===openKind)return;   // 2026-10-20: 만들 양을 입력하는 중이면 자동 갱신으로 지우지 않음
   const r=p[1]();$('#pT').textContent=p[0];$('#pL').innerHTML=logoHtml(p[2]);$('#pS').innerHTML=r.s||'';const pb=$('#pB'),st=pb.scrollTop;pb.innerHTML=r.h;pb.scrollTop=st;}
