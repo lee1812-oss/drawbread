@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 09:20">
+<meta name="dash-build" content="2026-10-22 09:40">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1077,7 +1077,7 @@ function c4Card(x,big){const lv=C4_LV[x.lv]||C4_LV.gray;
     '<div class="c4s">'+(dough?'주 평균 '+fmtN(x.weekly)+'봉 사용':'하루 평균 '+c4N(x.daily)+'박스 판매')+'</div>'+
     '<div class="tw">'+c4Roles(x).map(r=>'<div class="trow"><span class="mk '+r[0]+'"></span><span class="tag '+r[0]+'">'+r[1]+'</span><div class="tt">'+esc(r[2])+'</div></div>').join('')+'</div></button>';}
 function c4Row(){const c=c4Core();if(!c)return hdStrip();const s=D.stock;
-  return hdStrip()+'<div class="grp">핵심 4품목 · 세 사람이 같이 보는 재고 <span class="gsub">김 대리 실물 '+esc(s.at||'')+(s.date<s.today?' (오늘 입력 전)':'')+' · 초록 7일치 이상 · 주황 3~7일 · 빨강 3일 미만</span></div><div class="c4">'+c.items.map(x=>c4Card(x,c.big)).join('')+'</div>';}
+  return '<div class="grp">핵심 4품목 · 세 사람이 같이 보는 재고 <span class="gsub">김 대리 실물 '+esc(s.at||'')+(s.date<s.today?' (오늘 입력 전)':'')+' · 초록 7일치 이상 · 주황 3~7일 · 빨강 3일 미만</span>'+hdInline()+'</div><div class="c4">'+c.items.map(x=>c4Card(x,c.big)).join('')+'</div>';}
 function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 자료가 아직 없어요.<br>다음 대시보드 갱신 때 만들어져요.')};
   const s=D.stock;const old=s.date<s.today;let h='';
   h+='<div class="note '+(c.items.some(x=>x.lv==='red')?'red':c.items.some(x=>x.lv==='amber')?'amb':'ok')+'" style="margin-bottom:12px"><b>세 사람이 같은 숫자를 봐요</b><br>완제품은 「가용 재고 = 김 대리 실물 − 아직 안 뺀 출고」가 평소 판매 며칠치인지로 색을 정해요 (7일치 이상 초록 · 3~7일 주황 · 3일 미만 빨강). 생지는 생산·출고에 쓰고 남는 봉 수로 정해요 (0 미만 빨강 · 170봉 미만 주황).'+(old?'<br><b>오늘 실물 입력 전이에요 — '+esc(md(s.date))+' 숫자 기준</b>':'')+'</div>';
@@ -1138,6 +1138,13 @@ function hdStrip(){if(!hdList().length)return '';
   const up=hdList().filter(o=>o.d>=t&&o.d<=hdAdd(t,7)&&!(a&&o.d>=a.s&&o.d<=a.e));
   if(up.length)h+='<div class="meta" style="grid-column:1/-1;margin-bottom:8px">가까운 쉬는 날: '+up.map(o=>esc(md(o.d))+' '+esc(o.n)).join(' · ')+'</div>';
   return h;}
+// 핵심 4품목 제목 줄 오른쪽에 한 줄로 (전광판 한 화면 높이를 늘리지 않게, 2026-10-22 09:40)
+function hdInline(){if(!hdList().length)return '';const t=hdTodayIso();const a=hdAlert();
+  const st='margin-left:auto;padding-left:12px;white-space:nowrap;font-weight:800;';
+  if(a)return '<span style="'+st+'color:#d97706">연휴 '+esc(md(a.s))+'부터 '+a.n+'일 ('+esc(a.names[0])+') · 발주·생산 미리 확인</span>';
+  const up=hdList().filter(o=>o.d>=t&&o.d<=hdAdd(t,7));
+  if(up.length)return '<span style="'+st+'color:#dc2626">쉬는 날 '+up.map(o=>esc(md(o.d))+' '+esc(o.n)).join(' · ')+'</span>';
+  return '';}
 // 7일 달력 머리글: 공휴일은 빨강 + 이름, 토요일은 파랑
 function hdHead(d){const n=hdName(d),w=hdWk(d);const cls=(n||w===0)?'hd-hol':w===6?'hd-sat':'';
   return '<span class="'+cls+'">'+rbMd(d)+(n?'<span class="hd-tag">'+esc(n)+'</span>':'')+'</span>';}
