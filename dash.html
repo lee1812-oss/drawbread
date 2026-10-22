@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 09:40">
+<meta name="dash-build" content="2026-10-22 14:52">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -394,6 +394,7 @@ let D=null,loadErr='',lastLoad=0,openKind=null;
 function pickKey(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])k=([A-Za-z0-9_-]{16,})/);if(m)return m[1];const t=s.trim();return /^[A-Za-z0-9_-]{16,}$/.test(t)?t:'';}
 const k0=pickKey(location.hash)||pickKey(location.search);
 // 2026-10-17: 직원용 공장 대시보드 (?f=열쇠) — 메일·매출 없이 공장 자료만 (factory.enc.json)
+const POD0=/[?&#]po(=1)?(&|$)/.test(location.search+location.hash); // 2026-10-22 원료 발주 보고서 링크(&po=1) — 주소 정리 전에 읽음
 const LS_FKEY='dash_fkey_v1';function pickF(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])f=([A-Za-z0-9_-]{16,})/);return m?m[1]:'';}
 const f0=pickF(location.search)||pickF(location.hash);if(f0){try{localStorage.setItem(LS_FKEY,f0);}catch(_){}}
 let STAFF=!!f0;try{if(!STAFF&&!localStorage.getItem(LS_KEY)&&localStorage.getItem(LS_FKEY))STAFF=true;}catch(_){}
@@ -1107,6 +1108,76 @@ PANELS.core4=['핵심 4품목 · 세 사람이 같이 보는 재고',pCore4,'won
 function c4Fit(){document.body.classList.toggle('fit1',innerWidth>=1100);}c4Fit();addEventListener('resize',c4Fit);
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
 // ===== 2026-10-22 덧붙임 끝 =====
+// ===== 2026-10-22 원료 발주 보고서 (Aside 사무실 PC): 「원료 남은 기간」 카드를 누르면 맨 위에 거래처별 「왜 지금 발주하나요?」 + 발주 리스트 =====
+// 통합재고관리 v248 「오늘 발주 알림」과 같은 계산 — 추천 = 3주 쓸 양 + 최소 남길 양(육쪽 36박스분 · 미로와데코젤 9kg) − 지금 재고 → 포장·주문단위로 올림(0.1포장 여유).
+// 「💬 카톡 단체방에 보내기」 = 보고서 요약 + 직원용 링크(?f=직원 열쇠&po=1 → 열면 이 보고서가 바로 열림, POD0는 주소 정리 전에 맨 위에서 읽음)를 복사(휴대폰은 공유 창). 기존 코드는 고치지 않고 덧붙임.
+const POD_W=3,POD_ROOM='빵을그리다 HACCP 업무 공유방';
+function podDays(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/864e5);}
+function podToday(){const d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10);}
+function podAdd(n){const d=new Date(Date.now()+9*3600e3+n*864e5);return d.toISOString().slice(0,10);}
+function podHour(rule){const m=String(rule||'').match(/(\d{1,2})시까지/);return m?+m[1]:null;}
+function podPlan(rb,sup){const fl=(rb.rule&&rb.rule.floor)||36,miro=(rb.rule&&rb.rule.miroMin)||9000,s=(rb.sups||[]).find(x=>x.name===sup)||{},td=podToday(),dd=s.deliv?Math.max(0,podDays(td,s.deliv)):6;
+  const O={red:0,amber:1,blue:2,green:3};
+  return (rb.rows||[]).filter(r=>r.sup===sup).map(r=>{const wk=+r.weekly||0,st=+r.stock||0,pg=+r.packG||1,ou=Math.max(1,+r.ou||1);
+    const keep=r.perBox?fl*r.perBox:(r.nm==='미로와데코젤'?miro:(+r.target||0)*0.36),need=POD_W*wk+keep-st;
+    let rec=0;if(need>0){rec=Math.ceil(Math.max(0,need/pg-0.1)/ou)*ou;if(!rec)rec=ou;}
+    const weeks=wk>0?st/wk:null,out=wk>0&&st>0?podAdd(Math.floor(st/wk*7)):(st<=0?td:''),atD=st-wk*dd/7;let lv,why;
+    if(st<=0){lv='red';why='재고 바닥 (전산 '+Math.round(st)+'g)';}
+    else if(weeks!=null&&weeks<1){lv='red';why='1주도 안 남음 · '+rbMd(out)+'쯤 바닥';}
+    else if(r.nm==='미로와데코젤'&&st<miro){lv='red';why='기준 3통(9kg)보다 적음';}
+    else if(r.perBox&&atD<keep){lv='amber';why='입고일('+rbMd(s.deliv)+')쯤 최소선('+fl+'박스분) 아래';}
+    else if(rec>0){lv='blue';why='다음 발주(약 '+POD_W+'주 뒤)까지 모자람 → 같이 주문';}
+    else{lv='green';why='충분 · 이번엔 주문 안 함';}
+    return {nm:r.nm,item:r.item||r.nm,unit:r.unit,stock:st,pg,wk,weeks,rec,fill:+r.packs||0,lv,why,lastIn:r.lastIn,lastQty:r.lastQty};
+  }).sort((a,b)=>O[a.lv]-O[b.lv]);}
+function podAmt(g,pg,u){if(g<=0)return '0'+u;const n=g/pg;return (n>=10?Math.round(n):Math.round(n*10)/10)+u;}
+function podSups(rb){const td=podToday();return (rb.sups||[]).map(s=>{const plan=podPlan(rb,s.name),ord=plan.filter(p=>p.rec>0);const d=s.nextOrder?podDays(td,s.nextOrder):null,hr=podHour(s.rule);
+  let lv='gray',lab='발주일 확인 필요';if(d!=null){if(d<0){lv='red';lab='발주일 지남 · 바로 발주';}else if(d===0){lv='red';lab='오늘'+(hr?' '+hr+'시':'')+'까지 발주';}else{lv=d<=3?'amber':'blue';lab=rbMd(s.nextOrder)+'까지 발주 (D-'+d+')';}}
+  return Object.assign({},s,{plan,ord,lv,lab,d});}).filter(s=>s.ord.length).sort((a,b)=>(a.d==null?99:a.d)-(b.d==null?99:b.d));}
+function podWhy(rb,s){const out=[],red=s.plan.filter(p=>p.lv==='red'),amb=s.plan.filter(p=>p.lv==='amber');
+  if(red.length)out.push(['red','부족',red.map(p=>p.nm+' '+p.why).join(' · ')]);
+  if(amb.length)out.push(['amber','곧 부족',amb.map(p=>p.nm+' '+(p.weeks!=null?Math.round(p.weeks*10)/10+'주분':'')+' 남음').join(' · ')+' — 입고 전 최소선 아래로']);
+  if(s.deliv)out.push(['blue','마감',(s.d===0?'오늘':rbMd(s.nextOrder))+(podHour(s.rule)?' '+podHour(s.rule)+'시':'')+'까지 발주하면 '+rbMd(s.deliv)+' 입고'+(s.rule?' ('+s.rule.replace(/ · 납품 전날.*$/,'')+')':'')]);
+  const o=rb.orders,ol=o&&o.room&&s.rule&&s.rule.includes(o.room)?(o.list||[]):[];
+  if(ol.length){const l=ol[ol.length-1].d;out.push(['gray','지난 발주',rbMd(l)+' ('+podDays(l,podToday())+'일 전) · 평소 약 '+(o.avgGap||21)+'일 간격']);}
+  else if(s.lastIn)out.push(['gray','지난 입고',rbMd(s.lastIn)+' ('+podDays(s.lastIn,podToday())+'일 전)']);
+  return out;}
+function podLink(){let fk='';try{fk=STAFF?(localStorage.getItem(LS_FKEY)||''):((D&&D.staffKey)||'');}catch(_){}return fk?location.origin+location.pathname+'?f='+fk+'&po=1':'';}
+function podText(rb){const S=podSups(rb);let t='[빵을그리다 원료 발주 보고서] '+rbMd(podToday())+'\n이카운트 '+rbMd(rb.snap)+' 아침 재고 · 육쪽마늘빵 100박스분 유지 기준\n';
+  if(!S.length)t+='\n지금 발주할 원료가 없어요.\n';
+  S.forEach(s=>{t+='\n■ '+s.name+' — '+s.lab+(s.deliv?' → '+rbMd(s.deliv)+' 입고':'')+'\n';const w=podWhy(rb,s).filter(x=>x[0]==='red'||x[0]==='amber');if(w.length)t+='  이유: '+w.map(x=>x[2]).join(' / ')+'\n';t+='  발주: '+s.ord.map(p=>p.nm+' '+p.rec+p.unit).join(', ')+'\n';});
+  const u=podLink();if(u)t+='\n자세히 보기 (근거·재고·사용량):\n'+u+'\n';
+  t+='\n발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인 → 황정기 전무 승인 → 서재우 차장 발주';return t;}
+function podHtml(f){const rb=f&&f.rawbuy;if(!rb||!rb.rows)return '';const S=podSups(rb),LV={red:'부족',amber:'곧 부족',blue:'같이 주문',green:'충분'};
+  let h='<div class="box pod"><h3>원료 발주 보고서 <span class="c">거래처별 · 이카운트 '+rbMd(rb.snap)+' 아침 재고 · 최근 8주 사용량</span></h3>';
+  if(rb.maxBox!=null&&rb.maxBox<((rb.rule&&rb.rule.boxes)||100))h+='<div class="pod-sum">지금 재고로 육쪽마늘빵 <b>'+Math.max(0,rb.maxBox)+'박스</b>까지 만들 수 있어요'+((rb.firstOut||[]).length?' · 먼저 떨어지는 원료 <b>'+esc(rb.firstOut.join(', '))+'</b>':'')+' (목표 100박스분)</div>';
+  h+='<div class="pod-act"><button class="pod-b kk" data-pod="kakao">💬 카톡 단체방에 보내기</button><button class="pod-b" data-pod="link">🔗 링크만 복사</button><a class="pod-b" href="https://lee1812-oss.github.io/wonryo/#po-alert" target="_blank" rel="noopener">📄 발주서 만들기 (통합재고관리)</a></div><div id="podMsg"></div>';
+  if(!S.length)h+='<div class="meta">지금 발주할 원료가 없어요. 모든 원료가 3주 이상 + 최소선 위에 있어요.</div>';
+  S.forEach(s=>{h+='<div class="pod-s '+s.lv+'"><div class="pod-top"><span class="tag '+(s.lv==='gray'?'':s.lv)+'">'+esc(s.lab)+'</span> <b class="pod-n">'+esc(s.name)+'</b>'+(s.deliv?'<span class="pod-dv">입고 예정 '+rbMd(s.deliv)+'</span>':'')+'</div>';
+    h+='<div class="pod-wh">왜 지금 발주하나요?</div>'+podWhy(rb,s).map(x=>'<div class="pod-w '+x[0]+'"><span class="k">'+esc(x[1])+'</span><span>'+esc(x[2])+'</span></div>').join('');
+    h+='<div class="pod-wh">발주 리스트 · '+s.ord.length+'품목</div>'+tbl(['원료 · 이유','지금 재고','일주일 사용','지난 입고','추천 주문'],s.plan.map(p=>'<tr'+(p.lv==='green'?' class="pod-off"':'')+'><td><span class="tag '+(p.lv==='blue'?'blue':p.lv)+'">'+LV[p.lv]+'</span> <b>'+esc(p.item)+'</b><br><small>'+esc(p.why)+'</small></td><td class="r">'+esc(podAmt(p.stock,p.pg,p.unit))+'<br><small>'+(p.weeks!=null?(p.weeks<=0?'0주':Math.round(p.weeks*10)/10+'주분'):'')+'</small></td><td class="r">'+esc(podAmt(p.wk,p.pg,p.unit))+'</td><td class="r">'+(p.lastIn?rbMd(p.lastIn)+'<br><small>'+(p.lastQty||'')+esc(p.unit)+'</small>':'–')+'</td><td class="r pod-q">'+(p.rec?p.rec+' '+esc(p.unit):'–')+(p.rec&&p.fill&&p.fill!==p.rec?'<br><small>최소 '+p.fill+esc(p.unit)+'</small>':'')+'</td></tr>'))+'</div>';});
+  h+='<div class="meta" style="margin-top:8px">추천 = '+POD_W+'주 쓸 양 + 최소 남길 양(육쪽 36박스분 · 미로와데코젤 3통) − 지금 재고. 「최소」 = 100박스분만 채우는 양(이만큼만 주문하면 약 2주 뒤 또 발주). 발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인 → 황정기 전무 승인 → 서재우 차장 발주.</div></div>';
+  return h;}
+(function(){const st=document.createElement('style');st.textContent='.pod-sum{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);border-radius:10px;padding:8px 12px;margin:6px 0 10px;font-weight:600}'+
+  '.pod-act{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}.pod-b{display:inline-flex;align-items:center;min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line,#ccc);background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}.pod-b.kk{background:#FEE500;color:#191919;border-color:#e6cf00}'+
+  '#podMsg .pod-g{margin:6px 0 4px;padding:9px 12px;border-radius:10px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);line-height:1.6}#podMsg .pod-g.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.45)}'+
+  '.pod-s{border:1px solid var(--line,#ddd);border-left:6px solid #94a3b8;border-radius:12px;padding:10px 12px;margin:10px 0}.pod-s.red{border-left-color:#dc2626}.pod-s.amber{border-left-color:#f59e0b}.pod-s.blue{border-left-color:#3b82f6}'+
+  '.pod-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pod-n{font-size:1.15rem}.pod-dv{margin-left:auto;font-weight:700}.pod-wh{font-weight:800;margin:10px 0 4px}'+
+  '.pod-w{display:flex;gap:8px;align-items:baseline;padding:5px 8px;border-radius:8px;margin-bottom:3px;line-height:1.5}.pod-w .k{flex:0 0 auto;font-weight:800;font-size:.78rem;padding:1px 7px;border-radius:6px;color:#fff;white-space:nowrap}'+
+  '.pod-w.red{background:rgba(220,38,38,.1)}.pod-w.red .k{background:#dc2626}.pod-w.amber{background:rgba(245,158,11,.1)}.pod-w.amber .k{background:#d97706}.pod-w.blue{background:rgba(59,130,246,.1)}.pod-w.blue .k{background:#2563eb}.pod-w.gray{background:rgba(148,163,184,.12)}.pod-w.gray .k{background:#64748b}'+
+  '.pod-q{font-weight:800;font-size:1.1rem}.pod-off td{opacity:.55}';document.head.appendChild(st);})();
+PANELS.fraw=['원료 남은 기간 · 발주 보고서',(o=>function(){const r=o.apply(this,arguments);try{const x=podHtml(F_());if(x)r.h=x+r.h;}catch(_){}return r;})(PANELS.fraw[1]),PANELS.fraw[2]];
+facKpis=(o=>function(){const out=o.apply(this,arguments);try{const f=F_(),rb=f&&f.rawbuy;const c=out.find(x=>x.k==='fraw');if(c&&rb&&rb.rows){const S=podSups(rb);if(S.length){const s=S[0];c.ft=s.name.replace(/\(주\)|주식회사 /g,'')+' '+s.lab.replace(' 발주','')+' · '+s.ord.length+'품목'+(S.length>1?' 외 '+(S.length-1)+'곳':'');}}}catch(_){}return out;})(facKpis);
+async function podCopy(t){try{await navigator.clipboard.writeText(t);return true;}catch(_){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok;}catch(__){return false;}}}
+function podMsg(k,h){const m=document.getElementById('podMsg');if(m)m.innerHTML='<div class="pod-g'+(k==='warn'?' warn':'')+'">'+h+'</div>';}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-pod]');if(!b)return;e.preventDefault();const f=F_(),rb=f&&f.rawbuy;if(!rb)return;
+  if(b.dataset.pod==='link'){const u=podLink();if(!u)return podMsg('warn','직원용 링크 열쇠가 없어요.');const ok=await podCopy(u);return podMsg(ok?'ok':'warn',ok?'링크를 복사했어요. 카톡에 붙여넣으세요.':'복사가 막혔어요.');}
+  const t=podText(rb);
+  if(/Android|iPhone|iPad/i.test(navigator.userAgent)&&navigator.share){try{await navigator.share({title:'원료 발주 보고서',text:t});podMsg('ok','공유 창에서 <b>카카오톡 → 「'+esc(POD_ROOM)+'」</b>을 고르면 보내져요.');}catch(x){if(!x||x.name!=='AbortError')podMsg('warn','공유 창을 열지 못했어요.');}return;}
+  const ok=await podCopy(t);podMsg(ok?'ok':'warn',ok?'<b>보고서 글과 링크를 복사했어요.</b><br>① 카카오톡 PC에서 「'+esc(POD_ROOM)+'」 열기 ② <b>Ctrl + V</b> → 전송<br><small>받은 사람이 링크를 누르면 이 보고서가 바로 열려요 (매출·메일 없는 직원용 화면).</small>':'복사가 막혔어요. 「🔗 링크만 복사」를 눌러 보세요.');});
+(function podHash(n){if(!POD0||n>90)return;if(D&&F_()&&F_().rawbuy){try{history.replaceState(null,'',location.pathname+location.search);}catch(_){}openPanel('fraw');return;}setTimeout(()=>podHash(n+1),700);})(0);
+// ===== 2026-10-22 원료 발주 보고서 덧붙임 끝 =====
+
 applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
