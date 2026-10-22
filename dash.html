@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 08:59">
+<meta name="dash-build" content="2026-10-22 09:20">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1076,8 +1076,8 @@ function c4Card(x,big){const lv=C4_LV[x.lv]||C4_LV.gray;
     '<div class="c4n">'+c4Pic(x.k)+'<b class="num">'+c4N(n)+'</b><span>'+x.unit+(dough?' 남음':' 가용')+'</span><em>'+c4D(x.days)+'일치</em></div>'+
     '<div class="c4s">'+(dough?'주 평균 '+fmtN(x.weekly)+'봉 사용':'하루 평균 '+c4N(x.daily)+'박스 판매')+'</div>'+
     '<div class="tw">'+c4Roles(x).map(r=>'<div class="trow"><span class="mk '+r[0]+'"></span><span class="tag '+r[0]+'">'+r[1]+'</span><div class="tt">'+esc(r[2])+'</div></div>').join('')+'</div></button>';}
-function c4Row(){const c=c4Core();if(!c)return '';const s=D.stock;
-  return '<div class="grp">핵심 4품목 · 세 사람이 같이 보는 재고 <span class="gsub">김 대리 실물 '+esc(s.at||'')+(s.date<s.today?' (오늘 입력 전)':'')+' · 초록 7일치 이상 · 주황 3~7일 · 빨강 3일 미만</span></div><div class="c4">'+c.items.map(x=>c4Card(x,c.big)).join('')+'</div>';}
+function c4Row(){const c=c4Core();if(!c)return hdStrip();const s=D.stock;
+  return hdStrip()+'<div class="grp">핵심 4품목 · 세 사람이 같이 보는 재고 <span class="gsub">김 대리 실물 '+esc(s.at||'')+(s.date<s.today?' (오늘 입력 전)':'')+' · 초록 7일치 이상 · 주황 3~7일 · 빨강 3일 미만</span></div><div class="c4">'+c.items.map(x=>c4Card(x,c.big)).join('')+'</div>';}
 function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 자료가 아직 없어요.<br>다음 대시보드 갱신 때 만들어져요.')};
   const s=D.stock;const old=s.date<s.today;let h='';
   h+='<div class="note '+(c.items.some(x=>x.lv==='red')?'red':c.items.some(x=>x.lv==='amber')?'amb':'ok')+'" style="margin-bottom:12px"><b>세 사람이 같은 숫자를 봐요</b><br>완제품은 「가용 재고 = 김 대리 실물 − 아직 안 뺀 출고」가 평소 판매 며칠치인지로 색을 정해요 (7일치 이상 초록 · 3~7일 주황 · 3일 미만 빨강). 생지는 생산·출고에 쓰고 남는 봉 수로 정해요 (0 미만 빨강 · 170봉 미만 주황).'+(old?'<br><b>오늘 실물 입력 전이에요 — '+esc(md(s.date))+' 숫자 기준</b>':'')+'</div>';
@@ -1098,8 +1098,9 @@ function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 �
   cal.push('<tr><td>생산 계획 <small>(상무님)</small></td>'+days.map(()=>'<td><span style="color:var(--faint)">?</span></td>').join('')+'</tr>');
   cal.push('<tr><td>생지 입고 <small>(서 차장)</small></td>'+days.map(d=>'<td>'+(new Date(d+'T00:00:00+09:00').getDay()===4?'<span class="tag blue">목 입고?</span>':'<span style="color:var(--faint)">·</span>')+'</td>').join('')+'</tr>');
   h+='<div class="box c4cal"><h3>7일 달력 <span class="c">출고(−) · 50박스 이상 큰 주문은 빨강</span></h3>'+tbl(['']
-    .concat(days.map(d=>rbMd(d))),cal)+'<div class="meta" style="margin-top:8px">「?」 칸은 아직 적는 곳이 없어서 비어 있어요. 통합재고관리에 상무님 주간 생산 계획·서 차장 입고 예정 칸을 넣으면 채워져요 (다음 단계).</div></div>';
+    .concat(days.map(d=>hdHead(d))),cal)+'<div class="meta" style="margin-top:8px">「?」 칸은 아직 적는 곳이 없어서 비어 있어요. 통합재고관리에 상무님 주간 생산 계획·서 차장 입고 예정 칸을 넣으면 채워져요 (다음 단계).</div></div>';
   h+='<div class="box"><h3>사람별 오늘 챙길 것</h3>'+['출고 김명우','생산 박태일','매입 서재우'].map(role=>'<div style="margin:8px 0 4px;font-weight:800">'+role.replace(' ',' · ')+'</div>'+c.items.filter(x=>!x.none).map(x=>{const r=c4Roles(x).find(r=>r[1]===role);return r?'<div class="trow"><span class="mk '+r[0]+'"></span><span class="tag '+r[0]+'">'+esc(x.nm)+'</span><div class="tt" style="white-space:normal">'+esc(r[2])+'</div></div>':'';}).join('')).join('')+'</div>';
+  h+=hdMonthBox();
   h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (김 대리 실물 입력)</a>';
   return {s:'김 대리 실물 '+esc(s.at||'')+' · 이카운트 출고 예정 · '+esc(s.built||'')+' 계산',h};}
 PANELS.core4=['핵심 4품목 · 세 사람이 같이 보는 재고',pCore4,'wonryo'];
@@ -1111,6 +1112,53 @@ try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null'
 tick();setInterval(tick,15000);
 load();setInterval(load,5*60000);
 pcPoll(true);setInterval(()=>pcPoll(false),60000);
+// ===== 2026-10-22 공휴일·연휴 표시 (Aside): 자료 = D.stock.holidays (stock_build.js sbHolidays가 한국천문연구원 특일 정보로 채움). 기존 코드는 고치지 않고 아래만 덧붙임 =====
+(function(){const st=document.createElement('style');st.textContent='.hdm{table-layout:fixed}.hdm td,.hdm th{padding:4px 2px;font-size:.8rem}.hdm .hd-n{display:block;font-size:.62rem;line-height:1.15;word-break:keep-all;color:#dc2626;font-weight:700}.hd-d{font-weight:700}.hd-hol{color:#dc2626;font-weight:800}.hd-sat{color:#1d4ed8}.hd-tag{display:block;color:#dc2626;font-size:.66rem;font-weight:700;line-height:1.15}';document.head.appendChild(st);})();
+function hdList(){const h=D&&D.stock&&D.stock.holidays;return Array.isArray(h)?h:[];}
+function hdName(d){const x=hdList().find(o=>o.d===d);return x?x.n:null;}
+function hdWk(d){return new Date(d+'T00:00:00+09:00').getDay();}
+function hdAdd(d,n){return new Date(new Date(d+'T00:00:00+09:00').getTime()+n*864e5+9*3600e3).toISOString().slice(0,10);}
+function hdOff(d){return !!hdName(d)||hdWk(d)===0||hdWk(d)===6;}
+function hdTodayIso(){return (D&&D.stock&&D.stock.today)||new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}
+// 연휴 = 쉬는 날(공휴일·토·일)이 이어진 덩어리 가운데, 공휴일이 들어 있고 2일 이상인 것
+function hdBlocks(){const hs=hdList().map(o=>o.d).sort();const out=[],seen={};
+  for(const d0 of hs){if(seen[d0])continue;let s=d0,e=d0;
+    while(hdOff(hdAdd(s,-1)))s=hdAdd(s,-1);
+    while(hdOff(hdAdd(e,1)))e=hdAdd(e,1);
+    const days=[];for(let x=s;x<=e;x=hdAdd(x,1))days.push(x);
+    days.forEach(x=>{if(hdName(x))seen[x]=1;});
+    const names=days.filter(x=>hdName(x)).map(x=>hdName(x));
+    if(days.length>=2&&names.length)out.push({s:s,e:e,n:days.length,names:names});}
+  return out;}
+// 연휴 3일 전부터 연휴가 끝날 때까지 안내
+function hdAlert(){const t=hdTodayIso();for(const b of hdBlocks()){if(t>=hdAdd(b.s,-3)&&t<=b.e)return b;}return null;}
+function hdStrip(){if(!hdList().length)return '';
+  const t=hdTodayIso();const a=hdAlert();let h='';
+  if(a)h+='<div class="note amb" style="grid-column:1/-1;margin-bottom:10px"><b>연휴 전 발주·생산 확인</b> · '+esc(md(a.s))+'부터 '+a.n+'일 쉬어요 ('+esc(a.names.join(' · '))+'). 연휴 전에 발주·생산 일정을 미리 맞춰 주세요.</div>';
+  const up=hdList().filter(o=>o.d>=t&&o.d<=hdAdd(t,7)&&!(a&&o.d>=a.s&&o.d<=a.e));
+  if(up.length)h+='<div class="meta" style="grid-column:1/-1;margin-bottom:8px">가까운 쉬는 날: '+up.map(o=>esc(md(o.d))+' '+esc(o.n)).join(' · ')+'</div>';
+  return h;}
+// 7일 달력 머리글: 공휴일은 빨강 + 이름, 토요일은 파랑
+function hdHead(d){const n=hdName(d),w=hdWk(d);const cls=(n||w===0)?'hd-hol':w===6?'hd-sat':'';
+  return '<span class="'+cls+'">'+rbMd(d)+(n?'<span class="hd-tag">'+esc(n)+'</span>':'')+'</span>';}
+// 이번 달 쉬는 날 달력 (상세창 아래)
+function hdMonthBox(){if(!hdList().length)return '';
+  const t=hdTodayIso();const ym=t.slice(0,7);const first=ym+'-01';const last=new Date(Number(ym.slice(0,4)),Number(ym.slice(5,7)),0).getDate();
+  const cells=[];for(let i=0;i<hdWk(first);i++)cells.push('');
+  for(let i=1;i<=last;i++)cells.push(ym+'-'+String(i).padStart(2,'0'));
+  while(cells.length%7)cells.push('');
+  const W=['일','월','화','수','목','금','토'];
+  let g='<table class="tbl hdm"><thead><tr>'+W.map((w,i)=>'<th style="text-align:center;color:'+(i===0?'#dc2626':i===6?'#1d4ed8':'')+'">'+w+'</th>').join('')+'</tr></thead><tbody>';
+  for(let r=0;r<cells.length;r+=7){g+='<tr>';
+    for(const d of cells.slice(r,r+7)){
+      if(!d){g+='<td></td>';continue;}
+      const n=hdName(d),w=hdWk(d);const cls=(n||w===0)?'hd-hol':w===6?'hd-sat':'';
+      g+='<td style="text-align:center;vertical-align:top;'+(d===t?'background:#fef9c3;':'')+'"><span class="hd-d '+cls+'">'+Number(d.slice(8))+'</span>'+(n?'<span class="hd-n">'+esc(n)+'</span>':'')+'</td>';}
+    g+='</tr>';}
+  g+='</tbody></table>';
+  const blocks=hdBlocks().filter(b=>b.s.slice(0,7)===ym||b.e.slice(0,7)===ym);
+  return '<div class="box hdcal"><h3>쉬는 날 달력 <span class="c">'+ym.slice(0,4)+'년 '+Number(ym.slice(5,7))+'월 · 빨강 = 공휴일·일요일 · 파랑 = 토요일</span></h3>'+g+(blocks.length?'<div class="meta" style="margin-top:8px">연휴: '+blocks.map(b=>esc(md(b.s))+' ~ '+esc(md(b.e))+' ('+b.n+'일, '+esc(b.names.join(' · '))+')').join(' / ')+'</div>':'')+'</div>';}
+
 })();
 </script>
 </body>
