@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 14:52">
+<meta name="dash-build" content="2026-10-22 15:02">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1128,12 +1128,16 @@ function podPlan(rb,sup){const fl=(rb.rule&&rb.rule.floor)||36,miro=(rb.rule&&rb
     else if(r.perBox&&atD<keep){lv='amber';why='입고일('+rbMd(s.deliv)+')쯤 최소선('+fl+'박스분) 아래';}
     else if(rec>0){lv='blue';why='다음 발주(약 '+POD_W+'주 뒤)까지 모자람 → 같이 주문';}
     else{lv='green';why='충분 · 이번엔 주문 안 함';}
-    return {nm:r.nm,item:r.item||r.nm,unit:r.unit,stock:st,pg,wk,weeks,rec,fill:+r.packs||0,lv,why,lastIn:r.lastIn,lastQty:r.lastQty};
+    return {nm:r.nm,item:r.item||r.nm,unit:r.unit,stock:st,pg,wk,weeks,rec,fill:+r.packs||0,lv,why,lastIn:r.lastIn,lastQty:r.lastQty,price:+r.price||0,priceAt:r.priceAt||'',pricePrev:r.pricePrev||null,vf:!!r.vatFree};
   }).sort((a,b)=>O[a.lv]-O[b.lv]);}
+function podWon(v){return Math.round(v).toLocaleString('ko-KR')+'원';}
+function podPr(p){if(!p.price)return '<small>단가 없음</small>';const up=p.pricePrev&&p.pricePrev!==p.price?(p.price>p.pricePrev?' <b class="pod-up">▲ 인상</b>':' <b class="pod-dn">▼ 인하</b>'):'';return (p.rec?'<b>'+podWon(p.rec*p.price)+'</b><br>':'')+'<small>단가 '+podWon(p.price)+' · '+rbMd(p.priceAt)+(p.vf?' · 면세':'')+up+(up?' (이전 '+podWon(p.pricePrev)+')':'')+'</small>';}
+function podTot(s){if(!s.amt)return '';return '<div class="pod-tot">예상 매입가 <b>약 '+podWon(s.amt+s.vat)+'</b> <small>(공급가 '+podWon(s.amt)+' + 부가세 '+podWon(s.vat)+' · 최근 매입 단가 기준'+(s.noP?' · 단가 없는 '+s.noP+'품목 빠짐':'')+')</small></div>';}
 function podAmt(g,pg,u){if(g<=0)return '0'+u;const n=g/pg;return (n>=10?Math.round(n):Math.round(n*10)/10)+u;}
 function podSups(rb){const td=podToday();return (rb.sups||[]).map(s=>{const plan=podPlan(rb,s.name),ord=plan.filter(p=>p.rec>0);const d=s.nextOrder?podDays(td,s.nextOrder):null,hr=podHour(s.rule);
   let lv='gray',lab='발주일 확인 필요';if(d!=null){if(d<0){lv='red';lab='발주일 지남 · 바로 발주';}else if(d===0){lv='red';lab='오늘'+(hr?' '+hr+'시':'')+'까지 발주';}else{lv=d<=3?'amber':'blue';lab=rbMd(s.nextOrder)+'까지 발주 (D-'+d+')';}}
-  return Object.assign({},s,{plan,ord,lv,lab,d});}).filter(s=>s.ord.length).sort((a,b)=>(a.d==null?99:a.d)-(b.d==null?99:b.d));}
+  const amt=ord.reduce((a,p)=>a+(p.price?p.rec*p.price:0),0),vat=ord.reduce((a,p)=>a+(p.price&&!p.vf?Math.round(p.rec*p.price*0.1):0),0),noP=ord.filter(p=>!p.price).length;
+  return Object.assign({},s,{plan,ord,lv,lab,d,amt,vat,noP});}).filter(s=>s.ord.length).sort((a,b)=>(a.d==null?99:a.d)-(b.d==null?99:b.d));}
 function podWhy(rb,s){const out=[],red=s.plan.filter(p=>p.lv==='red'),amb=s.plan.filter(p=>p.lv==='amber');
   if(red.length)out.push(['red','부족',red.map(p=>p.nm+' '+p.why).join(' · ')]);
   if(amb.length)out.push(['amber','곧 부족',amb.map(p=>p.nm+' '+(p.weeks!=null?Math.round(p.weeks*10)/10+'주분':'')+' 남음').join(' · ')+' — 입고 전 최소선 아래로']);
@@ -1145,7 +1149,7 @@ function podWhy(rb,s){const out=[],red=s.plan.filter(p=>p.lv==='red'),amb=s.plan
 function podLink(){let fk='';try{fk=STAFF?(localStorage.getItem(LS_FKEY)||''):((D&&D.staffKey)||'');}catch(_){}return fk?location.origin+location.pathname+'?f='+fk+'&po=1':'';}
 function podText(rb){const S=podSups(rb);let t='[빵을그리다 원료 발주 보고서] '+rbMd(podToday())+'\n이카운트 '+rbMd(rb.snap)+' 아침 재고 · 육쪽마늘빵 100박스분 유지 기준\n';
   if(!S.length)t+='\n지금 발주할 원료가 없어요.\n';
-  S.forEach(s=>{t+='\n■ '+s.name+' — '+s.lab+(s.deliv?' → '+rbMd(s.deliv)+' 입고':'')+'\n';const w=podWhy(rb,s).filter(x=>x[0]==='red'||x[0]==='amber');if(w.length)t+='  이유: '+w.map(x=>x[2]).join(' / ')+'\n';t+='  발주: '+s.ord.map(p=>p.nm+' '+p.rec+p.unit).join(', ')+'\n';});
+  S.forEach(s=>{t+='\n■ '+s.name+' — '+s.lab+(s.deliv?' → '+rbMd(s.deliv)+' 입고':'')+'\n';const w=podWhy(rb,s).filter(x=>x[0]==='red'||x[0]==='amber');if(w.length)t+='  이유: '+w.map(x=>x[2]).join(' / ')+'\n';t+='  발주: '+s.ord.map(p=>p.nm+' '+p.rec+p.unit).join(', ')+'\n';if(s.amt)t+='  예상 매입가: 약 '+podWon(s.amt+s.vat)+' (부가세 포함, 최근 매입 단가 기준)\n';});
   const u=podLink();if(u)t+='\n자세히 보기 (근거·재고·사용량):\n'+u+'\n';
   t+='\n발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인 → 황정기 전무 승인 → 서재우 차장 발주';return t;}
 function podHtml(f){const rb=f&&f.rawbuy;if(!rb||!rb.rows)return '';const S=podSups(rb),LV={red:'부족',amber:'곧 부족',blue:'같이 주문',green:'충분'};
@@ -1155,7 +1159,7 @@ function podHtml(f){const rb=f&&f.rawbuy;if(!rb||!rb.rows)return '';const S=podS
   if(!S.length)h+='<div class="meta">지금 발주할 원료가 없어요. 모든 원료가 3주 이상 + 최소선 위에 있어요.</div>';
   S.forEach(s=>{h+='<div class="pod-s '+s.lv+'"><div class="pod-top"><span class="tag '+(s.lv==='gray'?'':s.lv)+'">'+esc(s.lab)+'</span> <b class="pod-n">'+esc(s.name)+'</b>'+(s.deliv?'<span class="pod-dv">입고 예정 '+rbMd(s.deliv)+'</span>':'')+'</div>';
     h+='<div class="pod-wh">왜 지금 발주하나요?</div>'+podWhy(rb,s).map(x=>'<div class="pod-w '+x[0]+'"><span class="k">'+esc(x[1])+'</span><span>'+esc(x[2])+'</span></div>').join('');
-    h+='<div class="pod-wh">발주 리스트 · '+s.ord.length+'품목</div>'+tbl(['원료 · 이유','지금 재고','일주일 사용','지난 입고','추천 주문'],s.plan.map(p=>'<tr'+(p.lv==='green'?' class="pod-off"':'')+'><td><span class="tag '+(p.lv==='blue'?'blue':p.lv)+'">'+LV[p.lv]+'</span> <b>'+esc(p.item)+'</b><br><small>'+esc(p.why)+'</small></td><td class="r">'+esc(podAmt(p.stock,p.pg,p.unit))+'<br><small>'+(p.weeks!=null?(p.weeks<=0?'0주':Math.round(p.weeks*10)/10+'주분'):'')+'</small></td><td class="r">'+esc(podAmt(p.wk,p.pg,p.unit))+'</td><td class="r">'+(p.lastIn?rbMd(p.lastIn)+'<br><small>'+(p.lastQty||'')+esc(p.unit)+'</small>':'–')+'</td><td class="r pod-q">'+(p.rec?p.rec+' '+esc(p.unit):'–')+(p.rec&&p.fill&&p.fill!==p.rec?'<br><small>최소 '+p.fill+esc(p.unit)+'</small>':'')+'</td></tr>'))+'</div>';});
+    h+='<div class="pod-wh">발주 리스트 · '+s.ord.length+'품목</div>'+tbl(['원료 · 이유','지금 재고','일주일 사용','지난 입고','추천 주문','예상 금액'],s.plan.map(p=>'<tr'+(p.lv==='green'?' class="pod-off"':'')+'><td><span class="tag '+(p.lv==='blue'?'blue':p.lv)+'">'+LV[p.lv]+'</span> <b>'+esc(p.item)+'</b><br><small>'+esc(p.why)+'</small></td><td class="r">'+esc(podAmt(p.stock,p.pg,p.unit))+'<br><small>'+(p.weeks!=null?(p.weeks<=0?'0주':Math.round(p.weeks*10)/10+'주분'):'')+'</small></td><td class="r">'+esc(podAmt(p.wk,p.pg,p.unit))+'</td><td class="r">'+(p.lastIn?rbMd(p.lastIn)+'<br><small>'+(p.lastQty||'')+esc(p.unit)+'</small>':'–')+'</td><td class="r pod-q">'+(p.rec?p.rec+' '+esc(p.unit):'–')+(p.rec&&p.fill&&p.fill!==p.rec?'<br><small>최소 '+p.fill+esc(p.unit)+'</small>':'')+'</td><td class="r">'+podPr(p)+'</td></tr>'))+podTot(s)+'</div>';});
   h+='<div class="meta" style="margin-top:8px">추천 = '+POD_W+'주 쓸 양 + 최소 남길 양(육쪽 36박스분 · 미로와데코젤 3통) − 지금 재고. 「최소」 = 100박스분만 채우는 양(이만큼만 주문하면 약 2주 뒤 또 발주). 발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인 → 황정기 전무 승인 → 서재우 차장 발주.</div></div>';
   return h;}
 (function(){const st=document.createElement('style');st.textContent='.pod-sum{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);border-radius:10px;padding:8px 12px;margin:6px 0 10px;font-weight:600}'+
@@ -1165,7 +1169,7 @@ function podHtml(f){const rb=f&&f.rawbuy;if(!rb||!rb.rows)return '';const S=podS
   '.pod-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pod-n{font-size:1.15rem}.pod-dv{margin-left:auto;font-weight:700}.pod-wh{font-weight:800;margin:10px 0 4px}'+
   '.pod-w{display:flex;gap:8px;align-items:baseline;padding:5px 8px;border-radius:8px;margin-bottom:3px;line-height:1.5}.pod-w .k{flex:0 0 auto;font-weight:800;font-size:.78rem;padding:1px 7px;border-radius:6px;color:#fff;white-space:nowrap}'+
   '.pod-w.red{background:rgba(220,38,38,.1)}.pod-w.red .k{background:#dc2626}.pod-w.amber{background:rgba(245,158,11,.1)}.pod-w.amber .k{background:#d97706}.pod-w.blue{background:rgba(59,130,246,.1)}.pod-w.blue .k{background:#2563eb}.pod-w.gray{background:rgba(148,163,184,.12)}.pod-w.gray .k{background:#64748b}'+
-  '.pod-q{font-weight:800;font-size:1.1rem}.pod-off td{opacity:.55}';document.head.appendChild(st);})();
+  '.pod-tot{margin:8px 0 2px;padding:8px 12px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.35);font-size:1.05rem}.pod-tot b{font-size:1.2rem}.pod-up{color:#ef4444}.pod-dn{color:#16a34a}'+'.pod-q{font-weight:800;font-size:1.1rem}.pod-off td{opacity:.55}';document.head.appendChild(st);})();
 PANELS.fraw=['원료 남은 기간 · 발주 보고서',(o=>function(){const r=o.apply(this,arguments);try{const x=podHtml(F_());if(x)r.h=x+r.h;}catch(_){}return r;})(PANELS.fraw[1]),PANELS.fraw[2]];
 facKpis=(o=>function(){const out=o.apply(this,arguments);try{const f=F_(),rb=f&&f.rawbuy;const c=out.find(x=>x.k==='fraw');if(c&&rb&&rb.rows){const S=podSups(rb);if(S.length){const s=S[0];c.ft=s.name.replace(/\(주\)|주식회사 /g,'')+' '+s.lab.replace(' 발주','')+' · '+s.ord.length+'품목'+(S.length>1?' 외 '+(S.length-1)+'곳':'');}}}catch(_){}return out;})(facKpis);
 async function podCopy(t){try{const ok=await Promise.race([navigator.clipboard.writeText(t).then(()=>true),new Promise(r=>setTimeout(()=>r(false),1500))]);if(ok)return true;throw 0;}catch(_){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok;}catch(__){return false;}}}
