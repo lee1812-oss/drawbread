@@ -27,12 +27,14 @@ a.tile:active{border-color:var(--blue)}
 .t{font-size:18px;font-weight:800;word-break:keep-all}
 .d{font-size:13.5px;color:var(--sub);line-height:1.45;word-break:keep-all}
 .where{font-size:12px;font-weight:700;color:var(--blue);margin-top:auto}
+.unlock{border-radius:14px;padding:14px 16px;margin:4px 0 6px;font-size:16px;font-weight:700;line-height:1.5;word-break:keep-all}.unlock.ok{background:#e7f6ec;color:#1a7f37}.unlock.bad{background:#fdecec;color:#c62828}
 .note{background:#fff;border-radius:14px;padding:14px 16px;margin-top:18px;font-size:14px;color:var(--sub);line-height:1.6}
 </style>
 </head>
 <body>
 <header><div class="in"><h1>🍞 빵을그리다 앱 모음</h1><p id="today"></p></div></header>
 <main>
+  <div id="unlock" class="unlock" hidden></div>
   <h2>배송·출고</h2>
   <div class="grid">
     <a class="tile" href="../dongseon/#board"><span class="ico">🚚</span><span class="t">출고 보드</span><span class="d">오늘 코스별 품목 체크, 적재 완료, 특이사항 공유</span><span class="where">출고장 태블릿 추천</span></a>
@@ -51,12 +53,29 @@ a.tile:active{border-color:var(--blue)}
   </div>
   <div class="note">
     · 처음 한 번 <b>홈 화면에 추가</b>해 두면 앱처럼 쓸 수 있어요. (안드로이드: 크롬 ⋮ → 앱 설치 / 아이폰·아이패드: 사파리 공유 → 홈 화면에 추가)<br>
-    · 배송·출고·거래처 앱의 직원용 암호와 「원료 사용 기록」 링크는 담당자에게 받으세요.<br>
+    · 담당자에게 받은 <b>「바로 열기」 링크</b>를 한 번 누르면, 그 기기에서는 배송·출고·거래처 앱이 암호 없이 열려요. 「원료 사용 기록」 링크도 담당자에게 받으세요.<br>
     · 새 앱이 생기면 이 화면에 버튼이 추가돼요. 다시 설치할 필요 없어요.
   </div>
 </main>
 <script>
 const d = new Date(); document.getElementById('today').textContent = `${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]}) · 필요한 앱을 눌러 주세요`;
+
+/* 바로 열기 주소 (2026-10-24): ?k=열쇠 로 한 번 열면 이 기기의 배송·출고·거래처·티맵 앱이 암호 없이 열림 */
+(async()=>{const box=document.getElementById('unlock');const say=(c,t)=>{box.className='unlock '+c;box.textContent=t;box.hidden=false};
+let h=location.href;try{h=decodeURIComponent(h)}catch(e){}
+const m=h.match(/[?&#]k=([A-Za-z0-9_-]{16,})/);
+if(m){history.replaceState(null,'',location.pathname);
+try{const r=await fetch('go.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('net');const e=await r.json();
+const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const bk=await crypto.subtle.importKey('raw',new TextEncoder().encode(m[1]),'PBKDF2',false,['deriveKey']);
+const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.s),iterations:e.it,hash:'SHA-256'},bk,{name:'AES-GCM',length:256},false,['decrypt']);
+const D=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))));
+localStorage.setItem('drawbread_pass',D.p);localStorage.setItem('tmapgo_k',m[1]);
+for(const k of ['dongseon_v1','dongseon_beta_v1']){try{const o=JSON.parse(localStorage.getItem(k));if(o&&o.dv){o.dv.pass=D.p;localStorage.setItem(k,JSON.stringify(o))}}catch(x){}}
+say('ok','✅ 이 기기에 등록됐어요. 이제 배송·출고·거래처 앱이 암호 없이 열려요.');
+}catch(x){say('bad',x&&x.message==='net'?'인터넷 연결을 확인하고 링크를 다시 눌러 주세요.':'링크가 맞지 않아요. 담당자에게 「바로 열기」 링크를 다시 받아 주세요.')}}
+else if(localStorage.getItem('drawbread_pass'))say('ok','✅ 이 기기는 암호 없이 열리도록 등록돼 있어요.');
+})();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
