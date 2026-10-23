@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-22 15:02">
+<meta name="dash-build" content="2026-10-23 14:23">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1240,6 +1240,76 @@ function hdMonthBox(){if(!hdList().length)return '';
   g+='</tbody></table>';
   const blocks=hdBlocks().filter(b=>b.s.slice(0,7)===ym||b.e.slice(0,7)===ym);
   return '<div class="box hdcal"><h3>쉬는 날 달력 <span class="c">'+ym.slice(0,4)+'년 '+Number(ym.slice(5,7))+'월 · 빨강 = 공휴일·일요일 · 파랑 = 토요일</span></h3>'+g+(blocks.length?'<div class="meta" style="margin-top:8px">연휴: '+blocks.map(b=>esc(md(b.s))+' ~ '+esc(md(b.e))+' ('+b.n+'일, '+esc(b.names.join(' · '))+')').join(' / ')+'</div>':'')+'</div>';}
+
+// ===== 2026-10-23 생산 계획 (Aside 사무실 PC, 사용자 요청): 거래명세표(이카운트 판매 전표, 미래 출고일) → 가용 재고 → 4주 생산 계획 → 생지 200 발주 제안 =====
+// 자료 = D.plan (Aside dashboard/plan_build.js → dash_publish.js 가 대표용·직원용 둘 다에 넣음). 기준값은 Aside data/dashboard/plan_config.json.
+// 카드 1개(핵심 4품목 아래 한 줄) + 누르면 자세히 창. 발주 문구는 복사만 하고 보내기는 사람이 직접.
+(function(){const s=document.createElement('style');s.textContent=
+ '.kpi.plk{grid-column:1/-1!important;min-height:0!important;padding:14px 18px 12px;display:flex;flex-direction:column;gap:8px}'+
+ '.plk .plh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.plk .plh .lb{font-size:1.05rem;font-weight:800}'+
+ '.plk .pls{display:flex;gap:10px;flex-wrap:wrap}.plk .plc{flex:1 1 150px;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--card)}'+
+ '.plk .plc b{font-size:1.6rem;font-weight:800;line-height:1.2}.plk .plc span{display:block;font-size:15px;color:var(--sub);font-weight:700}'+
+ '.plk .plc.red{border-color:rgba(220,38,38,.55);background:rgba(220,38,38,.08)}.plk .plc.red b{color:#dc2626}.plk .plc.amb{border-color:rgba(245,158,11,.6);background:rgba(245,158,11,.08)}.plk .plc.amb b{color:#b45309}.plk .plc.grn b{color:#15803d}'+
+ '.plk .plt{font-size:17px;font-weight:700;color:var(--ink)}.plk .plt small{color:var(--sub);font-weight:600;font-size:15px}'+
+ '.plp{font-size:17px;line-height:1.6}.plp .tbl{font-size:17px}.plp .tbl th{font-size:15px}.plp .tbl td{padding:9px 8px}.plp h3{font-size:18px}'+
+ '.plp .plbig{font-size:19px;font-weight:800}.plp .plmsg{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:17px;margin:10px 0;color:#111827}'+
+ '.plp .plbtn{min-height:56px;font-size:18px;font-weight:800;padding:0 24px;border-radius:12px;border:0;background:#1d4ed8;color:#fff;cursor:pointer}'+
+ '.plp .plst{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}.plp .plst div{border:1px solid var(--line);border-radius:10px;padding:8px 12px}.plp .plst b{display:block;font-size:24px;font-weight:800}.plp .plst span{font-size:15px;color:var(--sub);font-weight:700}'+
+ '.plp .plst .red b{color:#dc2626}.plp .plst .amb b{color:#b45309}.plp .plst .grn b{color:#15803d}'+
+ '.plp .pd{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:middle}.plp .pd.red{background:#dc2626}.plp .pd.amber{background:#f59e0b}.plp .pd.green{background:#16a34a}'+
+ '.plp .wk small{display:block;color:var(--sub);font-size:15px;line-height:1.4}.plp .wk b{font-size:19px}.plp tr.today td{background:rgba(250,204,21,.2)}.plp .wk td{min-width:120px}.plp .wk .l1{white-space:nowrap}';
+ document.head.appendChild(s);})();
+const PL_LV={red:'최소선 아래',amber:'목표선 아래',green:'충분'};
+const plN=v=>v==null?'–':(Math.round(v*10)/10).toLocaleString();const plB=v=>v==null?'–':Math.round(v).toLocaleString();
+const plP=()=>(D&&D.plan&&D.plan.sum)?D.plan:null;
+function plRow(){const p=plP();if(!p)return '';const s=p.sum,g=p.dough||{};
+  const old=p.stockDate<p.today;
+  return '<div class="grp">생산 계획 · 거래명세표(출고 예정)에서 이어지는 계획 <span class="gsub">김 대리 실물 '+esc(p.stockAt||'')+(old?' (오늘 입력 전)':'')+' · 판매 전표 '+esc(md(p.snap))+' 기준</span></div>'+
+  '<button class="kpi plk" data-open="plan"><div class="plh">'+logoHtml('wonryo')+'<span class="lb">생산 계획</span><span class="src">이번 주 포함 4주 · 목표선까지 채우는 양</span><span class="go" style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;white-space:nowrap">자세히'+chev+'</span></div>'+
+  '<div class="pls"><div class="plc"><b class="num">'+plN(s.w0)+'</b><span>이번 주 남은 생산 (박스)</span></div><div class="plc"><b class="num">'+plN(s.w1)+'</b><span>다음 주 생산 제안 (박스)</span></div>'+
+  '<div class="plc '+(s.red?'red':'grn')+'"><b class="num">'+s.red+'</b><span>🔴 최소선 아래 품목</span></div>'+
+  '<div class="plc '+(g.lv==='red'?'red':g.lv==='amber'?'amb':'grn')+'"><b class="num">'+(g.order==null?'–':plB(g.order)+'봉')+'</b><span>생지 200 발주 ('+esc(g.nextInMd||'')+' 입고)'+(g.extra?' + 화 추가 '+plN(g.extra)+'봉':'')+'</span></div>'+
+  '<div class="plc '+(s.warn?'red':'grn')+'"><b class="num">'+s.warn+'</b><span>계획대로 해도 모자라는 출고</span></div></div>'+
+  '<div class="plt">오늘 '+esc(p.todayTxt||'')+(p.nextTxt?' <small>· 다음 생산일 '+esc(p.nextTxt)+'</small>':'')+'</div></button>';}
+function pPlan(){const p=plP();if(!p)return {s:'',h:empty('생산 계획 자료가 아직 없어요.<br>다음 대시보드 갱신 때 만들어져요.')};
+  const g=p.dough||{},old=p.stockDate<p.today;let h='<div class="plp">';
+  h+='<div class="note '+(p.sum.warn||g.lv==='red'?'red':p.sum.red?'amb':'ok')+'" style="margin-bottom:12px"><b>거래명세표(출고 예정) → 가용 재고 → 생산 계획 → 생지 발주</b><br>이카운트에 미리 넣은 출고 예정과 김 대리 실물로 앞으로 4주 동안 무엇을 얼마나 만들지 계산했어요. 생산 제안은 주말에 목표선까지 채우는 양이에요. 실제로 만들 양은 생산실에서 정해요.'+(old?'<br><b>오늘 실물 입력 전이에요 — '+esc(md(p.stockDate))+' 숫자 기준</b>':'')+'</div>';
+  // 오늘 · 다음 생산일
+  h+='<div class="box"><h3>오늘 · 다음 생산일</h3><div class="plbig">오늘 '+esc(p.todayTxt)+'</div>'+(p.nextTxt?'<div style="margin-top:6px;font-weight:700">다음 생산일 '+esc(p.nextTxt)+'</div>':'')+
+    ((p.forced||[]).length?'<div class="meta" style="margin-top:8px">「출고 맞춤」 = 확정 출고를 내려면 그날까지 더 만들어야 하는 양: '+p.forced.map(f=>esc(f.md)+' '+esc(f.nm)+' '+plN(f.q)+'박스').join(' · ')+'</div>':'')+'</div>';
+  // 출고 점검
+  h+='<div class="box"><h3>출고 점검 <span class="c">앞으로 14일 확정 출고</span></h3>'+((p.warn||[]).length?'<table class="tbl"><thead><tr><th>출고일</th><th>품목</th><th>거래처</th><th>출고</th><th>모자람</th></tr></thead><tbody>'+p.warn.map(w=>'<tr><td>'+esc(w.md)+'</td><td>'+esc(w.nm)+'</td><td style="text-align:left">'+esc(w.c)+'</td><td>'+plN(w.box)+'박스</td><td style="color:#dc2626;font-weight:800">'+plN(w.short)+'박스</td></tr>').join('')+'</tbody></table><div class="meta" style="margin-top:6px">생산 계획을 다 넣어도 이 출고 전에 모자라요. 출고일 조정이나 추가 생산을 함께 정해요.</div>':'<div style="color:#15803d;font-weight:800">계획대로 만들면 앞으로 14일 확정 출고를 모두 낼 수 있어요.</div>')+'</div>';
+  // 생지 200
+  h+='<div class="box"><h3>생지 200 발주 제안 <span class="c">'+esc(g.item||'')+'</span></h3>';
+  if(g.phys==null)h+='<div>김 대리 생지 실물 입력이 없어요.</div>';else{
+    h+='<div class="plst"><div><b>'+plB(g.phys)+'봉</b><span>지금 실물 ('+esc(g.physAt||'')+')</span></div><div class="'+(g.preStock<0?'red':g.preStock<g.min?'amb':'grn')+'"><b>'+plB(g.preStock)+'봉</b><span>'+esc(g.nextInMd)+' 입고 직전 예상</span></div>'+
+      (g.extra?'<div class="red"><b>'+plB(g.extra)+'봉</b><span>'+esc(g.extraDayMd||'화요일')+' 추가 입고 필요</span></div>':'')+'<div class="'+(g.lv==='red'?'red':'amb')+'"><b>'+plB(g.order)+'봉</b><span>'+esc(g.nextInMd)+' 입고 발주 제안</span></div></div>';
+    h+='<div class="meta">입고 전까지 나갈 생지: 확정 출고 '+plB(g.outA)+'봉 + 아직 전표 없는 판매 예상 '+plB(g.sdA)+'봉 + 생산에 쓸 생지 '+plB(g.useA)+'봉. 입고 뒤 1주: 생산 '+plB(g.useB)+'봉 + 판매 예상 '+plB(g.sdB)+'봉 + 최소 '+plB(g.min)+'봉.</div>';
+    if(g.extraNote)h+='<div class="note red" style="margin-top:8px">'+esc(g.extraNote)+'</div>';
+    h+='<div class="plmsg" id="plMsg">'+esc(g.msg||'')+'</div><button class="plbtn" data-plcopy="1">카톡 복사</button> <span class="meta" id="plCopied">복사한 뒤 카톡에 붙여 보내 주세요. 자동으로 보내지 않아요.</span>';
+    const ol=(g.outLines||[]);if(ol.length)h+='<details style="margin-top:10px"><summary style="font-weight:700;cursor:pointer;min-height:40px">나갈 생지 확정 출고 '+ol.length+'건 보기</summary><table class="tbl"><tbody>'+ol.map(l=>'<tr><td>'+esc(md(l.d))+'</td><td style="text-align:left">'+esc(l.c)+'</td><td>'+plB(l.q)+'봉</td></tr>').join('')+'</tbody></table></details>';}
+  h+='<div class="meta" style="margin-top:8px">'+esc(g.rule||'')+'</div></div>';
+  // 요일별
+  const dl=(p.daily||[]).filter(d=>d.w<=1);
+  h+='<div class="box"><h3>요일별 생산 제안 <span class="c">이번 주 남은 날 · 다음 주 (요일 패턴 기준)</span></h3><table class="tbl"><thead><tr><th>날짜</th><th style="text-align:left">요일 패턴</th><th style="text-align:left">만들 것</th><th>생지</th></tr></thead><tbody>'+
+    dl.map(d=>'<tr class="'+(d.d===p.today?'today':'')+'"><td style="white-space:nowrap;font-weight:700">'+esc(d.md)+'</td><td style="text-align:left">'+esc(d.label||'')+'</td><td style="text-align:left">'+(d.items.length?d.items.map(x=>esc(x.nm)+' <b>'+plN(x.q)+'</b>박스'+(x.tag?' <small>('+esc(x.tag)+')</small>':'')).join('<br>'):'<span style="color:var(--sub)">없음</span>')+'</td><td>'+(d.dough?plN(d.dough)+'봉':'')+'</td></tr>').join('')+'</tbody></table><div class="meta" style="margin-top:6px">월 = 예비일(큰 주문·채움·부족분) · 화 몽블랑30+빅몽블랑20 · 수 육쪽25 · 목 빅몽블랑60(37.5 예약분) · 금 몽블랑30. 이번 주에 남은 날이 적으면 채움은 다음 주 월요일로 넘어가요.</div></div>';
+  // 4주 품목별
+  h+='<div class="box"><h3>4주 품목별 계획 <span class="c">박스 · 상태는 만들지 않을 때 남는 양 기준</span></h3><div class="tblw"><table class="tbl wk"><thead><tr><th>품목</th>'+p.weeks.map((w,i)=>'<th>'+esc(w.label)+(i===0?' (이번 주)':'')+'</th>').join('')+'</tr></thead><tbody>'+
+    p.items.map(it=>'<tr><td style="font-weight:800;white-space:nowrap">'+esc(it.nm)+'<small style="display:block;color:var(--sub);font-weight:600;font-size:14px">최소 '+plN(it.mn)+' · 목표 '+plN(it.tg)+' · 주 '+plN(it.weekly)+'</small></td>'+it.w.map(w=>'<td><div class="l1"><span class="pd '+w.lv+'" title="'+PL_LV[w.lv]+'"></span>생산 <b>'+plN(w.prod)+'</b></div><small>시작 '+plN(w.start)+' · 판매 '+plN(w.sale)+(w.big?' · 큰 주문 '+plN(w.big):'')+'</small><small>주말 '+plN(w.end)+(w.later?' · '+plN(w.later)+' 다음 주로':'')+'</small>'+(w.bigNote?'<small style="color:#1d4ed8">'+esc(w.bigNote)+'</small>':'')+'</td>').join('')+'</tr>').join('')+
+    '<tr><td style="font-weight:800">합계</td>'+p.weeks.map((w,i)=>'<td><b>'+plN(p.items.reduce((t,x)=>t+(x.w[i]?x.w[i].prod:0),0))+'</b></td>').join('')+'</tr></tbody></table></div>'+
+    '<div class="meta" style="margin-top:6px"><span class="pd red"></span>최소선 아래 · <span class="pd amber"></span>목표선 아래 · <span class="pd green"></span>충분 (만들지 않을 때 기준)</div></div>';
+  // 큰 주문
+  const bg=p.big||[];if(bg.length)h+='<div class="box"><h3>큰 주문 <span class="c">출고 3일 전이 속한 주에 미리 만들어요</span></h3><table class="tbl"><thead><tr><th>출고일</th><th>품목</th><th style="text-align:left">거래처</th><th>수량</th><th>구분</th><th>준비 주</th></tr></thead><tbody>'+
+    bg.map(b=>'<tr><td>'+esc(b.md)+'</td><td>'+esc(b.nm)+'</td><td style="text-align:left">'+esc(b.c)+'</td><td>'+plN(b.box)+'박스</td><td>'+(b.st==='확정'?'<span class="tag green">전표 있음</span>':'<span class="tag amber">예상</span>')+'</td><td>'+esc(b.prepLabel)+'</td></tr>').join('')+'</tbody></table><div class="meta" style="margin-top:6px">예상 큰 주문은 같은 거래처 전표가 출고일 앞뒤 4일 안에 들어오면 자동으로 빠져요.</div></div>';
+  h+='<div class="meta">'+esc(p.rule||'')+' · 계산 '+esc(p.built||'')+'</div></div>';
+  return {s:'이번 주 '+plN(p.sum.w0)+'박스 · 다음 주 '+plN(p.sum.w1)+'박스 · 생지 '+(g.order==null?'–':plN(g.order)+'봉'),h};}
+PANELS.plan=['생산 계획 · 생지 200 발주 제안',pPlan,'wonryo'];
+kpiLayout=(orig=>function(){const h=orig();try{const r=plRow();if(!r)return h;const i=h.indexOf('<div class="grp">생산 · 품질 · 출고');return i>=0?h.slice(0,i)+r+h.slice(i):r+h;}catch(_){return h;}})(kpiLayout);
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-plcopy]');if(!b)return;e.preventDefault();const p=plP();const t=p&&p.dough&&p.dough.msg;if(!t)return;let ok=false;
+  try{ok=await Promise.race([navigator.clipboard.writeText(t).then(()=>true),new Promise(r=>setTimeout(()=>r(false),1500))]);}catch(_){ok=false;}
+  if(!ok){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();ok=document.execCommand('copy');a.remove();}catch(_){ok=false;}}
+  b.textContent=ok?'복사했어요':'복사 안 됨 — 글자를 길게 눌러 복사';const m=document.getElementById('plCopied');if(m&&ok)m.textContent='카톡 대화창에 붙여 넣고 확인한 뒤 보내 주세요.';});
+// ===== 2026-10-23 생산 계획 덧붙임 끝 =====
 
 })();
 </script>
