@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-23 14:23">
+<meta name="dash-build" content="2026-10-26 09:51">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1181,6 +1181,53 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-pod]
   const ok=await podCopy(t);podMsg(ok?'ok':'warn',ok?'<b>보고서 글과 링크를 복사했어요.</b><br>① 카카오톡 PC에서 「'+esc(POD_ROOM)+'」 열기 ② <b>Ctrl + V</b> → 전송<br><small>받은 사람이 링크를 누르면 이 보고서가 바로 열려요 (매출·메일 없는 직원용 화면).</small>':'복사가 막혔어요. 「🔗 링크만 복사」를 눌러 보세요.');});
 (function podHash(n){if(!POD0||n>90)return;if(D&&F_()&&F_().rawbuy){try{history.replaceState(null,'',location.pathname+location.search);}catch(_){}openPanel('fraw');return;}setTimeout(()=>podHash(n+1),700);})(0);
 // ===== 2026-10-22 원료 발주 보고서 덧붙임 끝 =====
+
+// ===== 2026-10-26 원료 안전재고 기준 (Aside 사무실 PC, 사용자 「원료 남은 기간에 안전재고 기준을 넣고 심플하게」) =====
+// 안전재고 = 육쪽마늘빵 100박스분(RPK 마지막 값, 10/21 결정) · 미로와데코젤 3통(9kg) · 펄솔트 1봉(500g). 이 아래면 빨강.
+// 정기 주문: 철은 3주마다 월요일, 한국내츄럴치즈 2주마다 월요일(기준일 SS_ANCHOR), 사우스코어는 재고 2박스(20kg) 아래일 때 5박스.
+// 다음 주문량 = 채울 목표(안전재고 + (주문 간격+1주) × 최근 8주 주 사용량) − 지금 재고 → 포장·주문단위로 올림.
+// 예전 화면(발주 보고서·육쪽 만들 양·주 단위 표)은 지우지 않고 「예전 화면 더 보기」 안에 그대로 둠. 카톡 보고서 글(podText)도 이 기준으로 바꿈.
+const SS_SUP=[{k:'철은인터내셔날',nm:'철은인터내셔날',cyc:3,lb:'3주마다 월요일'},{k:'(주)한국내츄럴치즈',nm:'한국내츄럴치즈',cyc:2,lb:'2주마다 월요일'},{k:'주식회사 사우스코어',nm:'사우스코어',cyc:0,lb:'재고 2박스 아래일 때 5박스',fix:5,trig:20000}];
+const SS_ANCHOR='2026-10-26',SS_PRICE={'CH.B23_0':3300},SS_NM={'CH.1225_0':'미로와데코젤','CH.B23_0':'펄솔트'};
+function ssNext(c){const td=podToday(),p=c*7,d=podDays(SS_ANCHOR,td),k=d<=0?0:Math.ceil(d/p);const t=new Date(SS_ANCHOR+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+k*p);return t.toISOString().slice(0,10);}
+function ssCalc(f){if(!f||!f.raw||!f.raw.rows)return null;const pr={};((f.rawbuy&&f.rawbuy.rows)||[]).forEach(r=>{if(r.price)pr[r.code]=+r.price;});const td=podToday();
+  const sups=SS_SUP.map(S=>{const items=f.raw.rows.filter(x=>RPK[x.code]&&RPK[x.code][4]===S.k&&x.stock!=null).map(x=>{const K=RPK[x.code],pg=K[1],ou=K[3],ss=K[5],st=+x.stock,wk=+x.weekly||0;
+      let q=0,tg=null;if(S.cyc){tg=ss+(S.cyc+1)*wk;const n=(tg-st)/pg;if(n>0.03)q=Math.ceil(Math.ceil(n-0.03)/ou)*ou;}else if(st<S.trig)q=S.fix;
+      return {code:x.code,nm:SS_NM[x.code]||x.nm,unit:K[2],pg,st,ss,wk,tg,q,low:st<ss,half:st<ss/2,price:pr[x.code]||SS_PRICE[x.code]||0,box:rpPer(x.code)?Math.floor(st/rpPer(x.code)):null};});
+    const next=S.cyc?ssNext(S.cyc):'',dn=next?podDays(td,next):null,low=items.filter(i=>i.low).length,half=items.some(i=>i.half);
+    const ord=items.filter(i=>i.q>0),amt=ord.reduce((s,i)=>s+i.q*i.price,0);
+    const st=half?'now':S.cyc?(dn===0?'today':(low&&dn>7?'early':'wait')):(ord.length?'now':'none');
+    return Object.assign({},S,{items,next,dn,low,st,now:st!=='wait'&&st!=='none',ord,amt});}).filter(s=>s.items.length);
+  const all=sups.flatMap(s=>s.items),low=all.filter(i=>i.low),bx=all.filter(i=>i.box!=null),maxBox=bx.length?Math.min(...bx.map(i=>i.box)):null;
+  return {sups,all,low,maxBox,first:bx.filter(i=>i.box===maxBox).map(i=>i.nm)};}
+const ssFmt=v=>{const n=Math.round(v*10)/10;return (n>=10?Math.round(n):n).toLocaleString();};
+const ssShort=n=>n.replace('인터내셔날','');
+function ssWhen(s){if(!s.cyc)return s.ord.length?'재고 2박스 아래 → 이번에 주문':'주문 없음 (재고 넉넉)';return s.st==='now'?'바로 주문 (안전재고 절반 아래)':s.st==='today'?'오늘 주문하는 날':s.st==='early'?'앞당겨 주문 (다음 주문 '+rbMd(s.next)+')':'다음 주문 '+rbMd(s.next)+' ('+s.dn+'일 뒤)';}
+function ssPanelHtml(f){const C=ssCalc(f);if(!C)return '';
+  let h='<div class="box ss"><div class="stats">'+stat('지금 재고로 육쪽마늘빵',(C.maxBox==null?'–':fmtN(C.maxBox))+'박스')+stat('안전재고 아래',C.low.length+'종')+stat('안전재고 기준','100박스분')+'</div>';
+  h+='<div class="ss-rule">안전재고 = <b>육쪽마늘빵 100박스분</b>(약 4.5주 쓸 양) · 미로와데코젤 <b>3통</b> · 펄솔트 <b>1봉</b><br><span class="tag red">안전재고 아래</span> 다음 주문에 꼭 넣기 · <span class="tag green">여유</span> 그대로. 주문은 정해진 날에만, 비슷한 양으로 해요.</div>';
+  h+='<div class="pod-act"><button class="pod-b kk" data-pod="kakao">💬 카톡 단체방에 보내기</button><a class="pod-b" href="https://lee1812-oss.github.io/wonryo/#po-alert" target="_blank" rel="noopener">📄 발주서 만들기 (통합재고관리)</a></div><div id="podMsg"></div></div>';
+  C.sups.forEach(s=>{h+='<div class="box"><h3>'+esc(s.nm)+' <span class="c">'+esc(s.lb)+'</span></h3><div class="ss-when"><span class="tag '+(s.now?'red':'blue')+'">'+esc(ssWhen(s))+'</span>'+(s.amt?' <span class="ss-amt">예상 약 <b>'+Math.round(s.amt/1e4)+'만원</b> <small>(부가세 별도)</small></span>':'')+'</div>'+
+    tbl(['원료','지금 재고','안전재고','상태','다음 주문량'],s.items.map(i=>'<tr><td><b>'+esc(i.nm)+'</b></td><td class="r">'+ssFmt(i.st/i.pg)+esc(i.unit)+'</td><td class="r">'+ssFmt(i.ss/i.pg)+esc(i.unit)+'</td><td>'+(i.low?'<span class="tag red">안전재고 아래</span>':'<span class="tag green">여유</span>')+'</td><td class="r">'+(i.q?'<b>'+i.q+esc(i.unit)+'</b>':'–')+'</td></tr>'))+'</div>';});
+  h+='<div class="meta">다음 주문량 = 안전재고 + 다음 물건이 들어올 때까지 쓸 양(최근 8주 평균) − 지금 재고. 주문하는 날 한 번 더 확인해요.</div>';return h;}
+function ssText(f){const C=ssCalc(f);let t='[빵을그리다 원료 발주 보고서] '+rbMd(podToday())+'\n안전재고: 육쪽마늘빵 100박스분 · 미로와데코젤 3통 · 펄솔트 1봉\n지금 재고로 육쪽마늘빵 '+fmtN(C.maxBox)+'박스 · 안전재고 아래 '+C.low.length+'종'+(C.low.length?' ('+C.low.map(i=>i.nm).join(', ')+')':'')+'\n';
+  C.sups.forEach(s=>{t+='\n■ '+s.nm+' ('+s.lb+') — '+ssWhen(s)+'\n  주문: '+(s.ord.length?s.ord.map(i=>i.nm+' '+i.q+i.unit).join(', '):'없음')+'\n';if(s.amt)t+='  예상 금액: 약 '+Math.round(s.amt/1e4)+'만원 (부가세 별도)\n';});
+  const u=podLink();if(u)t+='\n자세히 보기:\n'+u+'\n';t+='\n발주 흐름: 이정현 과장 주문량 확인·신청 → 서재우 차장 확인 → 황정기 전무 승인 → 서재우 차장 발주';return t;}
+const podText0=podText;podText=function(rb){try{const f=F_();if(f&&f.raw)return ssText(f);}catch(_){}return podText0(rb);};
+PANELS.fraw=['원료 남은 기간 · 안전재고 기준',(o=>function(){const r=o.apply(this,arguments);try{const x=ssPanelHtml(F_());if(x){r.h=x+'<details class="ss-more"><summary>예전 화면 더 보기 (발주 보고서 · 육쪽 만들 양 미리 보기 · 주 단위 남은 기간)</summary>'+r.h+'</details>';r.s='안전재고 = 육쪽마늘빵 100박스분 · 이카운트 아침 재고';}}catch(_){}return r;})(PANELS.fraw[1]),PANELS.fraw[2]];
+facKpis=(o=>function(){const out=o.apply(this,arguments);try{const C=ssCalc(F_()),c=out.find(x=>x.k==='fraw');if(c&&C){const L=C.low.length,now=C.sups.filter(s=>s.now);c.src='안전재고 기준';c.v=L;c.u='종 안전재고 아래';c.cls=now.length?'alert':L?'warn':'ok';
+  c.trio=[['안전재고 아래',L,'red'],['여유',C.all.length-L,'green'],['육쪽 가능(박스)',C.maxBox==null?'–':fmtN(C.maxBox),'blue']];
+  c.badge=now.length?['red',now.map(s=>ssShort(s.nm)).join('·')+' 주문']:L?['amber','다음 정기 주문에']:['green','안전재고 이상'];
+  c.ft=C.sups.filter(s=>s.cyc).map(s=>ssShort(s.nm)+' '+(s.dn===0?'오늘':rbMd(s.next))+' 주문').join(' · ');}}catch(_){}return out;})(facKpis);
+rbWide=(o=>function(){let C=null;try{C=ssCalc(F_());}catch(_){}if(!C)return o.apply(this,arguments);
+  const L=C.sups.map(s=>[s.now?'red':s.low?'amber':'green',ssShort(s.nm),ssWhen(s)+(s.ord.length?' · '+s.ord.map(i=>i.nm+' '+i.q+i.unit).join(', '):'')]);
+  L.push([C.low.length?'red':'blue','재고','지금 재고로 육쪽마늘빵 최대 '+fmtN(C.maxBox)+'박스 · 안전재고 아래 '+C.low.length+'종'+(C.low.length?' ('+C.low.map(i=>i.nm).join(', ')+')':'')]);
+  const red=C.sups.some(s=>s.now);
+  return '<div class="kpi todow '+(red?'alert':C.low.length?'warn':'')+'" data-open="fraw" role="button" tabindex="0"><div class="top">'+logoHtml('ecount')+'<span class="lb">원료 발주 일정 · 안전재고 100박스분 기준</span><span class="src">이카운트 아침 재고</span></div>'+
+   '<div class="tw">'+L.map(x=>'<div class="trow"><span class="mk '+x[0]+'"></span><span class="tag '+x[0]+'">'+esc(x[1])+'</span><div class="tt">'+esc(x[2])+'</div></div>').join('')+'</div>'+
+   '<div class="ft"><span class="badge b-'+(red?'red':C.low.length?'amber':'green')+'">안전재고 아래 '+C.low.length+' · 여유 '+(C.all.length-C.low.length)+'</span><span class="go">자세히'+chev+'</span></div></div>';})(rbWide);
+document.head.insertAdjacentHTML('beforeend','<style>.ss-rule{margin-top:10px;line-height:1.6}.ss-when{margin:2px 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ss-amt{font-size:.95rem}details.ss-more{margin-top:14px}details.ss-more>summary{cursor:pointer;font-weight:700;padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--sub,#555)}</style>');
+// ===== 2026-10-26 원료 안전재고 기준 끝 =====
 
 applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=c0.d;lastLoad=c0.at;render();}}catch(_){}
