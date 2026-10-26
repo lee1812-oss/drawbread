@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-26 10:08">
+<meta name="dash-build" content="2026-10-26 10:16">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1212,10 +1212,17 @@ function ssCalc(f){if(!f||!f.raw||!f.raw.rows)return null;const pr={};((f.rawbuy
   return {sups,all,low,maxBox,first:bx.filter(i=>i.box===maxBox).map(i=>i.nm),plan,amtNow:first,amtLater:later,amtMonth:later/(SS_H/30.4)};}
 const ssMan=v=>Math.round(v/1e4).toLocaleString()+'만원';
 function ssDate(d){return rbMd(podAdd(d));}
+const SS_COL={'철은인터내셔날':'#c8925a','한국내츄럴치즈':'#5b8def','사우스코어':'#3fb27f'};
 function ssPlanHtml(C){if(!C.plan.length)return '';
-  let h='<div class="box"><h3>발주 금액 <span class="c">이번 주문 + 앞으로 12주 정기 주문 · 최근 매입가 · 부가세 별도</span></h3><div class="stats">'+stat('이번 주 주문',ssMan(C.amtNow))+stat('다음부터 한 달 평균','약 '+ssMan(C.amtMonth))+stat('앞으로 12주 합계',ssMan(C.amtLater))+'</div>';
-  h+='<div class="ss-plan">'+tbl(['주문하는 날','매입처','예상 금액','주요 품목'],C.plan.map(o=>'<tr'+(o.d<7?' class="ss-now"':'')+'><td>'+(o.d<7?'<span class="tag red">이번</span> ':'')+esc(ssDate(o.d))+'</td><td>'+esc(ssShort(o.sup))+'</td><td class="r"><b>'+ssMan(o.amt)+'</b></td><td><small>'+esc(o.L.slice(0,4).map(l=>l[0]+' '+l[1]+l[2]).join(', ')+(o.L.length>4?' 외 '+(o.L.length-4):''))+'</small></td></tr>'))+'</div>';
-  h+='<div class="meta" style="margin-top:6px">이번 주는 안전재고를 처음 채우는 주문이라 금액이 커요. 다음부터는 쓴 만큼만 채워서 금액이 비슷해져요. 사용량(최근 8주 평균)과 단가가 바뀌면 금액도 바뀌어요.</div></div>';return h;}
+  const by={};C.plan.forEach(o=>{(by[o.d]=by[o.d]||[]).push(o);});const cols=Object.keys(by).map(Number).sort((a,b)=>a-b).map(d=>({d,os:by[d],tot:by[d].reduce((s,o)=>s+o.amt,0)}));
+  const mx=Math.max(...cols.map(c=>c.tot))||1;
+  const reg=C.sups.map(s=>{const p=(s.plan||[]).filter(o=>o.d>=7);return {nm:s.nm,lb:s.cyc?s.cyc+'주마다':'가끔 (재고 2박스 아래)',avg:p.length?p.reduce((a,o)=>a+o.amt,0)/p.length:0};}).filter(r=>r.avg);
+  let h='<div class="box ssp"><h3>발주 금액 <span class="c">최근 매입가 · 부가세 별도</span></h3>';
+  h+='<div class="ssp-top"><div class="ssp-big now"><span>이번 주 주문</span><b>'+ssMan(C.amtNow)+'</b><small>안전재고 처음 채우기</small></div><div class="ssp-big"><span>다음부터 한 달 평균</span><b>약 '+ssMan(C.amtMonth)+'</b><small>쓴 만큼만 채움</small></div></div>';
+  h+='<div class="ssp-chart">'+cols.map(c=>'<div class="ssp-col'+(c.d<7?' now':'')+'"><div class="ssp-v">'+Math.round(c.tot/1e4)+'<small>만</small></div><div class="ssp-bar" style="height:'+Math.max(6,Math.round(c.tot/mx*130))+'px">'+c.os.map(o=>'<i style="flex:'+o.amt+';background:'+(SS_COL[o.sup]||'#999')+'" title="'+esc(ssShort(o.sup))+' '+ssMan(o.amt)+'"></i>').join('')+'</div><div class="ssp-d">'+(c.d<7?'<b>이번</b>':esc(ssDate(c.d).replace(/\(.\)/,'')))+'</div></div>').join('')+'</div>';
+  h+='<div class="ssp-leg">'+reg.map(r=>'<div><i style="background:'+(SS_COL[r.nm]||'#999')+'"></i><b>'+esc(ssShort(r.nm))+'</b> '+esc(r.lb)+' · 평소 1회 약 <b>'+ssMan(r.avg)+'</b></div>').join('')+'</div>';
+  h+='<details class="ssp-more"><summary>날짜별 주문 품목 보기</summary><div class="ss-plan">'+tbl(['주문하는 날','매입처','예상 금액','주요 품목'],C.plan.map(o=>'<tr'+(o.d<7?' class="ss-now"':'')+'><td>'+esc(ssDate(o.d))+'</td><td>'+esc(ssShort(o.sup))+'</td><td class="r"><b>'+ssMan(o.amt)+'</b></td><td><small>'+esc(o.L.map(l=>l[0]+' '+l[1]+l[2]).join(', '))+'</small></td></tr>'))+'</div></details></div>';
+  return h;}
 const ssFmt=v=>{const n=Math.round(v*10)/10;return (n>=10?Math.round(n):n).toLocaleString();};
 const ssShort=n=>n.replace('인터내셔날','');
 function ssWhen(s){if(!s.cyc)return s.ord.length?'재고 2박스 아래 → 이번에 주문':'주문 없음 (재고 넉넉)';return s.st==='now'?'바로 주문 (안전재고 절반 아래)':s.st==='today'?'오늘 주문하는 날':s.st==='early'?'앞당겨 주문 (다음 주문 '+rbMd(s.next)+')':'다음 주문 '+rbMd(s.next)+' ('+s.dn+'일 뒤)';}
@@ -1245,7 +1252,7 @@ rbWide=(o=>function(){let C=null;try{C=ssCalc(F_());}catch(_){}if(!C)return o.ap
   return '<div class="kpi todow '+(red?'alert':C.low.length?'warn':'')+'" data-open="fraw" role="button" tabindex="0"><div class="top">'+logoHtml('ecount')+'<span class="lb">원료 발주 일정 · 안전재고 100박스분 기준</span><span class="src">이카운트 아침 재고</span></div>'+
    '<div class="tw">'+L.map(x=>'<div class="trow"><span class="mk '+x[0]+'"></span><span class="tag '+x[0]+'">'+esc(x[1])+'</span><div class="tt">'+esc(x[2])+'</div></div>').join('')+'</div>'+
    '<div class="ft"><span class="badge b-'+(red?'red':C.low.length?'amber':'green')+'">안전재고 아래 '+C.low.length+' · 여유 '+(C.all.length-C.low.length)+'</span><span class="go">자세히'+chev+'</span></div></div>';})(rbWide);
-document.head.insertAdjacentHTML('beforeend','<style>.ss-rule{margin-top:10px;line-height:1.6}.ss-when{margin:2px 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ss-amt{font-size:.95rem}tr.ss-now td{background:var(--red-bg)}.ss-plan td:nth-child(-n+3){white-space:nowrap}details.ss-more{margin-top:14px}details.ss-more>summary{cursor:pointer;font-weight:700;padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--sub,#555)}</style>');
+document.head.insertAdjacentHTML('beforeend','<style>.ss-rule{margin-top:10px;line-height:1.6}.ss-when{margin:2px 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ss-amt{font-size:.95rem}tr.ss-now td{background:var(--red-bg)}.ss-plan td:nth-child(-n+3){white-space:nowrap}.ssp-top{display:flex;gap:10px;margin:4px 0 14px}.ssp-big{flex:1;text-align:left;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column}.ssp-big span{font-size:.95rem;opacity:.8}.ssp-big b{font-size:2rem;line-height:1.2}.ssp-big small{opacity:.7}.ssp-big.now{border-color:#e0a040;background:rgba(224,160,64,.12)}.ssp-big.now b{color:#f0b050}.ssp-chart{display:flex;align-items:flex-end;gap:6px;height:190px;padding:0 2px;border-bottom:1px solid var(--line)}.ssp-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.ssp-v{font-weight:800;font-size:1.05rem;margin-bottom:3px;white-space:nowrap}.ssp-v small{font-size:.75rem;font-weight:600;opacity:.8}.ssp-bar{width:78%;max-width:46px;display:flex;flex-direction:column-reverse;border-radius:6px 6px 0 0;overflow:hidden}.ssp-bar i{display:block;min-height:3px}.ssp-col.now .ssp-v{color:#f0b050;font-size:1.2rem}.ssp-col.now .ssp-bar{outline:2px solid #f0b050;outline-offset:1px}.ssp-d{font-size:.85rem;margin-top:5px;white-space:nowrap;height:0;overflow:visible;transform:translateY(2px)}.ssp-col .ssp-d{position:relative;top:0}.ssp-chart{margin-bottom:26px}.ssp-col.now .ssp-d b{color:#f0b050}.ssp-leg{display:flex;flex-direction:column;gap:5px;margin-top:12px;font-size:.98rem}.ssp-leg i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-2px}details.ssp-more{margin-top:10px}details.ssp-more>summary{cursor:pointer;font-weight:700;opacity:.85}details.ss-more{margin-top:14px}details.ss-more>summary{cursor:pointer;font-weight:700;padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--sub,#555)}</style>');
 // ===== 2026-10-26 원료 안전재고 기준 끝 =====
 
 applyNight();
