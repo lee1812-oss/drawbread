@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-02 22:50">
+<meta name="dash-build" content="2026-11-03 08:07">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -474,9 +474,9 @@ function pickKey(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const
 const k0=pickKey(location.hash)||pickKey(location.search);
 // 2026-10-17: 직원용 공장 대시보드 (?f=열쇠) — 메일·매출 없이 공장 자료만 (factory.enc.json)
 const POD0=/[?&#]po(=1)?(&|$)/.test(location.search+location.hash); // 2026-10-22 원료 발주 보고서 링크(&po=1) — 주소 정리 전에 읽음
-const LS_FKEY='dash_fkey_v1';function pickF(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])f=([A-Za-z0-9_-]{16,})/);return m?m[1]:'';}
+const LS_FKEY='dash_fkey_v1';const DEF_F='YQCKYNRdM9aUwBoRco-wVsZbrPqpNrcE_spfdCqlD0w'; /* 2026-11-03: 열쇠 없는 새 기기는 입력 화면 없이 직원용 공장 화면으로 바로 열림 */function pickF(s){s=String(s||'');try{s=decodeURIComponent(s);}catch(_){}const m=s.match(/(?:^|[#?&\s])f=([A-Za-z0-9_-]{16,})/);return m?m[1]:'';}
 const f0=pickF(location.search)||pickF(location.hash);if(f0){try{localStorage.setItem(LS_FKEY,f0);}catch(_){}}
-let STAFF=!!f0;try{if(!STAFF&&!localStorage.getItem(LS_KEY)&&localStorage.getItem(LS_FKEY))STAFF=true;}catch(_){}
+let STAFF=!!f0;try{if(!STAFF&&!k0&&!localStorage.getItem(LS_KEY)&&!localStorage.getItem(LS_KEY_BAK))STAFF=true;}catch(_){if(!k0)STAFF=true;}
 if(STAFF)document.body.classList.add('staff');
 if(k0){try{localStorage.setItem(LS_KEY,k0);localStorage.setItem(LS_KEY_BAK,k0);}catch(_){}window.__MEMKEY=k0;}
 // 주소에 열쇠를 항상 남겨 둔다 → 이 주소를 즐겨찾기/홈 화면에 추가하면 어느 브라우저에서든 바로 열림
@@ -520,7 +520,7 @@ try{const app=matchMedia('(display-mode: standalone),(display-mode: fullscreen)'
 async function load(){
   verCheck(false);
   if(window.__DASH_TEST){D=window.__DASH_TEST;lastLoad=Date.now();render();return;}
-  if(STAFF){let fk=null;try{fk=localStorage.getItem(LS_FKEY);}catch(_){}fk=fk||f0;
+  if(STAFF){let fk=null;try{fk=localStorage.getItem(LS_FKEY);}catch(_){}fk=fk||f0||DEF_F;
     try{const r=await fetch('factory.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 오류 ('+r.status+')');D=await decrypt(await r.json(),fk);lastLoad=Date.now();loadErr='';try{localStorage.setItem(LS_DATA+'_f',JSON.stringify({at:lastLoad,d:D}));}catch(_){}}
     catch(err){loadErr=err&&err.name==='OperationError'?'링크의 열쇠가 맞지 않아요. 새 직원용 링크를 받아 주세요':String(err&&err.message||err);if(!D){try{const c=JSON.parse(localStorage.getItem(LS_DATA+'_f')||'null');if(c){D=c.d;lastLoad=c.at;}}catch(_){}}if(!D){$('#main').innerHTML='<div class="lock"><h1>공장 대시보드</h1><p>'+esc(loadErr)+'</p></div>';return;}}
     render();return;}
@@ -1338,7 +1338,7 @@ function podWhy(rb,s){const out=[],red=s.plan.filter(p=>p.lv==='red'),amb=s.plan
   if(ol.length){const l=ol[ol.length-1].d;out.push(['gray','지난 발주',rbMd(l)+' ('+podDays(l,podToday())+'일 전) · 평소 약 '+(o.avgGap||21)+'일 간격']);}
   else if(s.lastIn)out.push(['gray','지난 입고',rbMd(s.lastIn)+' ('+podDays(s.lastIn,podToday())+'일 전)']);
   return out;}
-function podLink(){let fk='';try{fk=STAFF?(localStorage.getItem(LS_FKEY)||''):((D&&D.staffKey)||'');}catch(_){}return fk?location.origin+location.pathname+'?f='+fk+'&po=1':'';}
+function podLink(){let fk='';try{fk=STAFF?(localStorage.getItem(LS_FKEY)||DEF_F):((D&&D.staffKey)||'');}catch(_){}return fk?location.origin+location.pathname+'?f='+fk+'&po=1':'';}
 function podText(rb){const S=podSups(rb);let t='[빵을그리다 원료 발주 보고서] '+rbMd(podToday())+'\n이카운트 '+rbMd(rb.snap)+' 아침 재고 · 육쪽마늘빵 100박스분 유지 기준\n';
   if(!S.length)t+='\n지금 발주할 원료가 없어요.\n';
   S.forEach(s=>{t+='\n■ '+s.name+' — '+s.lab+(s.deliv?' → '+rbMd(s.deliv)+' 입고':'')+'\n';const w=podWhy(rb,s).filter(x=>x[0]==='red'||x[0]==='amber');if(w.length)t+='  이유: '+w.map(x=>x[2]).join(' / ')+'\n';t+='  발주: '+s.ord.map(p=>p.nm+' '+p.rec+p.unit).join(', ')+'\n';if(s.amt)t+='  예상 매입가: 약 '+podWon(s.amt+s.vat)+' (부가세 포함, 최근 매입 단가 기준)\n';});
