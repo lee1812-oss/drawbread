@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-10-26 10:27">
+<meta name="dash-build" content="2026-11-02 21:05">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -382,7 +382,7 @@ body.night .lg{background:#fff;border-color:transparent}
 <script>
 (function(){
 'use strict';
-const LS_KEY='dash_key_v1',LS_DATA='dash_cache_v1',LS_UI='dash_ui_v2';
+const LS_KEY='dash_key_v1',LS_KEY_BAK='dash_key_bak',LS_DATA='dash_cache_v1',LS_UI='dash_ui_v2';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rich=s=>esc(s).replace(/&lt;(\/?)b&gt;/g,'<$1b>');
@@ -399,10 +399,10 @@ const LS_FKEY='dash_fkey_v1';function pickF(s){s=String(s||'');try{s=decodeURICo
 const f0=pickF(location.search)||pickF(location.hash);if(f0){try{localStorage.setItem(LS_FKEY,f0);}catch(_){}}
 let STAFF=!!f0;try{if(!STAFF&&!localStorage.getItem(LS_KEY)&&localStorage.getItem(LS_FKEY))STAFF=true;}catch(_){}
 if(STAFF)document.body.classList.add('staff');
-if(k0){try{localStorage.setItem(LS_KEY,k0);}catch(_){}window.__MEMKEY=k0;}
+if(k0){try{localStorage.setItem(LS_KEY,k0);localStorage.setItem(LS_KEY_BAK,k0);}catch(_){}window.__MEMKEY=k0;}
 // 주소에 열쇠를 항상 남겨 둔다 → 이 주소를 즐겨찾기/홈 화면에 추가하면 어느 브라우저에서든 바로 열림
 function keepKeyInUrl(k){try{if(k&&pickKey(location.search)!==k)history.replaceState(null,'',location.pathname+'?k='+k);}catch(_){}}
-try{if(STAFF){const fk=f0||localStorage.getItem(LS_FKEY);if(fk&&pickF(location.search)!==fk)history.replaceState(null,'',location.pathname+'?f='+fk);}else keepKeyInUrl(k0||localStorage.getItem(LS_KEY));}catch(_){}
+try{if(STAFF){const fk=f0||localStorage.getItem(LS_FKEY);if(fk&&pickF(location.search)!==fk)history.replaceState(null,'',location.pathname+'?f='+fk);}else keepKeyInUrl(k0||localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK));}catch(_){}
 
 function kst(d){const x=d?new Date(d):new Date();return new Date(x.getTime()+(x.getTimezoneOffset()+540)*60000);}
 function md(d){const k=kst(d);return (k.getMonth()+1)+'/'+k.getDate()+'('+DOW[k.getDay()]+')';}
@@ -445,14 +445,14 @@ async function load(){
     try{const r=await fetch('factory.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 오류 ('+r.status+')');D=await decrypt(await r.json(),fk);lastLoad=Date.now();loadErr='';try{localStorage.setItem(LS_DATA+'_f',JSON.stringify({at:lastLoad,d:D}));}catch(_){}}
     catch(err){loadErr=err&&err.name==='OperationError'?'링크의 열쇠가 맞지 않아요. 새 직원용 링크를 받아 주세요':String(err&&err.message||err);if(!D){try{const c=JSON.parse(localStorage.getItem(LS_DATA+'_f')||'null');if(c){D=c.d;lastLoad=c.at;}}catch(_){}}if(!D){$('#main').innerHTML='<div class="lock"><h1>공장 대시보드</h1><p>'+esc(loadErr)+'</p></div>';return;}}
     render();return;}
-  let k=null;try{k=localStorage.getItem(LS_KEY);}catch(_){}k=k||window.__MEMKEY;
+  let k=null;try{k=localStorage.getItem(LS_KEY);if(!k){k=localStorage.getItem(LS_KEY_BAK);if(k){localStorage.setItem(LS_KEY,k);keepKeyInUrl(k);}}}catch(_){}k=k||window.__MEMKEY;
   if(!k){renderLock();return;}
   if(!(window.crypto&&crypto.subtle)){renderLock('이 브라우저에서는 열 수 없어요. 크롬(Chrome)에서 열어 주세요.');return;}
   try{const r=await fetch('dash.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 오류 ('+r.status+')');
     D=await decrypt(await r.json(),k);lastLoad=Date.now();loadErr='';try{localStorage.setItem(LS_DATA,JSON.stringify({at:lastLoad,d:D}));}catch(_){}}
   catch(err){
-    if(err&&err.name==='OperationError'){try{localStorage.removeItem(LS_KEY);}catch(_){}window.__MEMKEY=null;renderLock('열쇠가 맞지 않아요. 링크 전체(k= 뒤까지)를 다시 붙여넣어 주세요.');return;}
-    loadErr=navigator.onLine===false?'인터넷 연결이 끊겨 있어요':String(err&&err.message||err);
+    if(err&&err.name==='OperationError'){/* 2026-11-02 조조: 열쇠를 지우지 않음. 자료가 잠깐 어긋나도 링크를 다시 묻지 않고 지난 자료를 보여 줌 */let cc=null;try{cc=JSON.parse(localStorage.getItem(LS_DATA)||'null');}catch(_){}if(!D&&!cc){renderLock('열쇠가 맞지 않아요. 새로 받은 링크 전체(k= 뒤까지)를 붙여넣어 주세요.');return;}}
+    loadErr=err&&err.name==='OperationError'?'자료를 여는 열쇠가 맞지 않아 지난 자료를 보여 줘요':navigator.onLine===false?'인터넷 연결이 끊겨 있어요':String(err&&err.message||err);
     if(!D){try{const c=JSON.parse(localStorage.getItem(LS_DATA)||'null');if(c){D=c.d;lastLoad=c.at;}}catch(_){}}
     if(!D){renderLock('자료를 불러오지 못했어요: '+loadErr);return;}}
   render();
@@ -461,7 +461,7 @@ function renderLock(msg){
   $('#main').innerHTML='<div class="lock"><h1>업무 대시보드</h1><p>이 기기에서 처음 열었어요. 카카오톡 「나와의 채팅」으로 받은 대시보드 링크를 한 번 눌러 주세요. 다음부터는 바로 열려요.</p>'+
   '<input id="kin" placeholder="또는 받은 링크 전체를 붙여넣기" autocomplete="off"><button id="kbtn">열기</button>'+(msg?'<div class="err">'+esc(msg)+'</div>':'')+'</div>';
   $('#kbtn').onclick=()=>{const k=pickKey($('#kin').value);if(!k){renderLock('붙여넣은 내용에서 열쇠를 찾지 못했어요. 링크 전체를 붙여넣어 주세요.');return;}
-    try{localStorage.setItem(LS_KEY,k);}catch(_){}window.__MEMKEY=k;keepKeyInUrl(k);$('#kbtn').textContent='여는 중…';$('#kbtn').disabled=true;load();};
+    try{localStorage.setItem(LS_KEY,k);localStorage.setItem(LS_KEY_BAK,k);}catch(_){}window.__MEMKEY=k;keepKeyInUrl(k);$('#kbtn').textContent='여는 중…';$('#kbtn').disabled=true;load();};
 }
 
 // ---------- 자료 도우미 ----------
@@ -961,7 +961,7 @@ function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP �
 function khNextTxt(){const k=kst(Date.now()),h=k.getHours();return h<6?'다음 06:00':h<18?'다음 18:00':'내일 06:00';}
 // 2026-10-21: 자동 승인 보류 일지 캡처 보기 (khcap.enc.json, 대표 열쇠로 암호화 · 누를 때만 받음)
 let KHCAP=null;
-async function khCapGet(force){if(KHCAP&&!force&&Date.now()-KHCAP.t<5*60e3)return KHCAP.d;let k=null;try{k=localStorage.getItem(LS_KEY);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('열쇠가 없어요');const r=await fetch('khcap.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status===404?'캡처 파일이 아직 없어요':'캡처 파일 오류 ('+r.status+')');const d=await decrypt(await r.json(),k);KHCAP={t:Date.now(),d};return d;}
+async function khCapGet(force){if(KHCAP&&!force&&Date.now()-KHCAP.t<5*60e3)return KHCAP.d;let k=null;try{k=localStorage.getItem(LS_KEY);if(!k){k=localStorage.getItem(LS_KEY_BAK);if(k){localStorage.setItem(LS_KEY,k);keepKeyInUrl(k);}}}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('열쇠가 없어요');const r=await fetch('khcap.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status===404?'캡처 파일이 아직 없어요':'캡처 파일 오류 ('+r.status+')');const d=await decrypt(await r.json(),k);KHCAP={t:Date.now(),d};return d;}
 function khCapClose(){const m=document.getElementById('khcapM');if(m)m.remove();}
 async function khCapOpen(id){khCapClose();const m=document.createElement('div');m.id='khcapM';m.className='khcap-m';m.innerHTML='<div class="khcap-w"><div class="khcap-h"><b>자동 승인 보류 · 일지 캡처</b><button class="khcap-x" data-khcapx="1">닫기 ✕</button></div><div class="khcap-c"><div class="note gray">불러오는 중…</div></div></div>';document.body.appendChild(m);
   const c=m.querySelector('.khcap-c');try{const d=await khCapGet();const x=d&&d.caps&&d.caps[id];if(!x){c.innerHTML='<div class="note amb">이 일지 캡처가 아직 없어요. 다음 K-HACCP 점검(매일 06:00·18:00) 때 만들어져요.</div>';return;}
