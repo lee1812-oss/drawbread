@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-02 21:55">
+<meta name="dash-build" content="2026-11-02 22:10">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -378,6 +378,25 @@ body.night .lg{background:#fff;border-color:transparent}
 .khd-s{flex:0 0 auto;font-size:.8rem;font-weight:800;padding:3px 8px;border-radius:6px}
 .khd-ft{margin-top:8px;font-size:.8rem;color:var(--sub)}
 @media (max-width:900px){.khd-b{grid-template-columns:1fr}.khd-nav{margin-left:0}}
+</style><style id="fitall">/* 2026-11-02 조조: 한 화면 맞춤 */
+body.fitall main{max-width:none;padding:8px 14px 6px}
+body.fitall .foot{display:none}
+body.fitall .kpis{display:block}
+body.fitall .kpis>.khday{margin-bottom:10px;padding:10px 14px}
+body.fitall .khd-top{margin-bottom:6px}
+body.fitall .khd-l{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+body.fitall .khd-r{min-height:30px}
+body.fitall .khd-ft{display:none}
+body.fitall .fcols{display:grid;gap:12px;align-items:start}
+body.fitall .fcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+body.fitall .fsec{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;min-width:0}
+body.fitall .fsec>.grp{margin:0}
+body.fitall .fsec .kpi{grid-column:span 6}
+body.fitall .fsec .kpi.mailw,body.fitall .fsec .kpi.todow,body.fitall .fsec>.kpi:only-child,body.fitall .fsec>.grp+.kpi:last-child{grid-column:1/-1}
+body.fitall .fsec .pcw{grid-column:span 6}
+body.fitall .kpis .kg5{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+body.fitall .kpis .c4{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body.fitall .fsec .mailw{display:grid;grid-template-columns:1fr;gap:8px}body.fitall .fsec .mailw .mw-r{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 </style></head>
 <body>
 <header><div class="hd">
@@ -995,7 +1014,7 @@ function khDayWide(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     '<div class="khd-nav"><button data-kd="'+khAddDay(d,-1)+'"'+(d<=first?' disabled':'')+'>◀ 전날</button>'+chips.map(y=>'<button data-kd="'+y+'" class="'+(y===d?'on':'')+'">'+(y===today?'오늘':khMdW(y))+'</button>').join('')+'<button data-kd="'+khAddDay(d,1)+'"'+(d>=today?' disabled':'')+'>다음날 ▶</button></div></div>'+
     '<div class="khd-b">'+col('주기별 점검일지',x.per,'이 날 일지가 없어요')+col('CCP 실적',x.ccp,'이 날 CCP 기록이 없어요 (생산 없는 날)')+'</div>'+
     '<div class="khd-ft">K-HACCP 첫 화면의 「주기별점검일지」·「CCP실적/수불」과 같은 내용 · '+esc(cal.at)+' 기준 · 매일 09:30·18:00 새로 읽음 · '+Number(cal.months[0].ym.slice(5))+'월 1일부터 조회 가능</div></div>';}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-kd]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();KHV.d=t.dataset.kd===khYmdL(Date.now())?'':t.dataset.kd;const el=document.querySelector('.khday');if(el)el.outerHTML=khDayWide();},true);
+document.addEventListener('click',e=>{const t=e.target.closest('[data-kd]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();KHV.d=t.dataset.kd===khYmdL(Date.now())?'':t.dataset.kd;const el=document.querySelector('.khday');if(el)el.outerHTML=khDayWide();if(document.body.classList.contains('fitall')&&typeof fitSoon==='function')fitSoon(10);},true);
 function khNextTxt(){const k=kst(Date.now()),h=k.getHours()+k.getMinutes()/60;return h<9.5?'다음 09:30':h<18?'다음 18:00':'내일 09:30';}
 // 2026-10-21: 자동 승인 보류 일지 캡처 보기 (khcap.enc.json, 대표 열쇠로 암호화 · 누를 때만 받음)
 let KHCAP=null;
@@ -1147,6 +1166,48 @@ function c4Fit(){document.body.classList.toggle('fit1',innerWidth>=1100);}c4Fit(
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
 // 2026-11-02 조조: K-HACCP 하루 일지를 대시보드 맨 위로 (사용자 「가장 상단으로, 제일 중요」)
 kpiLayout=(orig=>function(){const h=orig();try{return khDayWide()+h;}catch(_){return h;}})(kpiLayout);
+
+// ===== 2026-11-02 조조: 한 화면 맞춤 (사용자 「한 페이지에 모두 보이게, 스크롤 없이 알차게 하나의 화면으로」) =====
+// 넓은 화면(가로 1100px 이상)에서만: K-HACCP 일지를 맨 위 한 줄로, 나머지 묶음은 순서대로 2~3단에 나눠 담고, 화면 높이에 맞게 전체 배율(zoom)을 자동으로 맞춤. 좁은 화면(태블릿 세로·휴대폰)은 예전처럼 스크롤.
+let FIT_BUSY=false,FIT_T=0;
+function fitUndo(){const m=$('#main');if(m)m.style.zoom='';document.body.classList.remove('fitall');}
+function fitSections(k){const kids=[...k.children];const W=k.getBoundingClientRect().width;const secs=[];let cur=null,pend=null;
+  for(const el of kids){if(el.classList.contains('khday'))continue;
+    if(el.classList.contains('grp')){pend=el;cur=null;continue;}
+    const full=el.getBoundingClientRect().width>=W*0.9;
+    if(full||!cur||pend){cur={els:[]};secs.push(cur);if(pend){cur.els.push(pend);pend=null;}}
+    cur.els.push(el);if(full)cur=null;}
+  if(pend)secs.push({els:[pend]});return secs;}
+function fitPart(hs,n){// 순서를 지키면서 n단으로 나눠 가장 긴 단을 최소로
+  const pre=[0];hs.forEach(h=>pre.push(pre[pre.length-1]+h));const N=hs.length;const memo={};
+  function go(i,c){if(c===1)return {m:pre[N]-pre[i],cut:[]};const key=i+','+c;if(memo[key])return memo[key];let best=null;
+    for(let j=i+1;j<=N-c+1;j++){const r=go(j,c-1);const m=Math.max(pre[j]-pre[i],r.m);if(!best||m<best.m)best={m,cut:[j].concat(r.cut)};}return memo[key]=best;}
+  return go(0,n).cut;}
+function fitFits(){return document.documentElement.scrollHeight<=innerHeight+1;}
+function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
+  if(innerWidth<1100||!D){fitUndo();return;}
+  FIT_BUSY=true;try{
+    // 처음 상태로 되돌린 뒤 묶음 계산
+    if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}
+    m.style.zoom='';document.body.classList.remove('fitall');
+    const secs=fitSections(k);const kh=k.querySelector(':scope>.khday');
+    document.body.classList.add('fitall');
+    const wrap=document.createElement('div');wrap.className='fcols';
+    const secEls=secs.map(s=>{const d=document.createElement('div');d.className='fsec';s.els.forEach(e=>d.appendChild(e));return d;});
+    k.innerHTML='';if(kh)k.appendChild(kh);k.appendChild(wrap);
+    const lay=(n,cuts)=>{wrap.innerHTML='';wrap.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';let s=0;[...cuts,secEls.length].forEach(e=>{const c=document.createElement('div');c.className='fcol';secEls.slice(s,e).forEach(x=>c.appendChild(x));wrap.appendChild(c);s=e;});};
+    const balance=n=>{lay(n,[]);/* 한 단에 모아 폭을 맞춘 뒤 높이 재기 */wrap.style.gridTemplateColumns='minmax(0,'+(100/n)+'%)';const hs=secEls.map(x=>x.getBoundingClientRect().height/(parseFloat(m.style.zoom)||1));lay(n,fitPart(hs,n));};
+    const search=()=>{let lo=0.4,hi=1;m.style.zoom='1';if(fitFits())return 1;for(let i=0;i<9;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);return lo;};
+    let best=null;
+    for(const n of [3,2,4]){if(n>secEls.length)continue;m.style.zoom='0.7';balance(n);let z=search();balance(n);z=search();balance(n);z=search();
+      const zs=n===3?z*1.12:z;/* 3단을 조금 우대: 카드 폭이 넓어 글자 잘림이 적음 */if(!best||zs>best.zs)best={n,z,zs};}
+    m.style.zoom='0.7';balance(best.n);let z=search();balance(best.n);z=search();
+    if(!fitFits())m.style.zoom='0.4';
+  }catch(err){fitUndo();try{console.warn('fitAll',err);}catch(_){}}
+  finally{FIT_BUSY=false;}}
+function fitSoon(ms){clearTimeout(FIT_T);FIT_T=setTimeout(fitAll,ms||60);}
+(function(){const m=$('#main');if(!m)return;new MutationObserver(()=>{if(!FIT_BUSY)fitAll();}).observe(m,{childList:true});addEventListener('resize',()=>fitSoon(200));addEventListener('load',()=>fitSoon(300));document.addEventListener('fullscreenchange',()=>fitSoon(300));setTimeout(()=>fitSoon(10),50);setTimeout(()=>fitSoon(10),1500);})();
+
 // ===== 2026-10-22 덧붙임 끝 =====
 // ===== 2026-10-22 원료 발주 보고서 (Aside 사무실 PC): 「원료 남은 기간」 카드를 누르면 맨 위에 거래처별 「왜 지금 발주하나요?」 + 발주 리스트 =====
 // 통합재고관리 v248 「오늘 발주 알림」과 같은 계산 — 추천 = 3주 쓸 양 + 최소 남길 양(육쪽 36박스분 · 미로와데코젤 9kg) − 지금 재고 → 포장·주문단위로 올림(0.1포장 여유).
