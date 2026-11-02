@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-02 21:20">
+<meta name="dash-build" content="2026-11-02 21:40">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -360,20 +360,24 @@ body.fit1 .kpis .kpi .lg{width:42px!important;height:42px!important;border-radiu
 .kpi .top .lb{font-size:1.12rem!important;font-weight:800!important;color:var(--ink)!important}
 body.night .lg{background:#fff;border-color:transparent}
 </style>
-<style id="khcal">/* 2026-11-02 조조: K-HACCP 달력 탭 */
-.khc-mon{display:flex;align-items:center;gap:6px;margin:0 0 10px}.khc-mon button{height:40px;padding:0 16px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:700;color:var(--ink2)}.khc-mon button.on{background:var(--ink);color:#fff;border-color:var(--ink)}body.night .khc-mon button.on{background:#f3f4f6;color:#111827}
-.khc-sum{margin-left:auto;font-weight:700;color:var(--ink2)}
-.khc-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;font-size:.88rem;color:var(--ink2)}.khc-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.khc-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px}
-.khc-w{text-align:center;font-weight:700;font-size:.85rem;padding:4px 0;color:var(--ink2)}.khc-w.sun,.khc-n.sun{color:#d14343}.khc-w.sat,.khc-n.sat{color:#2f6fd6}
-.khc-d{min-height:74px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;cursor:pointer}
-.khc-d.emp{background:transparent;border:0;cursor:default}.khc-d.hol{background:rgba(148,163,184,.16)}
-.khc-d.tdy{border:2px solid #22396F}.khc-d.sel{box-shadow:0 0 0 3px rgba(34,57,111,.35)}
-.khc-n{width:100%;font-size:.82rem;font-weight:800;color:var(--ink2);padding:0 2px}
-.khc-h{width:100%;font-size:.72rem;color:var(--sub)}
-.khc-c{font-size:.72rem;font-weight:800;line-height:1;padding:4px 4px;border-radius:5px;white-space:nowrap}
-.khc-st{display:inline-block;font-size:.8rem;font-weight:800;padding:3px 8px;border-radius:6px}
-@media (max-width:520px){.khc-d{min-height:58px}.khc-c{font-size:.6rem;padding:3px 2px}.khc-mon button{padding:0 10px}}
+<style id="khcal">/* 2026-11-02 조조: K-HACCP 하루 일지 (첫 화면) */
+.khday{grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.khd-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.khd-top .lb{font-weight:800;font-size:1.05rem}
+.khd-date{font-weight:800;font-size:1.15rem}.khd-date i{font-style:normal;font-size:.8rem;background:#22396F;color:#fff;border-radius:6px;padding:2px 7px;margin-left:4px;vertical-align:2px}.khd-date i.hol{background:#9ca3af}
+.khd-nav{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
+.khd-nav button{height:40px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-weight:700;font-size:.9rem;color:var(--ink2)}
+.khd-nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}body.night .khd-nav button.on{background:#f3f4f6;color:#111827}
+.khd-nav button:disabled{opacity:.35}
+.khd-b{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.khd-col{border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.khd-h{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}.khd-h b{font-size:1rem}.khd-h span{color:var(--sub);font-weight:700;font-size:.88rem}
+.khd-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:4px 14px}
+.khd-r{display:flex;align-items:center;gap:8px;min-height:34px;border-bottom:1px dashed var(--line)}
+.khd-c{flex:0 0 auto;min-width:30px;font-weight:800;font-size:.85rem;color:var(--ink2)}
+.khd-n{flex:1;min-width:0;font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.khd-s{flex:0 0 auto;font-size:.8rem;font-weight:800;padding:3px 8px;border-radius:6px}
+.khd-ft{margin-top:8px;font-size:.8rem;color:var(--sub)}
+@media (max-width:900px){.khd-b{grid-template-columns:1fr}.khd-nav{margin-left:0}}
 </style></head>
 <body>
 <header><div class="hd">
@@ -866,10 +870,10 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
 function staffLayout(){const by={};kpis().forEach(x=>by[x.k]=x);const f=F_();
   const a=f&&f.audit;const c=a?a.count||{}:{};const ws=a?(a.findings||[]).filter(x=>x.level==='경고').length:0;
   const au=a?{k:'faudit',logo:'ecount',lb:'이카운트 입력 점검',src:a.label.split(' (')[0],v:ws,u:'건',cls:ws?'warn':'ok',badge:ws?['amber','생산·재고 경고']:['green','이상 없음'],ft:'생산·재고·구매 항목만 · 매일 06:30'}:null;
-  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.stock,by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'')).join('')+facLayout(true);}
+  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.stock,by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'')).join('')+khDayWide()+facLayout(true);}
 function kpiLayout(){if(STAFF)return staffLayout();const by={};kpis().forEach(x=>by[x.k]=x);
   const g1=['stock','khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean);
-  return '<div class="grp">생산 · 품질 · 출고</div><div class="kg5">'+g1.map(x=>kpiHtml(x,'')).join('')+'</div>'+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
+  return '<div class="grp">생산 · 품질 · 출고</div><div class="kg5">'+g1.map(x=>kpiHtml(x,'')).join('')+'</div>'+khDayWide()+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
 function acctLine(n){if(n.byAcct){const e=Object.entries(n.byAcct).filter(([k,v])=>v);return e.length?e.map(([k,v])=>k+' '+v).join(' · '):'새 메일 없음';}return '참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0);}
 function mailWide(){
   const n=latest(D.naver),u=latest(D.utca),na=nAct(n).length,ua=uAct(u).length,tot=na+ua,none=!n&&!u;
@@ -957,7 +961,7 @@ function pSched(){
   return {s:'카톡 알림과 같은 시각에 자동으로 확인해요',h};}
 function khDevWhy(w){return /\(기준 [^)]*\)/.test(w)&&!/소비기한/.test(w);}
 function khPendDev(k){const ap=k&&k.appr;if(!ap)return [];return (ap.held||[]).filter(x=>(x.why||[]).some(khDevWhy)).map(x=>Object.assign({},x,{devWhy:(x.why||[]).filter(khDevWhy),devKind:/^Y/.test(String(x.lCode||''))?'한계기준 이탈':'관리기준 이탈'}));}
-function pKhaccpChk(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP 점검 기록이 없어요.<br>첫 자동 점검 후 보여요.')};
+function pKhaccp(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACCP 점검 기록이 없어요.<br>첫 자동 점검 후 보여요.')};
   const c=k.counts||{};let h=hist('khaccp');const pdv=khPendDev(k);const capBtn=x=>x.recNo?'<button class="khcap-b" data-khcap="'+esc(x.recNo)+'">일지 캡처 보기 ›</button>':'';
   h+='<div class="box"><div class="stats">'+stat('이탈'+(pdv.length?' (결재 전 '+pdv.length+')':''),(c.deviation||0)+pdv.length)+stat('미작성',c.unwritten||0)+stat('미결재',c.unapproved||0)+'</div></div>';
   const sec=(title,tag,mk,arr,fn,okTxt,click)=>'<div class="box"><h3><span class="tag '+tag+'">'+title+'</span> <span class="c">'+(arr||[]).length+'건</span></h3>'+((arr||[]).length?'<div class="rows">'+arr.map(x=>'<div class="row'+(click&&x.recNo?' khcap-r" data-khcap="'+esc(x.recNo):'')+'"><span class="mk '+(x._mk||mk)+'"></span><div class="bd"><div class="t1">'+(x.date?'<span class="tag">'+esc(x.date)+'</span>':'')+esc(x.title||'')+'</div>'+fn(x)+'</div></div>').join('')+'</div>':'<div class="note ok">'+okTxt+'</div>')+'</div>';
@@ -972,36 +976,26 @@ function pKhaccpChk(){const k=selOf('khaccp');if(!k)return {s:'',h:empty('K-HACC
   if(k.note)h+='<div class="meta">'+rich(k.note)+'</div>';
   h+='<a class="link" href="https://www.k-haccp.co.kr/" target="_blank" rel="noopener">K-HACCP 열기</a>';
   return {s:esc(k.label||'')+(k.range?' · 점검 범위 '+esc(k.range):'')+' · 매일 09:30·18:00 점검, '+khNextTxt(),h};}
-// 2026-11-02 조조: K-HACCP 홈 달력 두 탭(주기별점검일지 · CCP실적/수불)을 그대로 보기 (자료 = 최신 점검의 cal)
-const KHV={mon:null,day:0};
-function pKhaccp(){const t=ui.khTab||'chk';const k0=latest(D.khaccp);const c=(k0&&k0.counts)||{};const cal=k0&&k0.cal;
-  const td=khCalToday(cal);
-  const seg='<div class="seg">'+[['chk','점검 결과',k0?(c.unwritten||0)+(c.unapproved||0)+(c.deviation||0)+khPendDev(k0).length:'–'],['per','주기별 점검일지',td?td.per.length:'–'],['ccp','CCP 실적',td?td.ccp.length:'–']].map(([x,l,n])=>'<button data-ktab="'+x+'" class="'+(t===x?'on':'')+'">'+l+' <b class="num">'+n+'</b></button>').join('')+'</div>';
-  if(t==='chk'){const r=pKhaccpChk();return {s:r.s,h:seg+r.h};}
-  return {s:(cal?'K-HACCP 홈 달력 · '+esc(cal.at)+' 기준 · '+khNextTxt():'K-HACCP 홈 달력'),h:seg+khCalHtml(cal,t)};}
+// 2026-11-02 조조: K-HACCP 「주기별 점검일지 · CCP 실적」 하루치를 대시보드 첫 화면에 바로 (기본 오늘, ◀ ▶·날짜 버튼으로 지난 날 조회. 자료 = 최신 점검의 cal: 지난달+이번 달)
 const KH_ST={'미작성':['#e53935','#fff'],'검토중':['#f59e0b','#111'],'검토반려':['#111827','#fff'],'작성예정':['#4f74a8','#fff'],'승인중':['#9956AF','#fff'],'승인완료':['#87cfe9','#0b2a3a'],'승인반려':['#1f6fe0','#fff']};
-function khShort(n){const m=String(n).match(/^\[([A-Z]\d+)\]/);if(m)return m[1];const map=[[/일일일지/,'일일'],[/건강/,'건강'],[/주간일지/,'주간'],[/월간일지/,'월간'],[/생산작업일지/,'생산'],[/교육/,'교육'],[/해동/,'해동'],[/검교정/,'검교정']];for(const [r,s] of map)if(r.test(n))return s;return String(n).slice(0,3);}
-function khCalToday(cal){if(!cal||!cal.months)return null;const k=kst(Date.now());const ym=k.getFullYear()+'-'+String(k.getMonth()+1).padStart(2,'0');const m=cal.months.find(x=>x.ym===ym);if(!m)return null;const d=k.getDate();return {per:m.per.filter(x=>x[0]===d),ccp:m.ccp.filter(x=>x[0]===d)};}
-function khCalHtml(cal,t){if(!cal||!cal.months||!cal.months.length)return empty('달력 자료가 아직 없어요.<br>다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.');
-  const ms=cal.months;let mi=KHV.mon;if(mi==null||!ms[mi])mi=ms.length-1;const m=ms[mi];const [y,mo]=m.ym.split('-').map(Number);
-  const list=t==='ccp'?m.ccp:m.per;const k=kst(Date.now());const isCur=k.getFullYear()===y&&k.getMonth()+1===mo;const today=isCur?k.getDate():0;
-  const last=new Date(y,mo,0).getDate(),first=new Date(y,mo-1,1).getDay();const hol=new Set(m.hol||[]);
-  let sel=KHV.day||0;if(!sel||sel>last)sel=today||(list.length?list[list.length-1][0]:1);
-  const cnt={};list.forEach(x=>{cnt[x[2]]=(cnt[x[2]]||0)+1;});
-  let h='<div class="khc-mon">'+ms.map((x,i)=>'<button data-kmon="'+i+'" class="'+(i===mi?'on':'')+'">'+Number(x.ym.slice(5))+'월</button>').join('')+'<span class="khc-sum">'+(t==='ccp'?'생산일 '+new Set(list.filter(x=>/생산작업일지/.test(x[1])).map(x=>x[0])).size+'일 · 기록 '+list.length+'건':'일지 '+list.length+'건')+'</span></div>';
-  h+='<div class="khc-leg">'+Object.keys(KH_ST).filter(s=>cnt[s]).map(s=>'<span><i style="background:'+KH_ST[s][0]+'"></i>'+s+' <b class="num">'+cnt[s]+'</b></span>').join('')+'<span><i style="background:#cfd4dc"></i>휴일</span></div>';
-  h+='<div class="khc-g">'+'일월화수목금토'.split('').map((w,i)=>'<div class="khc-w'+(i===0?' sun':i===6?' sat':'')+'">'+w+'</div>').join('');
-  for(let i=0;i<first;i++)h+='<div class="khc-d emp"></div>';
-  for(let d=1;d<=last;d++){const it=list.filter(x=>x[0]===d);const wd=(first+d-1)%7;
-    h+='<div class="khc-d'+(hol.has(d)?' hol':'')+(d===today?' tdy':'')+(d===sel?' sel':'')+'" data-kday="'+d+'" role="button" tabindex="0"><div class="khc-n'+(wd===0?' sun':wd===6?' sat':'')+'">'+d+'</div>'+(hol.has(d)&&!it.length?'<div class="khc-h">휴일</div>':'')+it.map(x=>{const c=KH_ST[x[2]]||['#9ca3af','#fff'];return '<span class="khc-c" style="background:'+c[0]+';color:'+c[1]+'" title="'+esc(x[1]+' : '+x[2])+'">'+esc(khShort(x[1]))+'</span>';}).join('')+'</div>';}
-  h+='</div>';
-  const si=list.filter(x=>x[0]===sel);const sw='일월화수목금토'[new Date(y,mo-1,sel).getDay()];
-  h+='<div class="box"><h3>'+mo+'/'+sel+'('+sw+') '+(t==='ccp'?'CCP 실적':'주기별 점검일지')+' <span class="c">'+si.length+'건'+(hol.has(sel)?' · 휴일':'')+'</span></h3>'+(si.length?'<div class="rows">'+si.map(x=>{const c=KH_ST[x[2]]||['#9ca3af','#fff'];return '<div class="row"><span class="mk" style="background:'+c[0]+'"></span><div class="bd"><div class="t1">'+esc(x[1])+'</div><div class="t2"><span class="khc-st" style="background:'+c[0]+';color:'+c[1]+'">'+esc(x[2])+'</span></div></div></div>';}).join('')+'</div>':'<div class="note gray">'+(hol.has(sel)?'휴일이라 일지가 없어요':'이 날 '+(t==='ccp'?'CCP 기록':'일지')+'이 없어요')+'</div>')+'</div>';
-  h+='<div class="meta">K-HACCP 첫 화면 달력의 「'+(t==='ccp'?'CCP실적/수불':'주기별점검일지')+'」 탭과 같은 내용이에요. 날짜를 누르면 그 날 일지가 아래에 나와요. 매일 09:30·18:00 점검 때 새로 읽어 와요('+esc(cal.at)+' 기준).</div>';
-  h+='<a class="link" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP 열기</a>';return h;}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-ktab],[data-kmon],[data-kday]');if(!t)return;e.preventDefault();const pb=$('#pB');const sc=pb?pb.scrollTop:0;
-  if(t.dataset.ktab){ui.khTab=t.dataset.ktab;KHV.day=0;}else if(t.dataset.kmon!=null){KHV.mon=+t.dataset.kmon;KHV.day=0;}else{KHV.day=+t.dataset.kday;}
-  saveUi();fillPanel(openKind);if(pb)pb.scrollTop=t.dataset.kday?sc:0;});
+const KHV={d:''};
+function khYmdL(t){const k=kst(t);return k.getFullYear()+'-'+String(k.getMonth()+1).padStart(2,'0')+'-'+String(k.getDate()).padStart(2,'0');}
+function khDayOf(cal,ymd){if(!cal||!cal.months)return null;const m=cal.months.find(x=>x.ym===ymd.slice(0,7));if(!m)return null;const d=Number(ymd.slice(8,10));return {per:m.per.filter(x=>x[0]===d),ccp:m.ccp.filter(x=>x[0]===d),hol:(m.hol||[]).includes(d)};}
+function khCalToday(cal){return khDayOf(cal,khYmdL(Date.now()));}
+function khAddDay(ymd,n){const t=new Date(ymd+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10);}
+function khMdW(ymd){const t=new Date(ymd+'T12:00:00Z');return (t.getUTCMonth()+1)+'/'+t.getUTCDate()+'('+'일월화수목금토'[t.getUTCDay()]+')';}
+function khDayWide(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const today=khYmdL(Date.now());
+  if(!cal||!cal.months||!cal.months.length)return '<div class="khday"><div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 오늘 일지</span></div><div class="note gray">일지 자료가 아직 없어요. 다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.</div></div>';
+  const first=cal.months[0].ym+'-01';let d=KHV.d||today;if(d>today)d=today;if(d<first)d=first;
+  const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};
+  const chips=[];for(let i=6;i>=0;i--){const y=khAddDay(today,-i);if(y>=first)chips.push(y);}
+  const row=it=>{const c=KH_ST[it[2]]||['#9ca3af','#fff'];const m=String(it[1]).match(/^\[([A-Z]\d+)\]\s*(.*)$/);return '<div class="khd-r"><span class="khd-c">'+esc(m?m[1]:'')+'</span><span class="khd-n">'+esc(m?m[2]:it[1])+'</span><span class="khd-s" style="background:'+c[0]+';color:'+c[1]+'">'+esc(it[2])+'</span></div>';};
+  const col=(t,arr,none)=>{const ok=arr.filter(i=>i[2]==='승인완료').length;return '<div class="khd-col"><div class="khd-h"><b>'+t+'</b><span>'+arr.length+'건'+(arr.length?' · 승인완료 '+ok:'')+'</span></div>'+(arr.length?'<div class="khd-l">'+arr.map(row).join('')+'</div>':'<div class="note gray">'+(x.hol?'휴일이라 일지가 없어요':none)+'</div>')+'</div>';};
+  return '<div class="khday"><div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 일지</span><span class="khd-date">'+khMdW(d)+(d===today?' <i>오늘</i>':'')+(x.hol?' <i class="hol">휴일</i>':'')+'</span>'+
+    '<div class="khd-nav"><button data-kd="'+khAddDay(d,-1)+'"'+(d<=first?' disabled':'')+'>◀ 전날</button>'+chips.map(y=>'<button data-kd="'+y+'" class="'+(y===d?'on':'')+'">'+(y===today?'오늘':khMdW(y))+'</button>').join('')+'<button data-kd="'+khAddDay(d,1)+'"'+(d>=today?' disabled':'')+'>다음날 ▶</button></div></div>'+
+    '<div class="khd-b">'+col('주기별 점검일지',x.per,'이 날 일지가 없어요')+col('CCP 실적',x.ccp,'이 날 CCP 기록이 없어요 (생산 없는 날)')+'</div>'+
+    '<div class="khd-ft">K-HACCP 첫 화면의 「주기별점검일지」·「CCP실적/수불」과 같은 내용 · '+esc(cal.at)+' 기준 · 매일 09:30·18:00 새로 읽음 · '+Number(cal.months[0].ym.slice(5))+'월 1일부터 조회 가능</div></div>';}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-kd]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();KHV.d=t.dataset.kd===khYmdL(Date.now())?'':t.dataset.kd;const el=document.querySelector('.khday');if(el)el.outerHTML=khDayWide();},true);
 function khNextTxt(){const k=kst(Date.now()),h=k.getHours()+k.getMinutes()/60;return h<9.5?'다음 09:30':h<18?'다음 18:00':'내일 09:30';}
 // 2026-10-21: 자동 승인 보류 일지 캡처 보기 (khcap.enc.json, 대표 열쇠로 암호화 · 누를 때만 받음)
 let KHCAP=null;
