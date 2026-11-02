@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-02 21:40">
+<meta name="dash-build" content="2026-11-02 21:55">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -870,10 +870,10 @@ function kpis(){if(STAFF){D.naver=D.naver||[];D.utca=D.utca||[];D.audit=D.audit|
 function staffLayout(){const by={};kpis().forEach(x=>by[x.k]=x);const f=F_();
   const a=f&&f.audit;const c=a?a.count||{}:{};const ws=a?(a.findings||[]).filter(x=>x.level==='경고').length:0;
   const au=a?{k:'faudit',logo:'ecount',lb:'이카운트 입력 점검',src:a.label.split(' (')[0],v:ws,u:'건',cls:ws?'warn':'ok',badge:ws?['amber','생산·재고 경고']:['green','이상 없음'],ft:'생산·재고·구매 항목만 · 매일 06:30'}:null;
-  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.stock,by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'')).join('')+khDayWide()+facLayout(true);}
+  return '<div class="grp">생산 · 품질 · 출고</div>'+[by.stock,by.khaccp,au,by.delivery].filter(Boolean).map(x=>kpiHtml(x,'')).join('')+facLayout(true);}
 function kpiLayout(){if(STAFF)return staffLayout();const by={};kpis().forEach(x=>by[x.k]=x);
   const g1=['stock','khaccp','audit','delivery','sched'].map(k=>by[k]).filter(Boolean);
-  return '<div class="grp">생산 · 품질 · 출고</div><div class="kg5">'+g1.map(x=>kpiHtml(x,'')).join('')+'</div>'+khDayWide()+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
+  return '<div class="grp">생산 · 품질 · 출고</div><div class="kg5">'+g1.map(x=>kpiHtml(x,'')).join('')+'</div>'+facLayout(false)+'<div class="grp">메일</div>'+mailWide();}
 function acctLine(n){if(n.byAcct){const e=Object.entries(n.byAcct).filter(([k,v])=>v);return e.length?e.map(([k,v])=>k+' '+v).join(' · '):'새 메일 없음';}return '참고 '+((n.ref||[]).length)+' · 광고 '+((n.ad&&n.ad.count)||0);}
 function mailWide(){
   const n=latest(D.naver),u=latest(D.utca),na=nAct(n).length,ua=uAct(u).length,tot=na+ua,none=!n&&!u;
@@ -1145,6 +1145,8 @@ function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 �
 PANELS.core4=['핵심 4품목 · 세 사람이 같이 보는 재고',pCore4,'wonryo'];
 function c4Fit(){document.body.classList.toggle('fit1',innerWidth>=1100);}c4Fit();addEventListener('resize',c4Fit);
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
+// 2026-11-02 조조: K-HACCP 하루 일지를 대시보드 맨 위로 (사용자 「가장 상단으로, 제일 중요」)
+kpiLayout=(orig=>function(){const h=orig();try{return khDayWide()+h;}catch(_){return h;}})(kpiLayout);
 // ===== 2026-10-22 덧붙임 끝 =====
 // ===== 2026-10-22 원료 발주 보고서 (Aside 사무실 PC): 「원료 남은 기간」 카드를 누르면 맨 위에 거래처별 「왜 지금 발주하나요?」 + 발주 리스트 =====
 // 통합재고관리 v248 「오늘 발주 알림」과 같은 계산 — 추천 = 3주 쓸 양 + 최소 남길 양(육쪽 36박스분 · 미로와데코젤 9kg) − 지금 재고 → 포장·주문단위로 올림(0.1포장 여유).
