@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-03 08:07">
+<meta name="dash-build" content="2026-11-03 09:00">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1579,6 +1579,43 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-plco
   b.textContent=ok?'복사했어요':'복사 안 됨 — 글자를 길게 눌러 복사';const m=document.getElementById('plCopied');if(m&&ok)m.textContent='카톡 대화창에 붙여 넣고 확인한 뒤 보내 주세요.';});
 // ===== 2026-10-23 생산 계획 덧붙임 끝 =====
 
+})();
+</script>
+
+<style id="bk-style">
+/* 2026-11-03 Aside 경고등: 관리자가 바로 봐야 할 이탈·중요사항(빨강 단계)만 반짝임. 메일 확인 필요는 거의 매일 생겨 제외, 주의(주황)는 반짝이지 않음 */
+@keyframes bkGlow{0%,100%{opacity:.12}50%{opacity:1}}
+@keyframes bkLamp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.78)}}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red){border-color:var(--red)!important}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::before{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 2px var(--red),0 0 18px 3px rgba(239,68,68,.6);animation:bkGlow 1.2s ease-in-out infinite;z-index:1}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::after{content:"";position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 10px 4px rgba(239,68,68,.75);animation:bkLamp 1.2s ease-in-out infinite;pointer-events:none;z-index:2}
+.khd-big.s-bad{position:relative;animation:bkGlowTxt 1.2s ease-in-out infinite}
+@keyframes bkGlowTxt{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 3px rgba(239,68,68,.55),0 0 14px 2px rgba(239,68,68,.45)}}
+.khd-big.s-bad::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 7px 2px rgba(239,68,68,.7);animation:bkLamp 1.2s ease-in-out infinite}
+.bk-sum{display:inline-flex;align-items:center;gap:7px;flex-wrap:nowrap;min-width:0;overflow:hidden;flex:0 1 auto;white-space:nowrap;padding:5px 8px 5px 10px;border-radius:999px;background:var(--red-bg);border:2px solid var(--red);color:var(--red);font-weight:800;font-size:1rem;line-height:1.2;animation:bkGlowTxt 1.2s ease-in-out infinite}
+.bk-sum .bk-lamp{flex:none;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 9px 3px rgba(239,68,68,.75);animation:bkLamp 1.2s ease-in-out infinite}
+.bk-sum .bk-chip{border:1px solid var(--red);background:var(--card);color:var(--red);font:inherit;font-size:.9rem;font-weight:800;border-radius:999px;padding:3px 10px;cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}
+.bk-sum .bk-chip:hover{background:var(--red);color:#fff}
+</style>
+<script>
+(function(){
+// 2026-11-03 Aside 경고등: 화면에 빨강(바로 확인) 카드가 있으면 카드 테두리·모서리 등이 반짝이고, 맨 위 줄에 「바로 확인 N」 요약 칩을 보여 줌(누르면 그 카드 자세히). 화면 내용만 읽고 자료·열쇠는 건드리지 않음
+var SEL=".kpi.alert:not(.mailw):not([data-open=\"mail\"]):not([data-open=\"naver\"]):not([data-open=\"utca\"]),.kpi.c4k.lv-red"+',.khd-big.s-bad',tm=0;
+function tx(el,s){var e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';}
+function esc2(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function run(){var m=document.getElementById('main');if(!m)return;var bar=document.querySelector('header .hd');if(!bar)return;
+  var it=[];m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-sum')||el.closest('#panel'))return;
+    if(el.classList.contains('khd-big')){it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').trim(),open:'khaccp'});return;}
+    var pc=el.classList.contains('pcs');var lb=(pc?tx(el,'.pt'):(tx(el,'.lb')||tx(el,'.c4h .lb'))).split(' · ')[0];var st=pc?tx(el,'.pv'):tx(el,'.badge');
+    it.push({lb:lb,st:st,open:el.getAttribute('data-open')||'',pc:el.getAttribute('data-pc')||'',sub:el.getAttribute('data-sub')||''});});
+  var h=it.length?'<span class="bk-lamp"></span><span>바로 확인 '+it.length+'</span>'+it.map(function(x){var t=x.lb+(x.st?' · '+x.st:'');return '<button class="bk-chip" title="'+esc2(t)+'"'+(x.open?' data-open="'+esc2(x.open)+'"':'')+(x.pc?' data-pc="'+esc2(x.pc)+'"':'')+(x.sub?' data-sub="'+esc2(x.sub)+'"':'')+'>'+esc2(t)+'</button>';}).join(''):'';
+  var cur=bar.querySelector('.bk-sum');
+  if(!h){if(cur)cur.remove();return;}
+  if(cur&&cur.getAttribute('data-h')===String(h.length)+'|'+it.map(function(x){return x.lb+x.st;}).join('/'))return;
+  var el=document.createElement('span');el.className='bk-sum';el.setAttribute('role','status');el.setAttribute('data-h',String(h.length)+'|'+it.map(function(x){return x.lb+x.st;}).join('/'));el.innerHTML=h;
+  if(cur)cur.replaceWith(el);else{var f=bar.querySelector('.brand');if(f)f.after(el);else bar.prepend(el);}
+}
+try{var mm=document.getElementById('main');if(mm){new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(function(){try{run();}catch(_){}},80);}).observe(mm,{childList:true,subtree:true});}run();}catch(_){}
 })();
 </script>
 </body>
