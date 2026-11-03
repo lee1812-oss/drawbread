@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-03 09:00">
+<meta name="dash-build" content="2026-11-03 09:10">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1583,38 +1583,43 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-plco
 </script>
 
 <style id="bk-style">
-/* 2026-11-03 Aside 경고등: 관리자가 바로 봐야 할 이탈·중요사항(빨강 단계)만 반짝임. 메일 확인 필요는 거의 매일 생겨 제외, 주의(주황)는 반짝이지 않음 */
-@keyframes bkGlow{0%,100%{opacity:.12}50%{opacity:1}}
-@keyframes bkLamp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.78)}}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red){border-color:var(--red)!important}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::before{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 2px var(--red),0 0 18px 3px rgba(239,68,68,.6);animation:bkGlow 1.2s ease-in-out infinite;z-index:1}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::after{content:"";position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 10px 4px rgba(239,68,68,.75);animation:bkLamp 1.2s ease-in-out infinite;pointer-events:none;z-index:2}
-.khd-big.s-bad{position:relative;animation:bkGlowTxt 1.2s ease-in-out infinite}
+/* 2026-11-03 Aside 경고등 v2: 빨강(바로 확인) 단계만 강조. 메일 확인 필요·주황(주의)은 제외 */
+@keyframes bkGlow{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes bkBlink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes bkStrip{0%,100%{background:#b91c1c}50%{background:#ef4444}}
 @keyframes bkGlowTxt{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 3px rgba(239,68,68,.55),0 0 14px 2px rgba(239,68,68,.45)}}
-.khd-big.s-bad::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 7px 2px rgba(239,68,68,.7);animation:bkLamp 1.2s ease-in-out infinite}
-.bk-sum{display:inline-flex;align-items:center;gap:7px;flex-wrap:nowrap;min-width:0;overflow:hidden;flex:0 1 auto;white-space:nowrap;padding:5px 8px 5px 10px;border-radius:999px;background:var(--red-bg);border:2px solid var(--red);color:var(--red);font-weight:800;font-size:1rem;line-height:1.2;animation:bkGlowTxt 1.2s ease-in-out infinite}
-.bk-sum .bk-lamp{flex:none;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffb4b4,#ef2b2b 55%,#9b1111);box-shadow:0 0 9px 3px rgba(239,68,68,.75);animation:bkLamp 1.2s ease-in-out infinite}
-.bk-sum .bk-chip{border:1px solid var(--red);background:var(--card);color:var(--red);font:inherit;font-size:.9rem;font-weight:800;border-radius:999px;padding:3px 10px;cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}
-.bk-sum .bk-chip:hover{background:var(--red);color:#fff}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red){border:3px solid #e11d1d!important;background-image:linear-gradient(rgba(239,68,68,.08),rgba(239,68,68,.08))!important}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::before{content:"";position:absolute;inset:-3px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ef4444,0 0 26px 6px rgba(239,68,68,.7);animation:bkGlow 1s ease-in-out infinite;z-index:1}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::after{content:"⚠ 바로 확인";position:absolute;top:-1px;right:14px;padding:4px 16px 6px;border-radius:0 0 12px 12px;background:#e11d1d;color:#fff;font-size:1.55rem;font-weight:900;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;box-shadow:0 2px 8px rgba(185,28,28,.5);animation:bkBlink 1s steps(1) infinite;pointer-events:none;z-index:3}
+.khd-big.s-bad{position:relative;background:#e11d1d!important;color:#fff!important;animation:bkGlowTxt 1s ease-in-out infinite}
+.khd-big.s-bad::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:#fff;animation:bkBlink 1s steps(1) infinite}
+.bk-strip{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:10px 24px;color:#fff;font-weight:900;font-size:1.75rem;line-height:1.25;animation:bkStrip 1.6s ease-in-out infinite;border-bottom:2px solid #7f1d1d}
+.bk-strip .bk-t{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.bk-strip .bk-t i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#fff;color:#dc2626;font-size:1.7rem;animation:bkBlink 1s steps(1) infinite}
+.bk-strip .bk-chip{border:0;background:#fff;color:#b91c1c;font:inherit;font-size:1.45rem;font-weight:900;border-radius:999px;padding:6px 18px;cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.bk-strip .bk-chip b{color:#fff;background:#dc2626;border-radius:999px;padding:1px 9px;margin-left:6px}
+.bk-strip .bk-chip:hover{background:#fee2e2}
+.bk-strip .bk-chip::after{content:" 보기 ›";color:#7f1d1d;font-weight:700;font-size:.9rem}
 </style>
 <script>
 (function(){
-// 2026-11-03 Aside 경고등: 화면에 빨강(바로 확인) 카드가 있으면 카드 테두리·모서리 등이 반짝이고, 맨 위 줄에 「바로 확인 N」 요약 칩을 보여 줌(누르면 그 카드 자세히). 화면 내용만 읽고 자료·열쇠는 건드리지 않음
+// 2026-11-03 Aside 경고등 v2: 빨강(바로 확인) 카드가 있으면 머리줄 아래에 붉은 경고 띠 + 카드에 「⚠ 바로 확인」 표와 강한 빛. 화면 내용만 읽고 자료·열쇠는 건드리지 않음
 var SEL=".kpi.alert:not(.mailw):not([data-open=\"mail\"]):not([data-open=\"naver\"]):not([data-open=\"utca\"]),.kpi.c4k.lv-red"+',.khd-big.s-bad',tm=0;
 function tx(el,s){var e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';}
 function esc2(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-function run(){var m=document.getElementById('main');if(!m)return;var bar=document.querySelector('header .hd');if(!bar)return;
-  var it=[];m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-sum')||el.closest('#panel'))return;
-    if(el.classList.contains('khd-big')){it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').trim(),open:'khaccp'});return;}
-    var pc=el.classList.contains('pcs');var lb=(pc?tx(el,'.pt'):(tx(el,'.lb')||tx(el,'.c4h .lb'))).split(' · ')[0];var st=pc?tx(el,'.pv'):tx(el,'.badge');
+function run(){var m=document.getElementById('main'),hd=document.querySelector('header');if(!m||!hd)return;
+  var it=[];m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-strip'))return;
+    if(el.classList.contains('khd-big')){it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').replace('확인할 일지','확인 필요').trim(),open:'khaccp'});return;}
+    var pc=el.classList.contains('pcs');var lb=(pc?tx(el,'.pt'):(tx(el,'.lb')||tx(el,'.c4h .lb'))).split(' · ')[0];var st=(pc?tx(el,'.pv'):tx(el,'.badge')).split(' · ')[0];
     it.push({lb:lb,st:st,open:el.getAttribute('data-open')||'',pc:el.getAttribute('data-pc')||'',sub:el.getAttribute('data-sub')||''});});
-  var h=it.length?'<span class="bk-lamp"></span><span>바로 확인 '+it.length+'</span>'+it.map(function(x){var t=x.lb+(x.st?' · '+x.st:'');return '<button class="bk-chip" title="'+esc2(t)+'"'+(x.open?' data-open="'+esc2(x.open)+'"':'')+(x.pc?' data-pc="'+esc2(x.pc)+'"':'')+(x.sub?' data-sub="'+esc2(x.sub)+'"':'')+'>'+esc2(t)+'</button>';}).join(''):'';
-  var cur=bar.querySelector('.bk-sum');
-  if(!h){if(cur)cur.remove();return;}
-  if(cur&&cur.getAttribute('data-h')===String(h.length)+'|'+it.map(function(x){return x.lb+x.st;}).join('/'))return;
-  var el=document.createElement('span');el.className='bk-sum';el.setAttribute('role','status');el.setAttribute('data-h',String(h.length)+'|'+it.map(function(x){return x.lb+x.st;}).join('/'));el.innerHTML=h;
-  if(cur)cur.replaceWith(el);else{var f=bar.querySelector('.brand');if(f)f.after(el);else bar.prepend(el);}
+  var sig=it.map(function(x){return x.lb+'|'+x.st;}).join('/');var cur=hd.querySelector('.bk-strip');
+  if(!it.length){if(cur){cur.remove();refit();}return;}
+  if(cur&&cur.getAttribute('data-h')===sig)return;
+  var h='<span class="bk-t"><i>!</i>지금 바로 확인 '+it.length+'건</span>'+it.map(function(x){return '<button class="bk-chip" title="'+esc2(x.lb+' '+x.st)+'"'+(x.open?' data-open="'+esc2(x.open)+'"':'')+(x.pc?' data-pc="'+esc2(x.pc)+'"':'')+(x.sub?' data-sub="'+esc2(x.sub)+'"':'')+'>'+esc2(x.lb)+(x.st?'<b>'+esc2(x.st)+'</b>':'')+'</button>';}).join('');
+  var el=document.createElement('div');el.className='bk-strip';el.setAttribute('role','alert');el.setAttribute('data-h',sig);el.innerHTML=h;
+  if(cur)cur.replaceWith(el);else hd.appendChild(el);refit();
 }
+function refit(){try{if(typeof fitSoon==='function')fitSoon(80);}catch(_){}}
 try{var mm=document.getElementById('main');if(mm){new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(function(){try{run();}catch(_){}},80);}).observe(mm,{childList:true,subtree:true});}run();}catch(_){}
 })();
 </script>
