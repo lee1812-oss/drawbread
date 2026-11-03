@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-03 11:22">
+<meta name="dash-build" content="2026-11-03 11:45">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1297,10 +1297,11 @@ function fitTpl(m,k){if(innerWidth<1400)return false;
   return true;}
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   FIT_BUSY=true;let ok=false;
-  try{fitTplUndo(k);if(innerWidth>=1400&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
+  try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1400&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
   finally{FIT_BUSY=false;}
   if(!ok){document.body.classList.remove('ftpl');fitAllAuto();}}
 function fitSoon(ms){clearTimeout(FIT_T);FIT_T=setTimeout(fitAll,ms||60);}
+try{window.fitSoon=fitSoon;}catch(_){}/* 2026-11-03: 경고등 스크립트가 강조 뒤 다시 맞출 수 있게 */
 setInterval(()=>{try{if(!FIT_BUSY&&document.body.classList.contains('ftpl')&&!fitFits())fitSoon(10);}catch(_){}},2000);// 사진·자료가 늦게 들어와 넘치면 다시 맞춤
 (function(){const m=$('#main');if(!m)return;new MutationObserver(()=>{if(!FIT_BUSY)fitAll();}).observe(m,{childList:true});addEventListener('resize',()=>fitSoon(200));addEventListener('load',()=>fitSoon(300));document.addEventListener('fullscreenchange',()=>fitSoon(300));setTimeout(()=>fitSoon(10),50);setTimeout(()=>fitSoon(10),1500);})();
 
@@ -1593,10 +1594,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-plco
 @keyframes bkBlink{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes bkStrip{0%,100%{background:#b91c1c}50%{background:#ef4444}}
 @keyframes bkGlowTxt{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 3px rgba(239,68,68,.55),0 0 14px 2px rgba(239,68,68,.45)}}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red){border:3px solid #e11d1d!important;background-image:linear-gradient(rgba(239,68,68,.08),rgba(239,68,68,.08))!important}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::before{content:"";position:absolute;inset:-3px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ef4444,0 0 26px 6px rgba(239,68,68,.7);animation:bkGlow 1s ease-in-out infinite;z-index:1}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)::after{content:"⚠ 바로 확인";position:absolute;top:-1px;right:14px;padding:4px 16px 6px;border-radius:0 0 12px 12px;background:#e11d1d;color:#fff;font-size:1.55rem;font-weight:900;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;box-shadow:0 2px 8px rgba(185,28,28,.5);animation:bkBlink 1s steps(1) infinite;pointer-events:none;z-index:3}
-:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red)[data-bkno]::after{content:"⚠ No." attr(data-bkno) " 바로 확인"}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red,.khday.bk-hot){border:3px solid #e11d1d!important;background-image:linear-gradient(rgba(239,68,68,.08),rgba(239,68,68,.08))!important}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red,.khday.bk-hot)::before{content:"";position:absolute;inset:-3px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 3px #ef4444,0 0 26px 6px rgba(239,68,68,.7);animation:bkGlow 1s ease-in-out infinite;z-index:1}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red,.khday.bk-hot)::after{content:"⚠ 바로 확인";position:absolute;top:-1px;right:14px;padding:4px 16px 6px;border-radius:0 0 12px 12px;background:#e11d1d;color:#fff;font-size:1.55rem;font-weight:900;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;box-shadow:0 2px 8px rgba(185,28,28,.5);animation:bkBlink 1s steps(1) infinite;pointer-events:none;z-index:3}
+:is(.kpi.alert:not(.mailw):not([data-open="mail"]):not([data-open="naver"]):not([data-open="utca"]),.kpi.c4k.lv-red,.khday.bk-hot)[data-bkno]::after{content:"⚠ No." attr(data-bkno) " 바로 확인"}
+/* 2026-11-03 조조: No.1 K-HACCP 일지 카드도 No.2처럼 붉은 테두리·빛·꼬리표 (사용자 「No.1도 2번처럼 돋보이게」) */
+.khday.bk-hot{position:relative;padding-top:50px!important}
+body.fitall .kpis>.khday.bk-hot{padding-top:50px!important}
 .khd-big.s-bad{position:relative;background:#e11d1d!important;color:#fff!important;animation:bkGlowTxt 1s ease-in-out infinite}
 .khd-big.s-bad::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:#fff;animation:bkBlink 1s steps(1) infinite}
 .bk-strip{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:10px 24px;color:#fff;font-weight:900;font-size:1.75rem;line-height:1.25;animation:bkStrip 1.6s ease-in-out infinite;border-bottom:2px solid #7f1d1d}
@@ -1617,10 +1621,11 @@ var SEL=".kpi.alert:not(.mailw):not([data-open=\"mail\"]):not([data-open=\"naver
 function tx(el,s){var e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';}
 function esc2(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function run(){var m=document.getElementById('main'),hd=document.querySelector('header');if(!m||!hd)return;
-  var it=[];m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-strip'))return;var no=String(it.length+1);if(el.getAttribute('data-bkno')!==no)el.setAttribute('data-bkno',no);
-    if(el.classList.contains('khd-big')){it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').replace('확인할 일지','확인 필요').trim(),open:'khaccp'});return;}
+  var it=[];var hotKh=[],khChg=false;m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-strip'))return;var no=String(it.length+1);if(el.getAttribute('data-bkno')!==no)el.setAttribute('data-bkno',no);
+    if(el.classList.contains('khd-big')){var kc=el.closest('.khday');if(kc){hotKh.push(kc);if(!kc.classList.contains('bk-hot')){kc.classList.add('bk-hot');khChg=true;}if(kc.getAttribute('data-bkno')!==no)kc.setAttribute('data-bkno',no);}it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').replace('확인할 일지','확인 필요').trim(),open:'khaccp'});return;}
     var pc=el.classList.contains('pcs');var lb=(pc?tx(el,'.pt'):(tx(el,'.lb')||tx(el,'.c4h .lb'))).split(' · ')[0];var st=(pc?tx(el,'.pv'):tx(el,'.badge')).split(' · ')[0];
     it.push({lb:lb,st:st,open:el.getAttribute('data-open')||'',pc:el.getAttribute('data-pc')||'',sub:el.getAttribute('data-sub')||''});});
+  m.querySelectorAll('.khday.bk-hot').forEach(function(c){if(hotKh.indexOf(c)<0){c.classList.remove('bk-hot');c.removeAttribute('data-bkno');khChg=true;}});if(khChg)refit();
   var sig=it.map(function(x){return x.lb+'|'+x.st;}).join('/');var cur=hd.querySelector('.bk-strip');
   if(!it.length){if(cur){cur.remove();refit();}return;}
   if(cur&&cur.getAttribute('data-h')===sig)return;
