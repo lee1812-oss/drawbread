@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-03 09:40">
+<meta name="dash-build" content="2026-11-03 11:11">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1213,7 +1213,10 @@ function pCore4(){const c=c4Core();if(!c)return {s:'',h:empty('핵심 4품목 �
   h+='<a class="link" href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기 (김 대리 실물 입력)</a>';
   return {s:'김 대리 실물 '+esc(s.at||'')+' · 이카운트 출고 예정 · '+esc(s.built||'')+' 계산',h};}
 PANELS.core4=['핵심 4품목 · 세 사람이 같이 보는 재고',pCore4,'wonryo'];
-function c4Fit(){document.body.classList.toggle('fit1',innerWidth>=1100);}c4Fit();addEventListener('resize',c4Fit);
+// 2026-11-03 조조: 세로형 큰 화면(키오스크 전광판)도 한 화면 맞춤. 가로 1100px 이상이거나, 세로로 긴 큰 화면(폭 700·높이 1200 이상) 또는 세로 화면에서 전광판(전체 화면) 모드일 때
+function fitPort(){const w=innerWidth,h=innerHeight;return w<1100&&w>=600&&h>=w*1.25&&((w>=700&&h>=1200)||!!document.fullscreenElement);}
+function fitBigScr(){return innerWidth>=1100||fitPort();}
+function c4Fit(){document.body.classList.toggle('fit1',fitBigScr());document.body.classList.toggle('fport',fitPort());}c4Fit();addEventListener('resize',c4Fit);document.addEventListener('fullscreenchange',c4Fit);
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
 // 2026-11-02 조조: K-HACCP 하루 일지를 대시보드 맨 위로 (사용자 「가장 상단으로, 제일 중요」)
 kpiLayout=(orig=>function(){const h=orig();try{return khDayWide()+h;}catch(_){return h;}})(kpiLayout);
@@ -1221,7 +1224,9 @@ kpiLayout=(orig=>function(){const h=orig();try{return khDayWide()+h;}catch(_){re
 // ===== 2026-11-02 조조: 한 화면 맞춤 (사용자 「한 페이지에 모두 보이게, 스크롤 없이 알차게 하나의 화면으로」) =====
 // 넓은 화면(가로 1100px 이상)에서만: K-HACCP 일지를 맨 위 한 줄로, 나머지 묶음은 순서대로 2~3단에 나눠 담고, 화면 높이에 맞게 전체 배율(zoom)을 자동으로 맞춤. 좁은 화면(태블릿 세로·휴대폰)은 예전처럼 스크롤.
 let FIT_BUSY=false,FIT_T=0;
-function fitUndo(){const m=$('#main');if(m)m.style.zoom='';document.body.classList.remove('fitall');}
+function fitUndo(){const m=$('#main');if(m)m.style.zoom='';document.body.classList.remove('fitall');
+  // 2026-11-03: 나눠 담았던 단(fcols)을 원래 순서로 풀어 둠 (전광판 끄기·화면 회전 때 스크롤 화면이 깨지지 않게)
+  try{const k=m&&m.querySelector('.kpis');if(k&&k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}}catch(_){}}
 function fitSections(k){const kids=[...k.children];const W=k.getBoundingClientRect().width;const secs=[];let cur=null,pend=null;
   for(const el of kids){if(el.classList.contains('khday'))continue;
     if(el.classList.contains('grp')){pend=el;cur=null;continue;}
@@ -1236,7 +1241,7 @@ function fitPart(hs,n){// 순서를 지키면서 n단으로 나눠 가장 긴 �
   return go(0,n).cut;}
 function fitFits(){return document.documentElement.scrollHeight<=innerHeight+1;}
 function fitAllAuto(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
-  if(innerWidth<1100||!D){fitUndo();return;}
+  if(!fitBigScr()||!D){fitUndo();return;}
   FIT_BUSY=true;try{
     // 처음 상태로 되돌린 뒤 묶음 계산
     if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}
@@ -1248,10 +1253,10 @@ function fitAllAuto(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySe
     k.innerHTML='';if(kh)k.appendChild(kh);k.appendChild(wrap);
     const lay=(n,cuts)=>{wrap.innerHTML='';wrap.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';let s=0;[...cuts,secEls.length].forEach(e=>{const c=document.createElement('div');c.className='fcol';secEls.slice(s,e).forEach(x=>c.appendChild(x));wrap.appendChild(c);s=e;});};
     const balance=n=>{lay(n,[]);/* 한 단에 모아 폭을 맞춘 뒤 높이 재기 */wrap.style.gridTemplateColumns='minmax(0,'+(100/n)+'%)';const hs=secEls.map(x=>x.getBoundingClientRect().height/(parseFloat(m.style.zoom)||1));lay(n,fitPart(hs,n));};
-    const search=()=>{let lo=0.4,hi=1;m.style.zoom='1';if(fitFits())return 1;for(let i=0;i<9;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);return lo;};
+    const search=()=>{let lo=fitPort()?0.3:0.4,hi=1;m.style.zoom='1';if(fitFits())return 1;for(let i=0;i<9;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);return lo;};
     let best=null;
-    for(const n of [3,2,4]){if(n>secEls.length)continue;m.style.zoom='0.7';balance(n);let z=search();balance(n);z=search();balance(n);z=search();
-      const zs=n===3?z*1.12:z;/* 3단을 조금 우대: 카드 폭이 넓어 글자 잘림이 적음 */if(!best||zs>best.zs)best={n,z,zs};}
+    for(const n of (fitPort()?(globalThis.FIT_PN||[1,2]):[3,2,4])){if(n>secEls.length)continue;m.style.zoom='0.7';balance(n);let z=search();balance(n);z=search();balance(n);z=search();
+      const zs=fitPort()?(n===1?z*1.15:z):(n===3?z*1.12:z);/* 세로 화면은 1단을 조금 우대 *//* 3단을 조금 우대: 카드 폭이 넓어 글자 잘림이 적음 */if(!best||zs>best.zs)best={n,z,zs};}
     m.style.zoom='0.7';balance(best.n);let z=search();balance(best.n);z=search();
     if(!fitFits())m.style.zoom='0.4';
   }catch(err){fitUndo();try{console.warn('fitAll',err);}catch(_){}}
