@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-03 11:45">
+<meta name="dash-build" content="2026-11-04 10:43">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -282,6 +282,23 @@ body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 .rp-red{color:var(--red)}.rp-amb{color:var(--amber)}.rp-ok{color:var(--green)}.rp-na{color:var(--faint)}
 .rp-go{width:100%;min-height:56px;margin-top:12px;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;font-size:1.05rem}
 .rp-go[disabled]{background:var(--gray-bg);color:var(--sub);cursor:default}
+
+/* 2026-11-04 조조: 칸 고르기 · 키오스크 칸 */
+a.kpi{text-decoration:none;color:inherit}
+.kpis .pcw.one{grid-template-columns:1fr!important}
+.pcs.kio .pt i{background:var(--blue)}.pcs.kio .pv{color:var(--blue)}
+.kio-b{margin-top:8px;flex:1 1 auto;display:flex;align-items:center;gap:8px;background:#0c0c0c;color:#e5e7eb;border-radius:6px;padding:8px 10px;font-size:.78rem;line-height:1.35;word-break:keep-all;min-height:52px}
+.kio-b svg{width:26px;height:26px;flex:none;stroke:#e5e7eb}
+body.fit1 .kio-b{flex:1 1 0;height:0;min-height:44px}
+.cdHid{border:1px solid var(--amber);background:transparent;color:var(--amber);border-radius:999px;padding:5px 12px;font-weight:800;font-size:.85rem;cursor:pointer;margin-right:8px}
+.cdtop{display:flex;align-items:center;gap:6px;font-size:1.05rem;color:var(--ink2);margin:4px 0 12px}.cdtop b{font-size:1.3rem;color:var(--ink)}.cdtop .sp{flex:1}
+.cdbtn{min-height:48px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;cursor:pointer}.cdbtn:disabled{opacity:.45;cursor:default}
+.cdg{margin:0 0 14px}.cdg h3{font-size:.9rem;color:var(--sub);margin:0 0 6px;font-weight:800}
+.cdr{display:flex;align-items:center;gap:12px;min-height:54px;padding:6px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:0 0 6px;cursor:pointer;font-size:1.06rem;font-weight:700;color:var(--ink)}
+.cdr input{width:26px;height:26px;flex:none;accent-color:var(--green);cursor:pointer}
+.cdr.off{background:transparent;color:var(--sub)}.cdr.off .cdn{text-decoration:line-through}
+.cdr .cdn{flex:1;min-width:0;word-break:keep-all}
+.cdhot{font-style:normal;font-size:.8rem;font-weight:800;color:#fff;background:var(--red);border-radius:999px;padding:3px 9px;white-space:nowrap}
 </style>
 <style id="c4css">
 /* 2026-10-22 핵심 4품목 현황판 (Aside) */
@@ -449,6 +466,7 @@ body.fitall.ftpl .fgrid .plk .plt{display:-webkit-box;-webkit-line-clamp:3;-webk
     <button class="ib" id="bInst" title="앱 설치" style="display:none;border-color:var(--ink);color:var(--ink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>앱 설치</span></button>
     <button class="ib" id="bRef" title="새로고침"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg><span>새로고침</span></button>
     <button class="ib" id="bNight" title="밤 화면"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span id="tNight">밤 화면</span></button>
+    <button class="ib" id="bCards" title="칸 고르기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8.5l1.6 1.6L11.5 7M7 15l1.6 1.6 2.9-3.1M14 9h4M14 15.5h4"/></svg><span>칸 고르기</span></button>
     <button class="ib" id="bBoard" title="전광판"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="tBoard">전광판</span></button>
   </div>
 </div></header>
@@ -1288,7 +1306,7 @@ function fitTpl(m,k){if(innerWidth<1400)return false;
   document.body.classList.add('fitall','ftpl');
   const kh=k.querySelector(':scope>.khday');const wrap=document.createElement('div');wrap.className='frows';
   const mk=(t,c,sub,its)=>{const r=document.createElement('section');r.className='frow';const h=document.createElement('div');h.className='frh';h.style.setProperty('--rc',c);h.innerHTML='<b>'+t+'</b>'+sub;const g=document.createElement('div');g.className='fgrid';
-    const tot=its.reduce((a,x)=>a+x[1],0);its.forEach(([el,sp],j)=>{let s=sp;if(j===its.length-1&&tot<6)s+=6-tot;el.style.setProperty('--sp',s);g.appendChild(el);});r.appendChild(h);r.appendChild(g);wrap.appendChild(r);};
+    const tot=its.reduce((a,x)=>a+x[1],0);g.style.gridTemplateColumns='repeat('+Math.max(6,tot)+',minmax(0,1fr))';its.forEach(([el,sp],j)=>{let s=sp;if(j===its.length-1&&tot<6)s+=6-tot;el.style.setProperty('--sp',s);g.appendChild(el);});r.appendChild(h);r.appendChild(g);wrap.appendChild(r);};
   rows.forEach(({R,i,its})=>{if(its.length)mk(R.t,R.c,fitTplSub(k,i),its);});
   const grps=top.filter(e=>e.classList.contains('grp'));
   if(rest.length)mk('기타','var(--faint)','',rest.map(e=>[e,e.classList.contains('note')?6:2]));
@@ -1584,6 +1602,65 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-plco
   if(!ok){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();ok=document.execCommand('copy');a.remove();}catch(_){ok=false;}}
   b.textContent=ok?'복사했어요':'복사 안 됨 — 글자를 길게 눌러 복사';const m=document.getElementById('plCopied');if(m&&ok)m.textContent='카톡 대화창에 붙여 넣고 확인한 뒤 보내 주세요.';});
 // ===== 2026-10-23 생산 계획 덧붙임 끝 =====
+
+// ===== 2026-11-04 조조: 「칸 고르기」(체크로 대시보드 칸 빼고 넣기, 모든 화면 같이) + 「생산실 키오스크」 원격 화면 칸 =====
+// 뺀 칸 목록은 Apps Script 「빵을그리다 업무 대시보드 칸 고르기 저장소」(lee1812@naver.com)에 저장. 읽기는 누구나(칸 이름 목록뿐), 저장은 대표 열쇠에서 만든 토큰이 맞을 때만.
+// 직원용 화면(키오스크 등)은 같은 설정을 읽어서 적용만 하고 고칠 수는 없음. 키오스크 원격 주소는 대표 열쇠로 암호화해 둠(직원 화면·공개 코드에서 안 보임).
+const UIS_URL='https://script.google.com/macros/s/AKfycby3Cz4QiWExpSoURyyjAGO0zt6a5aGmUnSdDVDYJNJm82J4erSK0kElJ8on0fjN9-2S/exec';
+const KIO_ENC={"kdf":"pbkdf2-sha256-100000","salt":"hlYBZHedezbtUJmPTkCn9w==","iv":"CJgVZ0AsJ9fA/D2E","ct":"DtC3xppTD28CqwGMLS9wWk5qcqrqATI2DGaLaPNOvVS9dIcGdfbSR2RnjI6/DeSpZarcMw6kNxsxHaUFZWQYF6GrhHAC2wesne4I/OdEna8k8jF1fDjEXpn+ER7Dv4FHX8XPWLVcwaDMmiu30SZuMZoLx19S1D6yG62j9xZL8rzPKMbaPA=="};
+let KIO_URL='';
+LOGO.cards='<svg viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8.5l1.6 1.6L11.5 7M7 15l1.6 1.6 2.9-3.1M14 9h4M14 15.5h4"/></svg>';
+LOGO.kiosk='<svg viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="16" rx="2"/><path d="M10 21.5h4M12 18.5v3"/></svg>';
+const CD={hide:new Set(),at:0,cat:{},cur:[],dirty:0,st:'',stAt:0,busy:false};
+try{const o=JSON.parse(localStorage.getItem('dash_cards_v1')||'null');if(o&&Array.isArray(o.hide)){CD.hide=new Set(o.hide);CD.at=+o.at||0;}CD.cat=JSON.parse(localStorage.getItem('dash_cards_cat')||'{}')||{};}catch(_){}
+function cdKeep(){try{localStorage.setItem('dash_cards_v1',JSON.stringify({hide:[...CD.hide],at:CD.at}));}catch(_){}}
+function cdId(el){if(el.classList.contains('khday'))return 'khday';const c=el.getAttribute('data-cid');if(c)return c;const o=el.getAttribute('data-open')||'';if(!o)return '';
+  if(o==='pcmon')return 'pcmon:'+(el.getAttribute('data-pc')||'');if(o==='core4'){const n=el.querySelector('.c4h .lb');return 'core4:'+(n?n.textContent.trim():'');}
+  if(el.classList.contains('todow')&&o!=='ftodo')return o+':todo';return o;}
+function cdName(el){if(el.classList.contains('khday'))return 'K-HACCP 일지 (맨 위 날짜 칸)';const q=s=>{const e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';};
+  const n=(el.classList.contains('pcs')?q('.pt'):(q('.c4h .lb')||q('.lb')||q('.mt')))||el.getAttribute('data-open')||'';return n.split(' · ')[0];}
+function cdHot(el){return el.matches('.kpi.alert:not(.mailw):not([data-open="mail"]),.kpi.c4k.lv-red')||!!el.querySelector('.khd-big.s-bad');}
+function kioCard(){return '<a class="kpi pcs kio" data-cid="kiosk" href="'+(KIO_URL?esc(KIO_URL):'#')+'" target="_blank" rel="noopener" title="생산실 키오스크 화면을 원격(크롬 원격 데스크톱)으로 새 창에 열어요"><div class="pt"><i></i>생산실 키오스크</div><div class="ps">원격 화면 · 새 창으로 열림</div><div class="pv sm2">화면 보기</div><div class="kio-b">'+LOGO.kiosk+'<span>누르면 키오스크 화면이 새 창으로 떠요<br>처음 한 번은 PIN 입력</span></div></a>';}
+function cdApply(h,build){const t=document.createElement('template');t.innerHTML=h;const r=t.content;
+  if(build){if(!STAFF&&!r.querySelector('[data-cid="kiosk"]')){const pw=r.querySelector('.pcw');const tmp=document.createElement('template');tmp.innerHTML=kioCard();if(pw)pw.after(tmp.content);else r.append(tmp.content);}
+    const cur=[];let g='맨 위';[...r.children].forEach(c=>{if(c.classList.contains('grp')){const cl=c.cloneNode(true);cl.querySelectorAll('.gsub,small,.src').forEach(x=>x.remove());g=cl.textContent.replace(/\s+/g,' ').trim()||g;return;}
+      const list=(c.matches('.khday,.kpi')?[c]:[]).concat([...c.querySelectorAll('.kpi')]);list.forEach(el=>{const id=cdId(el);if(!id||cur.some(x=>x.id===id))return;const x={id,n:cdName(el),g,hot:cdHot(el)};cur.push(x);CD.cat[id]={n:x.n,g};});});
+    CD.cur=cur;try{localStorage.setItem('dash_cards_cat',JSON.stringify(CD.cat));}catch(_){}}
+  if(!CD.hide.size&&!build)return h;
+  r.querySelectorAll('.khday,.kpi').forEach(el=>{if(CD.hide.has(cdId(el)))el.remove();});
+  r.querySelectorAll('.c4,.pcw,.kg5').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';});
+  [...r.children].forEach(c=>{if(!c.classList.contains('grp'))return;const nx=c.nextElementSibling;if(!nx||nx.classList.contains('grp'))c.remove();});
+  const d=document.createElement('div');d.append(r);return d.innerHTML;}
+kpiLayout=(orig=>function(){const h=orig();try{return cdApply(h,true);}catch(err){try{console.warn('cards',err);}catch(_){}return h;}})(kpiLayout);
+pcPaint=function(){const el=document.getElementById('pcw');if(el){let h=pcPair();try{h=cdApply(h,false);}catch(_){}el.outerHTML=h;}if(openKind==='pcmon')fillPanel('pcmon');};
+try{FIT_ROWS[3].items.splice(3,0,['.kpi[data-cid=kiosk]',1]);}catch(_){}
+render=(orig=>function(){orig();try{if(STAFF||!CD.hide.size)return;const b=document.querySelector('#main .bar');if(b&&!b.querySelector('.cdHid')){const x=document.createElement('button');x.className='cdHid';x.setAttribute('data-open','cards');x.textContent='빠진 칸 '+CD.hide.size+'개 · 칸 고르기';const sp=b.querySelector('.sp');if(sp)sp.after(x);else b.append(x);}}catch(_){}})(render);
+async function cdTok(){let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return '';
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('dashui|'+k));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function cdPull(){if(CD.busy||CD.dirty)return;CD.busy=true;try{const r=await fetch(UIS_URL+'?op=get&t='+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&j.ok&&j.v&&!CD.dirty){const nh=(j.v.hide||[]).map(String);const same=nh.length===CD.hide.size&&nh.every(x=>CD.hide.has(x));CD.at=+j.v.at||0;
+    if(!same){CD.hide=new Set(nh);cdKeep();if(D)render();}else cdKeep();}}catch(_){}finally{CD.busy=false;}}
+let CD_T=0;
+function cdSet(next){CD.hide=next;CD.dirty++;cdKeep();if(D)render();clearTimeout(CD_T);CD.st='저장 중…';CD.stAt=Date.now();if(openKind==='cards')fillPanel('cards');
+  CD_T=setTimeout(async()=>{const my=CD.dirty;try{const tk=await cdTok();if(!tk)throw new Error('열쇠 없음');const r=await fetch(UIS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({op:'set',token:tk,hide:[...CD.hide],by:navigator.userAgent.includes('Windows')?'PC':'기기'})});const j=await r.json();
+      if(!j||!j.ok)throw new Error(j&&j.err==='auth'?'저장 권한 없음':'응답 오류');CD.at=+j.v.at||Date.now();CD.st='ok';}catch(err){CD.st='저장 안 됨: '+(err&&err.message||err)+' — 이 기기에만 적용됐어요';}
+    CD.stAt=Date.now();if(my===CD.dirty)CD.dirty=0;cdKeep();if(openKind==='cards')fillPanel('cards');},700);}
+function pCards(){const cur=CD.cur.slice();const ids=new Set(cur.map(x=>x.id));
+  CD.hide.forEach(id=>{if(!ids.has(id)){const c=CD.cat[id]||{n:id,g:'기타'};cur.push({id,n:c.n,g:c.g,hot:false});}});
+  const groups=[];cur.forEach(x=>{let g=groups.find(y=>y.g===x.g);if(!g){g={g:x.g,a:[]};groups.push(g);}g.a.push(x);});
+  const on=cur.filter(x=>!CD.hide.has(x.id)).length;
+  const st=CD.st==='저장 중…'?'<div class="note gray">저장 중…</div>':CD.st==='ok'?'<div class="note ok">모든 화면에 저장했어요 '+hm(CD.stAt)+' · 키오스크·태블릿은 5분 안에 바뀌어요</div>':CD.st?'<div class="note amb">'+esc(CD.st)+'</div>':'';
+  const h=st+'<div class="cdtop"><b>'+on+'</b>개 보이는 중 · <b>'+CD.hide.size+'</b>개 뺌<span class="sp"></span><button class="cdbtn" id="cdAll"'+(CD.hide.size?'':' disabled')+'>모두 보이기</button></div>'+
+    groups.map(g=>'<div class="cdg"><h3>'+esc(g.g)+'</h3>'+g.a.map(x=>'<label class="cdr'+(CD.hide.has(x.id)?' off':'')+'"><input type="checkbox" data-cd="'+esc(x.id)+'"'+(CD.hide.has(x.id)?'':' checked')+'><span class="cdn">'+esc(x.n)+'</span>'+(x.hot?'<em class="cdhot">⚠ 지금 빨간 경고</em>':'')+'</label>').join('')+'</div>').join('')+
+    '<div class="box" style="margin-top:14px"><h3>알아 두세요</h3><div class="t2">1. 체크를 끄면 그 칸이 사무실 PC·생산실 키오스크·태블릿 대시보드에서 같이 빠져요.<br>2. 빨간 경고 중인 칸을 빼면 위쪽 붉은 경고 띠에서도 빠지니 조심해 주세요.<br>3. 칸 고르기는 대표 화면에서만 할 수 있어요. 직원용 화면은 보기만 해요.</div></div>';
+  return {s:'체크한 칸만 대시보드에 보여요',h};}
+PANELS.cards=['대시보드 칸 고르기',pCards,'cards'];
+document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('input[data-cd]'))return;if(STAFF)return;const n=new Set(CD.hide);if(t.checked)n.delete(t.dataset.cd);else n.add(t.dataset.cd);cdSet(n);});
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#cdAll');if(a&&!STAFF){cdSet(new Set());return;}
+  const k=e.target.closest&&e.target.closest('a.kio');if(k&&!KIO_URL){e.preventDefault();alert('키오스크 주소를 여는 중이에요. 잠시 뒤 다시 눌러 주세요.');}});
+(function(){const b=document.getElementById('bCards');if(!b)return;if(STAFF){b.style.display='none';return;}b.onclick=()=>openPanel('cards');})();
+(async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;KIO_URL=await decrypt(KIO_ENC,k);document.querySelectorAll('a.kio').forEach(a=>a.href=KIO_URL);}catch(_){}})();
+cdPull();setInterval(cdPull,5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cdPull();});
+// ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
 
 })();
 </script>
