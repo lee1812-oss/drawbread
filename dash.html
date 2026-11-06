@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-06 10:48">
+<meta name="dash-build" content="2026-11-06 12:21">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -283,35 +283,33 @@ body.night .con{background:#05070c;box-shadow:inset 0 0 0 1px #1f2937}
 .rp-go{width:100%;min-height:56px;margin-top:12px;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;font-size:1.05rem}
 .rp-go[disabled]{background:var(--gray-bg);color:var(--sub);cursor:default}
 
-/* 2026-11-04 조조: 칸 고르기 · 키오스크 칸 */
+/* 2026-11-04 조조: 칸 고르기 */
 a.kpi{text-decoration:none;color:inherit}
 .kpis .pcw.one{grid-template-columns:1fr!important}
-.pcs.kio .pt i{background:var(--blue)}.pcs.kio .pv{color:var(--blue)}
-.kio-b{margin-top:8px;flex:1 1 auto;display:flex;align-items:center;gap:8px;background:#0c0c0c;color:#e5e7eb;border-radius:6px;padding:8px 10px;font-size:.78rem;line-height:1.35;word-break:keep-all;min-height:52px}
-.kio-b svg{width:26px;height:26px;flex:none;stroke:#e5e7eb}
-body.fit1 .kio-b{flex:1 1 0;height:0;min-height:44px}
-/* 2026-11-04 조조: 키오스크 원격 화면을 대시보드 안에서 실시간으로 보기(화면 중계) */
-.pcs.kio.kpos .pt i{background:var(--green)}.pcs.kio.kpos .pv{color:var(--green)}.kfl.kpos{box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 2px #16a34a}
-.rdst{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}.rdst>.kpi{flex:1 1 0;min-height:0;margin:0}.rdst .kio-b{flex-direction:row;align-items:stretch;min-height:40px}.rdst .kio-b button{flex:1 1 0;padding:6px 4px}.rdst .kio-v{min-height:50px}
-.pcs.kio{cursor:default}.pcs.kio.on{cursor:pointer}
-.kio-b{flex-direction:column;align-items:stretch;justify-content:center;gap:6px;padding:8px}
-.kio-b button{border:0;border-radius:8px;font:inherit;font-weight:800;cursor:pointer;padding:8px 6px;line-height:1.2;word-break:keep-all}
-.kio-go{background:#2563eb;color:#fff;font-size:.95rem}.kio-go:hover{background:#1d4ed8}
-.kio-op{background:#374151;color:#e5e7eb;font-size:.78rem}
-.kio-e{margin-top:6px;font-size:.74rem;color:var(--amber);line-height:1.35;word-break:keep-all}
-.kio-live{color:#ef4444;font-weight:800}
-.kio-v{margin-top:8px;flex:1 1 auto;min-height:90px;background:#0c0c0c;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
-body.fit1 .kio-v{flex:1 1 0;height:0;min-height:60px}
-.kcrop{position:relative;overflow:hidden;max-width:100%;max-height:100%;height:100%;margin:auto}
-.kcrop video{position:absolute;left:0;top:0;width:100%;height:100%;display:block;background:#000}
-.kfl{position:fixed;z-index:25;right:12px;top:70px;display:none;flex-direction:column;background:#0b1020;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 2px #2563eb;overflow:hidden}
-.kfl.show{display:flex}
-.kfl .kf-h{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;background:#111827;color:#f9fafb;font-size:.9rem;cursor:move;user-select:none;flex:none}
-.kfl .kf-h b{white-space:nowrap}.kfl .kf-h .sp{flex:1}
-.kfl .kf-h button{border:0;border-radius:7px;background:#374151;color:#f9fafb;font:inherit;font-size:.82rem;font-weight:700;padding:7px 10px;cursor:pointer;white-space:nowrap}
-.kfl .kf-h button:hover{background:#4b5563}.kfl .kf-h button.x{background:#1f2937;font-size:1rem;padding:5px 11px}
-.kfl .kf-b{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;background:#000}
-.kfl .kf-n{flex:none;font-size:.74rem;color:#9ca3af;padding:4px 10px;background:#111827;word-break:keep-all}
+/* 2026-11-06 조조: 키오스크·포스기 화면 고정 (오른쪽 세로 단, 버튼 없이 저절로) */
+#scrCol{display:none}
+body.rsc{padding-right:calc(var(--scrW,380px) + 12px)}
+body.rsc #scrCol{display:flex;flex-direction:column;gap:8px;position:fixed;top:0;right:0;bottom:0;width:calc(var(--scrW,380px) + 12px);box-sizing:border-box;padding:8px 8px 8px 4px;background:var(--bg);border-left:1px solid var(--line);z-index:19;overflow:hidden}
+.scr{flex:none;display:flex;flex-direction:column;background:#0b1020;border-radius:10px;overflow:hidden;box-shadow:0 0 0 2px #2563eb}
+.scr[data-dev="pos"]{box-shadow:0 0 0 2px #16a34a}
+.scr-h{flex:none;height:36px;display:flex;align-items:center;gap:7px;padding:0 6px 0 10px;background:#111827;color:#f9fafb;font-size:.95rem;white-space:nowrap}
+.scr-h i{flex:none;width:10px;height:10px;border-radius:50%;background:#2563eb}.scr[data-dev="pos"] .scr-h i{background:#16a34a}
+.scr-st{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.82rem;font-weight:700;color:#9ca3af}
+.scr-st.live{color:#4ade80}.scr-st.stop{color:#fbbf24}
+.scr-h button,#scrBig .sb-h button{flex:none;border:0;border-radius:7px;background:#374151;color:#f9fafb;font:inherit;font-size:.82rem;font-weight:700;padding:6px 10px;cursor:pointer}
+.scr-h button:hover,#scrBig .sb-h button:hover{background:#4b5563}
+.scr-b{position:relative;background:#000;cursor:zoom-in}
+.scr-b img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.scr-m{position:absolute;left:8px;right:8px;bottom:8px;padding:7px 9px;border-radius:8px;background:rgba(17,24,39,.88);color:#f3f4f6;font-size:.85rem;font-weight:600;line-height:1.4;word-break:keep-all;text-align:center}
+.scr-m:empty{display:none}
+.scr.stop .scr-b img{opacity:.5;filter:grayscale(.7)}
+#scrBig{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.82);display:none;flex-direction:column}
+#scrBig.show{display:flex}
+#scrBig .sb-h{flex:none;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111827;color:#f9fafb;font-size:1.1rem}
+#scrBig .sb-h .scr-st{font-size:.95rem}
+#scrBig .sb-b{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px;cursor:zoom-out}
+#scrBig .sb-b img{width:100%;height:100%;object-fit:contain}
+#scrBig .sb-n{flex:none;padding:6px 14px 10px;color:#9ca3af;font-size:.85rem;text-align:center;word-break:keep-all}
 .cdHid{border:1px solid var(--amber);background:transparent;color:var(--amber);border-radius:999px;padding:5px 12px;font-weight:800;font-size:.85rem;cursor:pointer;margin-right:8px}
 .cdtop{display:flex;align-items:center;gap:6px;font-size:1.05rem;color:var(--ink2);margin:4px 0 12px}.cdtop b{font-size:1.3rem;color:var(--ink)}.cdtop .sp{flex:1}
 .cdbtn{min-height:48px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;cursor:pointer}.cdbtn:disabled{opacity:.45;cursor:default}
@@ -1643,30 +1641,17 @@ function cdId(el){if(el.classList.contains('khday'))return 'khday';const c=el.ge
 function cdName(el){if(el.classList.contains('khday'))return 'K-HACCP 일지 (맨 위 날짜 칸)';const q=s=>{const e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';};
   const n=(el.classList.contains('pcs')?q('.pt'):(q('.c4h .lb')||q('.lb')||q('.mt')))||el.getAttribute('data-open')||'';return n.split(' · ')[0];}
 function cdHot(el){return el.matches('.kpi.alert:not(.mailw):not([data-open="mail"]),.kpi.c4k.lv-red')||!!el.querySelector('.khd-big.s-bad');}
-const KS={stream:null,err:'',crop:null,size:'side',open:false,pos:null};
-// 2026-11-06 조조: 원격 화면 칸을 기기별로 (생산실 키오스크 + 사무실 입구 포스기)
-const RDEV={kiosk:{name:'생산실 키오스크',S:KS,fid:'kioFloat',ar0:[9,16],sub:'원격 화면 · 대시보드 안에서 보기',tip:'생산실 키오스크 원격 화면을 대시보드 안에서 실시간으로 봐요',pick:'「Chrome 원격 데스크톱 - DRAWBREAD-키오스크」',
-    open(){if(!KIO_URL){alert('키오스크 주소를 여는 중이에요. 잠시 뒤 다시 눌러 주세요.');return;}window.open(KIO_URL,'dbkiosk');}},
-  pos:{name:'사무실 포스기',S:{stream:null,err:'',crop:null,size:'side',open:false,pos:null},fid:'posFloat',ar0:[4,3],sub:'입구 신발장 · 대시보드 안에서 보기',tip:'사무실 입구 신발장 포스기 화면을 대시보드 안에서 실시간으로 봐요 (팀뷰어 원격 창을 받아서 보여 줘요)',pick:'포스기 팀뷰어 원격 창(TeamViewer)',
-    open(){window.open('https://web.teamviewer.com/remote-support','dbpos');}}};
-function kioInner(id){id=id||'kiosk';const R=RDEV[id],S=R.S,on=!!S.stream;
-  return '<div class="pt"><i></i>'+R.name+'</div><div class="ps">'+(on?'<b class="kio-live">● 실시간</b> · 누르면 크게 보기':R.sub)+'</div>'+
-    (on?'<div class="kio-v" data-k="big"><div class="kcrop"><video class="kiov" data-dev="'+id+'" autoplay muted playsinline></video></div></div>'
-      :'<div class="kio-b"><button class="kio-go" data-k="cap">화면 연결</button><button class="kio-op" data-k="open">원격 연결 열기</button></div>'+(S.err?'<div class="kio-e">'+esc(S.err)+'</div>':''));}
-function kioCard(id){id=id||'kiosk';const R=RDEV[id];return '<div class="kpi pcs kio'+(id==='pos'?' kpos':'')+(R.S.stream?' on':'')+'" data-cid="'+id+'" title="'+R.tip+'">'+kioInner(id)+'</div>';}
 function cdApply(h,build){const t=document.createElement('template');t.innerHTML=h;const r=t.content;
-  if(build){if(!STAFF&&!r.querySelector('.rdst')){const pw=r.querySelector('.pcw');const tmp=document.createElement('template');tmp.innerHTML='<div class="rdst">'+kioCard('kiosk')+kioCard('pos')+'</div>';if(pw)pw.after(tmp.content);else r.append(tmp.content);}
-    const cur=[];let g='맨 위';[...r.children].forEach(c=>{if(c.classList.contains('grp')){const cl=c.cloneNode(true);cl.querySelectorAll('.gsub,small,.src').forEach(x=>x.remove());g=cl.textContent.replace(/\s+/g,' ').trim()||g;return;}
+  if(build){const cur=[];let g='맨 위';[...r.children].forEach(c=>{if(c.classList.contains('grp')){const cl=c.cloneNode(true);cl.querySelectorAll('.gsub,small,.src').forEach(x=>x.remove());g=cl.textContent.replace(/\s+/g,' ').trim()||g;return;}
       const list=(c.matches('.khday,.kpi')?[c]:[]).concat([...c.querySelectorAll('.kpi')]);list.forEach(el=>{const id=cdId(el);if(!id||cur.some(x=>x.id===id))return;const x={id,n:cdName(el),g,hot:cdHot(el)};cur.push(x);CD.cat[id]={n:x.n,g};});});
     CD.cur=cur;try{localStorage.setItem('dash_cards_cat',JSON.stringify(CD.cat));}catch(_){}}
   if(!CD.hide.size&&!build)return h;
   r.querySelectorAll('.khday,.kpi').forEach(el=>{if(CD.hide.has(cdId(el)))el.remove();});
-  r.querySelectorAll('.c4,.pcw,.kg5,.rdst').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';});
+  r.querySelectorAll('.c4,.pcw,.kg5').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';});
   [...r.children].forEach(c=>{if(!c.classList.contains('grp'))return;const nx=c.nextElementSibling;if(!nx||nx.classList.contains('grp'))c.remove();});
   const d=document.createElement('div');d.append(r);return d.innerHTML;}
 kpiLayout=(orig=>function(){const h=orig();try{return cdApply(h,true);}catch(err){try{console.warn('cards',err);}catch(_){}return h;}})(kpiLayout);
 pcPaint=function(){const el=document.getElementById('pcw');if(el){let h=pcPair();try{h=cdApply(h,false);}catch(_){}el.outerHTML=h;}if(openKind==='pcmon')fillPanel('pcmon');};
-try{FIT_ROWS[3].items.splice(3,0,['.rdst',1]);}catch(_){}
 render=(orig=>function(){orig();try{if(STAFF||!CD.hide.size)return;const b=document.querySelector('#main .bar');if(b&&!b.querySelector('.cdHid')){const x=document.createElement('button');x.className='cdHid';x.setAttribute('data-open','cards');x.textContent='빠진 칸 '+CD.hide.size+'개 · 칸 고르기';const sp=b.querySelector('.sp');if(sp)sp.after(x);else b.append(x);}}catch(_){}})(render);
 async function cdTok(){let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return '';
   const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('dashui|'+k));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -1688,68 +1673,57 @@ function pCards(){const cur=CD.cur.slice();const ids=new Set(cur.map(x=>x.id));
   return {s:'체크한 칸만 대시보드에 보여요',h};}
 PANELS.cards=['대시보드 칸 고르기',pCards,'cards'];
 document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('input[data-cd]'))return;if(STAFF)return;const n=new Set(CD.hide);if(t.checked)n.delete(t.dataset.cd);else n.add(t.dataset.cd);cdSet(n);});
-document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#cdAll');if(a&&!STAFF){cdSet(new Set());return;}
-  kioClick(e);});
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#cdAll');if(a&&!STAFF){cdSet(new Set());return;}});
 (function(){const b=document.getElementById('bCards');if(!b)return;if(STAFF){b.style.display='none';return;}b.onclick=()=>openPanel('cards');})();
 (async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;KIO_URL=await decrypt(KIO_ENC,k);}catch(_){}})();
 cdPull();setInterval(cdPull,5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cdPull();});
-// ===== 2026-11-04 조조: 키오스크 원격 화면 「화면 중계」 =====
-// 구글 원격 데스크톱은 다른 화면 안에 넣는 것을 막아 두어서(X-Frame-Options), 이 PC에 열린 원격 창(또는 탭)을 크롬 화면 공유로 받아 칸 안에 실시간 영상으로 보여 줌.
-// 영상은 이 PC 안에서만 돌고 어디에도 올라가지 않음. 대표 화면에만 있음(직원 화면 없음).
-function kioV(id){return document.querySelector('video.kiov[data-dev="'+id+'"]');}
-function kioPaint(id){const ids=id?[id]:Object.keys(RDEV);ids.forEach(d=>{const S=RDEV[d].S;document.querySelectorAll('.kpi.kio[data-cid="'+d+'"]').forEach(el=>{el.classList.toggle('on',!!S.stream);el.innerHTML=kioInner(d);});});kioAttach();}
-function kioAttach(){Object.keys(RDEV).forEach(d=>{const S=RDEV[d].S;if(!S.stream)return;document.querySelectorAll('video.kiov[data-dev="'+d+'"]').forEach(v=>{if(v.srcObject!==S.stream)v.srcObject=S.stream;if(v.paused)v.play().catch(()=>{});});kioCropApply(d);});}
-function kioStop(id,quiet){const S=RDEV[id].S;const s=S.stream;S.stream=null;S.crop=null;clearInterval(S.ct);if(s)s.getTracks().forEach(t=>{try{t.stop();}catch(_){}});kioFloat(id,false);if(!quiet)kioPaint(id);}
-async function kioCap(id){const R=RDEV[id],S=R.S;S.err='';
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){S.err='이 기기에서는 화면 연결이 안 돼요. 사무실 PC 크롬에서 써 주세요.';kioPaint(id);return;}
-  let ctl=null;try{ctl=new CaptureController();try{ctl.setFocusBehavior('no-focus-change');}catch(_){}}catch(_){}
-  try{const opt={video:{frameRate:{ideal:15,max:30}},audio:false,selfBrowserSurface:'exclude',surfaceSwitching:'include',monitorTypeSurfaces:'exclude'};if(ctl)opt.controller=ctl;
-    const st=await navigator.mediaDevices.getDisplayMedia(opt);try{ctl&&ctl.setFocusBehavior('no-focus-change');}catch(_){}
-    kioStop(id,true);S.stream=st;const tr=st.getVideoTracks()[0];if(tr)tr.addEventListener('ended',()=>{if(S.stream===st)kioStop(id);});
-    kioPaint(id);S.ct=setInterval(()=>kioCropScan(id),3000);setTimeout(()=>kioCropScan(id),700);kioFloat(id,true);
-  }catch(e){S.err=(e&&e.name==='NotAllowedError')?'연결을 취소했어요. 다시 눌러 '+R.pick+'을 골라 주세요.':'화면 연결이 안 됐어요: '+(e&&e.message||e);kioPaint(id);}}
-// 원격 창의 회색 여백을 잘라 기기 화면만 보이게 (3초마다 작은 그림으로 살핌)
-const KCV=document.createElement('canvas');
-function kioCropScan(id){const S=RDEV[id].S;if(!S.stream)return;const v=kioV(id);if(!v||!v.videoWidth)return;
-  const W=160,H=Math.max(40,Math.round(160*v.videoHeight/v.videoWidth));KCV.width=W;KCV.height=H;const c=KCV.getContext('2d',{willReadFrequently:true});
-  try{c.drawImage(v,0,0,W,H);}catch(_){return;}const d=c.getImageData(0,0,W,H).data;const px=(x,y)=>{const i=(y*W+x)*4;return [d[i],d[i+1],d[i+2]];};
-  const bg=px(1,Math.floor(H/2));const df=(x,y)=>{const p=px(x,y);return Math.abs(p[0]-bg[0])+Math.abs(p[1]-bg[1])+Math.abs(p[2]-bg[2])>36;};
-  const y0s=Math.floor(H*.08);const cols=[];for(let x=0;x<W;x++){let n=0;for(let y=y0s;y<H;y++)if(df(x,y))n++;cols.push(n/(H-y0s));}
-  let x0=cols.findIndex(f=>f>.25),x1=W-1-[...cols].reverse().findIndex(f=>f>.25);let cr=null;
-  if(x0>=0&&x1>x0&&(x1-x0+1)<W*.97){const rows=[];for(let y=0;y<H;y++){let n=0,o=0;for(let x=x0;x<=x1;x++)if(df(x,y))n++;for(let x=0;x<x0;x++)if(df(x,y))o++;rows.push(n/(x1-x0+1)>.15&&(x0<2||o/x0<.3));}
-    let y0=rows.indexOf(true),y1=rows.lastIndexOf(true);if(y0>=0&&y1>y0){const cw=(x1-x0+1)/W,ch=(y1-y0+1)/H;if(cw*ch>.12)cr={x:x0/W,y:y0/H,w:cw,h:ch};}}
-  const o=S.crop;const same=(!o&&!cr)||(o&&cr&&Math.abs(o.x-cr.x)<.015&&Math.abs(o.y-cr.y)<.015&&Math.abs(o.w-cr.w)<.015&&Math.abs(o.h-cr.h)<.015);
-  if(!same){S.crop=cr;kioCropApply(id);}}
-function kioAR(id){const R=RDEV[id];const v=kioV(id);const vw=v&&v.videoWidth||R.ar0[0],vh=v&&v.videoHeight||R.ar0[1];const c=R.S.crop||{w:1,h:1};return (vw*c.w)/(vh*c.h);}
-function kioCropApply(id){const c=RDEV[id].S.crop||{x:0,y:0,w:1,h:1};const ar=kioAR(id);
-  document.querySelectorAll('video.kiov[data-dev="'+id+'"]').forEach(v=>{const w=v.parentElement;if(!w||!w.classList.contains('kcrop'))return;w.style.aspectRatio=String(ar);v.style.width=(100/c.w)+'%';v.style.height=(100/c.h)+'%';v.style.left=(-c.x/c.w*100)+'%';v.style.top=(-c.y/c.h*100)+'%';});
-  kioFloatSize(id);}
-// 대시보드 안에 떠 있는 큰 화면 (기기마다 하나)
-function kioFloatEl(id){const R=RDEV[id],S=R.S;let f=document.getElementById(R.fid);if(f)return f;f=document.createElement('div');f.id=R.fid;f.className='kfl'+(id==='pos'?' kpos':'');f.dataset.dev=id;
-  f.innerHTML='<div class="kf-h"><b>'+R.name+'</b><span class="kio-live">● 실시간</span><span class="sp"></span><button data-k="size">크게</button><button data-k="cap">다시 고르기</button><button data-k="stop">중계 끄기</button><button class="x" data-k="close" title="칸으로 작게">✕</button></div><div class="kf-b"><div class="kcrop"><video class="kiov" data-dev="'+id+'" autoplay muted playsinline></video></div></div><div class="kf-n">보기 전용이에요. 누르거나 입력하려면 원격 창에서 해 주세요 (Alt+Tab).</div>';
-  document.body.append(f);f.addEventListener('click',kioClick);
-  f.addEventListener('pointerdown',()=>{document.querySelectorAll('.kfl').forEach(x=>x.style.zIndex=x===f?'26':'25');},true);
-  const h=f.querySelector('.kf-h');h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=f.getBoundingClientRect();const sx=e.clientX-r.left,sy=e.clientY-r.top;h.setPointerCapture(e.pointerId);
-    const mv=ev=>{S.pos={l:Math.max(0,Math.min(innerWidth-80,ev.clientX-sx)),t:Math.max(0,Math.min(innerHeight-40,ev.clientY-sy))};kioFloatSize(id);};
-    const up=()=>{h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);};h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);});
-  const v=f.querySelector('video');v.addEventListener('resize',()=>{kioCropApply(id);});return f;}
-function kioFloat(id,show){const R=RDEV[id],S=R.S;S.open=!!show;const f=show?kioFloatEl(id):document.getElementById(R.fid);if(!f)return;f.classList.toggle('show',S.open);if(S.open){kioAttach();kioFloatSize(id);}
-  Object.keys(RDEV).forEach(d=>{if(d!==id)kioFloatSize(d);});}
-function kioFloatSize(id){if(!id){Object.keys(RDEV).forEach(kioFloatSize);return;}const R=RDEV[id],S=R.S;const f=document.getElementById(R.fid);if(!f||!S.open)return;const hd=document.querySelector('header');const top=Math.round((hd?hd.getBoundingClientRect().bottom:60)+8);
-  const big=S.size==='big';const ar=kioAR(id);const extra=62;let h=innerHeight-top-12;let w=(h-extra)*ar;const maxW=innerWidth*(big?.94:.45);if(w>maxW){w=maxW;h=w/ar+extra;}w=Math.max(300,Math.round(w));h=Math.round(h);
-  f.style.width=w+'px';f.style.height=h+'px';
-  // 키오스크·포스기 둘 다 옆에 띄우면 포스기는 왼쪽으로
-  const both=id==='pos'&&RDEV.kiosk.S.open&&RDEV.kiosk.S.size!=='big';
-  if(S.pos&&!big){f.style.left=Math.min(S.pos.l,innerWidth-w)+'px';f.style.top=Math.min(S.pos.t,innerHeight-60)+'px';f.style.right='auto';}
-  else if(big){f.style.left=Math.round((innerWidth-w)/2)+'px';f.style.right='auto';f.style.top=top+'px';}else if(both){f.style.left='12px';f.style.right='auto';f.style.top=top+'px';}else{f.style.left='auto';f.style.right='12px';f.style.top=top+'px';}
-  const b=f.querySelector('[data-k="size"]');if(b)b.textContent=big?'옆으로':'크게';}
-function kioClick(e){const b=e.target.closest&&e.target.closest('[data-k]');const t=e.target.closest&&e.target.closest('.kpi.kio,.kfl');if(!t)return;
-  const id=t.dataset.cid||t.dataset.dev;if(!RDEV[id])return;const S=RDEV[id].S;
-  const k=b?b.dataset.k:(t.classList.contains('on')?'big':'');if(!k)return;e.preventDefault();e.stopPropagation();
-  if(k==='cap')kioCap(id);else if(k==='open')RDEV[id].open();else if(k==='stop')kioStop(id);else if(k==='close')kioFloat(id,false);
-  else if(k==='big'){if(S.stream)kioFloat(id,!S.open);}else if(k==='size'){S.size=S.size==='big'?'side':'big';if(S.size==='big')S.pos=null;kioFloatSize(id);}}
-render=(orig=>function(){orig();try{kioAttach();}catch(_){}})(render);
-setInterval(()=>{try{kioAttach();}catch(_){}},2000);addEventListener('resize',()=>{try{kioFloatSize();}catch(_){}});
+// ===== 2026-11-06 조조: 키오스크·포스기 화면 고정 (오른쪽 세로 단) =====
+// 사용자 「화면 연결 누르지 않고 고정으로 나오게」. 브라우저는 다른 창 화면을 버튼 없이 가져올 수 없어서, 방식을 바꿈:
+// 키오스크·포스기에 깔린 작은 도우미가 10초마다 자기 화면 사진을 「빵을그리다 기기 화면 사진 저장소」(drawbread01 Apps Script)에 올리고,
+// 대표 화면은 8초마다 바뀐 사진만 받아 오른쪽 단에 고정으로 보여 줌. 사진은 구글 임시 보관함에 최근 1장(15분 뒤 자동 삭제),
+// 대표 열쇠로 만든 표(scr|열쇠의 지문)가 있어야 받을 수 있음. 직원 화면·좁은 화면(가로 1100px 미만)에는 없음.
+const SCR_API='https://script.google.com/macros/s/AKfycby9gg2nvnirIbBheaFs7sa6Mqdkj6qhFz4OIfl7j6fiJDBY6IldV4NeACtv_Dhm44jbRw/exec';
+const SCR={kiosk:{name:'생산실 키오스크',ar:9/16,open(){if(!KIO_URL){alert('키오스크 원격 주소를 여는 중이에요. 잠시 뒤 다시 눌러 주세요.');return;}window.open(KIO_URL,'dbkiosk');}},
+  pos:{name:'사무실 포스기',ar:4/3,open(){window.open('https://web.teamviewer.com/remote-support','dbpos');}}};
+const SCS={rt:'',have:{},busy:false,big:'',err:'',skew:0,W:0};
+function scrOn(){return !STAFF&&!!SCS.rt&&innerWidth>=1100;}
+function scrBuild(){if(document.getElementById('scrCol'))return;const a=document.createElement('aside');a.id='scrCol';a.setAttribute('aria-label','기기 화면');
+  a.innerHTML=Object.keys(SCR).map(d=>'<section class="scr" data-dev="'+d+'"><div class="scr-h"><i></i><b>'+SCR[d].name+'</b><span class="scr-st">연결 중…</span><button data-s="open" title="원격으로 들어가서 직접 누르기">원격 조작</button></div><div class="scr-b" data-s="big" title="누르면 크게 보기"><img alt=""><div class="scr-m">화면을 받아 오는 중이에요</div></div></section>').join('');
+  document.body.append(a);a.addEventListener('click',scrClick);
+  const b=document.createElement('div');b.id='scrBig';b.innerHTML='<div class="sb-h"><b></b><span class="scr-st"></span><span style="flex:1"></span><button data-s="open">원격 조작 열기</button><button data-s="close">닫기 ✕</button></div><div class="sb-b" data-s="close"><img alt=""></div><div class="sb-n">보기 전용 화면이에요. 누르거나 입력하려면 「원격 조작 열기」를 눌러 주세요. (Esc 또는 화면을 누르면 닫혀요)</div>';
+  document.body.append(b);b.addEventListener('click',scrClick);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
+function scrSize(){const on=scrOn();const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',on);const a=document.getElementById('scrCol');if(!a)return;
+  let W=SCS.W;if(on){const ids=Object.keys(SCR);const hh=36,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/SCR[d].ar,0);
+    W=(innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum;W=Math.max(240,Math.min(innerWidth*0.3,Math.round(W)));
+    document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/SCR[d].ar)+'px';});}
+  if(on!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
+function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
+function scrState(d){const x=SCR[d].meta;if(SCS.err)return {c:'stop',t:SCS.err,m:SCR[d].src?'':SCS.err};
+  if(!x)return {c:'stop',t:'꺼짐',m:'아직 화면이 안 와요. 기기가 꺼져 있거나 인터넷이 끊겼어요.'};
+  const age=(Date.now()+SCS.skew)-(x.seen||x.t);
+  if(age<=90e3)return {c:'live',t:'● 실시간 · '+scrT(x.t)+' 화면',m:SCR[d].src?'':'화면을 받아 오는 중이에요'};
+  return {c:'stop',t:'⏸ 멈춤 · 마지막 '+scrT(x.seen||x.t),m:'화면 소식이 '+Math.round(age/60e3)+'분째 없어요. 기기가 꺼졌거나 인터넷이 끊겼을 수 있어요.'};}
+function scrPaint(d){const a=document.getElementById('scrCol');if(!a)return;const sec=a.querySelector('.scr[data-dev="'+d+'"]');if(!sec)return;const st=scrState(d);
+  sec.classList.toggle('stop',st.c==='stop');const s=sec.querySelector('.scr-st');s.className='scr-st '+st.c;s.textContent=st.t;
+  const im=sec.querySelector('img');if(SCR[d].src&&im.getAttribute('src')!==SCR[d].src)im.src=SCR[d].src;sec.querySelector('.scr-m').textContent=st.m;
+  if(SCS.big===d){const b=document.getElementById('scrBig');const bi=b.querySelector('img');if(SCR[d].src&&bi.getAttribute('src')!==SCR[d].src)bi.src=SCR[d].src;const bs=b.querySelector('.scr-st');bs.className='scr-st '+st.c;bs.textContent=st.t;}}
+function scrBigOpen(d){SCS.big=d;const b=document.getElementById('scrBig');if(!b)return;b.classList.toggle('show',!!d);if(!d)return;
+  b.querySelector('.sb-h b').textContent=SCR[d].name;b.querySelector('.sb-b img').removeAttribute('src');scrPaint(d);}
+function scrClick(e){const t=e.target.closest&&e.target.closest('[data-s]');if(!t)return;const k=t.dataset.s;const sec=t.closest('.scr');const d=sec?sec.dataset.dev:SCS.big;
+  if(k==='open'){if(d&&SCR[d])SCR[d].open();}else if(k==='big'){if(d)scrBigOpen(d);}else if(k==='close'){if(e.target.tagName!=='IMG'||t.tagName==='BUTTON')scrBigOpen('');}}
+async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;SCS.busy=true;
+  try{const r=await fetch(SCR_API,{method:'POST',body:JSON.stringify({op:'get',rt:SCS.rt,have:SCS.have}),cache:'no-store',credentials:'omit'});const j=await r.json();
+    if(!j||!j.ok){SCS.err=j&&j.err==='auth'?'보기 권한이 안 맞아요':'잠시 연결이 안 돼요';}
+    else{SCS.err='';if(j.now)SCS.skew=j.now-Date.now();
+      Object.keys(SCR).forEach(d=>{const x=j.dev&&j.dev[d];const S=SCR[d];S.meta=x||null;
+        if(x&&x.img){S.src='data:image/jpeg;base64,'+x.img;SCS.have[d]=x.id;delete x.img;if(x.w&&x.h){const ar=x.w/x.h;if(Math.abs(ar-S.ar)>.01){S.ar=ar;scrSize();}}}
+        else if(!x||x.miss)delete SCS.have[d];});}
+  }catch(_){SCS.err='잠시 연결이 안 돼요 (인터넷 확인)';}finally{SCS.busy=false;Object.keys(SCR).forEach(scrPaint);}}
+(async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('scr|'+k));SCS.rt=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  scrBuild();scrSize();scrPull();setInterval(scrPull,8000);setInterval(()=>{try{Object.keys(SCR).forEach(scrPaint);}catch(_){}},5000);
+  addEventListener('resize',scrSize);document.addEventListener('fullscreenchange',scrSize);document.addEventListener('visibilitychange',()=>{if(!document.hidden)scrPull();});}catch(_){}})();
 
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
 
