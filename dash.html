@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 19:51">
+<meta name="dash-build" content="2026-11-08 20:15">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -308,6 +308,11 @@ body.rsc #scrCol{display:flex;flex-direction:column;gap:8px;position:fixed;top:0
 .scr-m{position:absolute;left:8px;right:8px;bottom:8px;padding:7px 9px;border-radius:8px;background:rgba(17,24,39,.88);color:#f3f4f6;font-size:.85rem;font-weight:600;line-height:1.4;word-break:keep-all;text-align:center}
 .scr-m:empty{display:none}
 .scr.stop .scr-b img{opacity:.5;filter:grayscale(.7)}
+/* 2026-11-08 건강일지 메인화면: 관리자만, 입력 없는 미리보기 */
+.scr[data-dev="health"]{box-shadow:0 0 0 2px #b7791f}.scr[data-dev="health"] .scr-h i{background:#b7791f}
+.scr-h{height:54px;display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:6px;row-gap:0}.scr-h i{grid-row:1/3}.scr-h b{font-size:17px;overflow:hidden;text-overflow:ellipsis;align-self:end}.scr-h .scr-st{grid-column:2;align-self:start;font-size:13px}.scr-h button{grid-column:3;grid-row:1/3;min-height:40px;font-size:14px;padding:6px 8px}
+body.rsc #scrCol{overflow-y:auto}.hl-frame{position:absolute;left:0;top:0;width:1024px;height:768px;border:0;transform-origin:top left;pointer-events:none;background:#FAF4EA}.hl-hit{position:absolute;inset:0;border:0;background:transparent;padding:0;width:100%;height:100%;cursor:zoom-in;z-index:2}.hl-hit:focus-visible{outline:3px solid #b7791f;outline-offset:-3px}
+#scrBig .sb-b.hl-big{position:relative;padding:0;display:block;overflow:hidden}#scrBig .sb-b.hl-big img{display:none}
 #scrBig{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.82);display:none;flex-direction:column}
 #scrBig.show{display:flex}
 #scrBig .sb-h{flex:none;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111827;color:#f9fafb;font-size:1.1rem}
@@ -320,7 +325,7 @@ body.rsc #scrCol{display:flex;flex-direction:column;gap:8px;position:fixed;top:0
 .cdbtn{min-height:48px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:800;font-size:1rem;cursor:pointer}.cdbtn:disabled{opacity:.45;cursor:default}
 .cdg{margin:0 0 14px}.cdg h3{font-size:.9rem;color:var(--sub);margin:0 0 6px;font-weight:800}
 .cdr{display:flex;align-items:center;gap:12px;min-height:54px;padding:6px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:0 0 6px;cursor:pointer;font-size:1.06rem;font-weight:700;color:var(--ink)}
-.cdr input{width:26px;height:26px;flex:none;accent-color:var(--green);cursor:pointer}
+.cdr{width:100%;text-align:left;font-family:inherit;touch-action:manipulation}.cdr:focus-visible{outline:3px solid var(--green);outline-offset:2px}.cdstate{min-width:62px;padding:7px 10px;border-radius:8px;background:var(--green);color:#fff;text-align:center;font-size:1rem;font-weight:800;flex:none}.cdr.off .cdstate{background:var(--soft);color:var(--ink2);border:1px solid var(--line)}
 .cdr.off{background:transparent;color:var(--sub)}.cdr.off .cdn{text-decoration:line-through}
 .cdr .cdn{flex:1;min-width:0;word-break:keep-all}
 .cdhot{font-style:normal;font-size:.8rem;font-weight:800;color:#fff;background:var(--red);border-radius:999px;padding:3px 9px;white-space:nowrap}
@@ -491,11 +496,11 @@ body.fitall.ftpl .fgrid .plk .plt{display:-webkit-box;-webkit-line-clamp:3;-webk
     <button class="ib" id="bInst" title="앱 설치" style="display:none;border-color:var(--ink);color:var(--ink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>앱 설치</span></button>
     <button class="ib" id="bRef" title="새로고침"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg><span>새로고침</span></button>
     <button class="ib" id="bNight" title="밤 화면"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span id="tNight">밤 화면</span></button>
-    <button class="ib" id="bCards" title="칸 고르기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8.5l1.6 1.6L11.5 7M7 15l1.6 1.6 2.9-3.1M14 9h4M14 15.5h4"/></svg><span>칸 고르기</span></button>
+    <button class="ib" id="bCards" title="칸 고르기" data-open="cards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8.5l1.6 1.6L11.5 7M7 15l1.6 1.6 2.9-3.1M14 9h4M14 15.5h4"/></svg><span>칸 고르기</span></button>
     <button class="ib" id="bBoard" title="전광판"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="tBoard">전광판</span></button>
   </div>
 </div></header>
-<div class="access-note" id="accessNote" hidden>직원용 화면입니다. 키오스크·포스 화면은 관리자 연결 후 볼 수 있어요. <a href="?admin=1">관리자 연결</a></div>
+<div class="access-note" id="accessNote" hidden>직원용 화면입니다. 기기 화면·건강일지 미리보기는 관리자 연결 후 볼 수 있어요. <a href="?admin=1">관리자 연결</a></div>
 <main id="main"></main>
 <div class="scrim" id="scrim"></div>
 <aside class="panel" id="panel" aria-hidden="true">
@@ -1142,7 +1147,7 @@ $('#scrim').onclick=()=>closePanel();$('#pClose').onclick=()=>closePanel();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('mailw')){ui.mailTab='act';openPanel('mail');}if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('todow'))openPanel('ftodo');});
 document.addEventListener('click',e=>{const nf=e.target.closest('[data-nf],[data-copy]');if(nf){if(nf.dataset.copy){try{navigator.clipboard.writeText(nf.dataset.copy).catch(()=>{});}catch(_){}nf.textContent='복사했어요';return;}ui.nf=ui.nf||{};ui.nf[nf.dataset.nf]=!nfOn(nf.dataset.nf);ui.nfSeen=1;saveUi();render();fillPanel('night');return;}
   const t=e.target.closest('[data-open],[data-hist],[data-day],[data-mtab],[data-pctab]');if(!t)return;if(t.dataset&&t.dataset.open==='night'){ui.nfSeen=1;saveUi();}
-  if(t.hasAttribute('data-open')){if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}if(t.dataset.pc){ui.pcTab=t.dataset.pc;saveUi();pcPoll(true);}openPanel(t.dataset.open);return;}
+  if(t.hasAttribute('data-open')){if(t.dataset.open==='cards'&&STAFF)return;if(t.dataset.sub){ui.mailTab=t.dataset.sub;saveUi();}if(t.dataset.pc){ui.pcTab=t.dataset.pc;saveUi();pcPoll(true);}openPanel(t.dataset.open);return;}
   if(t.hasAttribute('data-pctab')){ui.pcTab=t.dataset.pctab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-mtab')){ui.mailTab=t.dataset.mtab;saveUi();fillPanel(openKind);$('#pB').scrollTop=0;return;}
   if(t.hasAttribute('data-hist'))ui.sel[t.dataset.hist]=+t.dataset.i;
@@ -1678,13 +1683,13 @@ function pCards(){const cur=CD.cur.slice();const ids=new Set(cur.map(x=>x.id));
   const on=cur.filter(x=>!CD.hide.has(x.id)).length;
   const st=CD.st==='저장 중…'?'<div class="note gray">저장 중…</div>':CD.st==='ok'?'<div class="note ok">모든 화면에 저장했어요 '+hm(CD.stAt)+' · 키오스크·태블릿은 5분 안에 바뀌어요</div>':CD.st?'<div class="note amb">'+esc(CD.st)+'</div>':'';
   const h=st+'<div class="cdtop"><b>'+on+'</b>개 보이는 중 · <b>'+CD.hide.size+'</b>개 뺌<span class="sp"></span><button class="cdbtn" id="cdAll"'+(CD.hide.size?'':' disabled')+'>모두 보이기</button></div>'+
-    groups.map(g=>'<div class="cdg"><h3>'+esc(g.g)+'</h3>'+g.a.map(x=>'<label class="cdr'+(CD.hide.has(x.id)?' off':'')+'"><input type="checkbox" data-cd="'+esc(x.id)+'"'+(CD.hide.has(x.id)?'':' checked')+'><span class="cdn">'+esc(x.n)+'</span>'+(x.hot?'<em class="cdhot">⚠ 지금 빨간 경고</em>':'')+'</label>').join('')+'</div>').join('')+
+    groups.map(g=>'<div class="cdg"><h3>'+esc(g.g)+'</h3>'+g.a.map(x=>'<button type="button" class="cdr'+(CD.hide.has(x.id)?' off':'')+'" role="checkbox" aria-checked="'+(!CD.hide.has(x.id))+'" aria-label="'+esc(x.n)+'" data-cd-toggle="'+esc(x.id)+'"><span class="cdstate" aria-hidden="true">'+(CD.hide.has(x.id)?'숨김':'보임')+'</span><span class="cdn">'+esc(x.n)+'</span>'+(x.hot?'<em class="cdhot">⚠ 지금 빨간 경고</em>':'')+'</button>').join('')+'</div>').join('')+
     '<div class="box" style="margin-top:14px"><h3>알아 두세요</h3><div class="t2">1. 체크를 끄면 그 칸이 사무실 PC·생산실 키오스크·태블릿 대시보드에서 같이 빠져요.<br>2. 빨간 경고 중인 칸을 빼면 위쪽 붉은 경고 띠에서도 빠지니 조심해 주세요.<br>3. 칸 고르기는 대표 화면에서만 할 수 있어요. 직원용 화면은 보기만 해요.</div></div>';
   return {s:'체크한 칸만 대시보드에 보여요',h};}
 PANELS.cards=['대시보드 칸 고르기',pCards,'cards'];
-document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('input[data-cd]'))return;if(STAFF)return;const n=new Set(CD.hide);if(t.checked)n.delete(t.dataset.cd);else n.add(t.dataset.cd);cdSet(n);});
-document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#cdAll');if(a&&!STAFF){cdSet(new Set());return;}});
-(function(){const b=document.getElementById('bCards');if(!b)return;if(STAFF){b.style.display='none';return;}b.onclick=()=>openPanel('cards');})();
+// 2026-11-08 조조: 칸 선택은 큰 버튼으로 명확히 표시하고 문서 위임으로 클릭 연결 유지.
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-cd-toggle],#cdAll');if(!t||STAFF)return;e.preventDefault();if(t.id==='cdAll'){cdSet(new Set());return;}const n=new Set(CD.hide),id=t.dataset.cdToggle;if(n.has(id))n.delete(id);else n.add(id);cdSet(n);});
+(function(){const b=document.getElementById('bCards');if(b&&STAFF)b.style.display='none';})();
 (async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;KIO_URL=await decrypt(KIO_ENC,k);}catch(_){}})();
 cdPull();setInterval(cdPull,5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cdPull();});
 // ===== 2026-11-06 조조: 키오스크·포스기 화면 고정 (오른쪽 세로 단) =====
@@ -1695,19 +1700,25 @@ cdPull();setInterval(cdPull,5*60e3);document.addEventListener('visibilitychange'
 const SCR_API='https://script.google.com/macros/s/AKfycby9gg2nvnirIbBheaFs7sa6Mqdkj6qhFz4OIfl7j6fiJDBY6IldV4NeACtv_Dhm44jbRw/exec';
 const SCR={kiosk:{name:'생산실 키오스크',ar:9/16,open(){if(!KIO_URL){alert('키오스크 원격 주소를 여는 중이에요. 잠시 뒤 다시 눌러 주세요.');return;}window.open(KIO_URL,'dbkiosk');}},
   pos:{name:'사무실 포스기',ar:4/3,open(){window.open('https://web.teamviewer.com/remote-support','dbpos');}}};
+// 연결 열쇠는 관리자 열쇠로 암호화, 공개 소스에 원문을 두지 않음.
+const HL_VIEW={name:'건강일지 메인화면',ar:4/3,key:'',frame:null,enc:{"v":1,"kdf":"PBKDF2-SHA256-100000","salt":"r2TXPD1Vzj8dh0urxMWbww==","iv":"8sHe+OKficdbA97D","ct":"qkLEXHMZPqTvB5NF3xlFWUsEMTtoC053CX/bcL/msEy1GnOmqEBjMbY="}};
+function hlViewUrl(app){return 'https://lee1812-oss.github.io/health/'+(app?'':'app.html')+'?m=tablet&k='+encodeURIComponent(HL_VIEW.key);}
+function hlViewFit(){const f=HL_VIEW.frame;if(!f)return;const b=f.parentElement;const w=b.clientWidth,h=b.clientHeight;const z=Math.min(w/1024,h/768);f.style.transform='scale('+z+')';f.style.left=Math.max(0,(w-1024*z)/2)+'px';f.style.top=Math.max(0,(h-768*z)/2)+'px';}
+async function hlViewInit(k){try{const j=await decrypt(HL_VIEW.enc,k);if(!j||!j.key)return;HL_VIEW.key=j.key;const sec=document.querySelector('#scrCol .scr[data-dev="health"]');if(!sec)return;const f=document.createElement('iframe');f.className='hl-frame';f.title='건강일지 메인화면 보기 전용';f.setAttribute('sandbox','allow-scripts');f.setAttribute('referrerpolicy','no-referrer');f.setAttribute('allow',"camera 'none'; microphone 'none'; autoplay 'none'");f.setAttribute('tabindex','-1');f.setAttribute('inert','');f.src=hlViewUrl(false);HL_VIEW.frame=f;sec.querySelector('.scr-b').prepend(f);sec.querySelector('.scr-st').textContent='메인화면 · 보기 전용';sec.querySelector('.scr-m').textContent='';hlViewFit();setInterval(()=>{if(!document.hidden&&SCS.big!=='health')f.src=hlViewUrl(false);},5*60e3);}catch(_){const s=document.querySelector('#scrCol .scr[data-dev="health"] .scr-m');if(s)s.textContent='건강일지 연결을 확인해 주세요';}}
 const SCS={rt:'',have:{},busy:false,big:'',err:'',skew:0,W:0};
 function scrOn(){return !STAFF&&!!SCS.rt;}
 function scrBuild(){if(document.getElementById('scrCol'))return;const a=document.createElement('aside');a.id='scrCol';a.setAttribute('aria-label','기기 화면');
   a.innerHTML=Object.keys(SCR).map(d=>'<section class="scr" data-dev="'+d+'"><div class="scr-h"><i></i><b>'+SCR[d].name+'</b><span class="scr-st">연결 중…</span><button data-s="open" title="원격으로 들어가서 직접 누르기">원격 조작</button></div><div class="scr-b" data-s="big" title="누르면 크게 보기"><img alt=""><div class="scr-m">화면을 받아 오는 중이에요</div></div></section>').join('');
+  a.insertAdjacentHTML('beforeend','<section class="scr" data-dev="health"><div class="scr-h"><i></i><b>건강일지 메인화면</b><span class="scr-st">연결 중…</span><button data-s="open" title="실제 건강일지 앱에서 입력하기">앱 열기</button></div><div class="scr-b" data-s="big" title="누르면 크게 보기"><button class="hl-hit" data-s="big" aria-label="건강일지 메인화면 크게 보기"></button><div class="scr-m">메인화면을 불러오는 중이에요</div></div></section>');
   document.getElementById('main').after(a);a.addEventListener('click',scrClick);
   const b=document.createElement('div');b.id='scrBig';b.innerHTML='<div class="sb-h"><b></b><span class="scr-st"></span><span style="flex:1"></span><button data-s="open">원격 조작 열기</button><button data-s="close">닫기 ✕</button></div><div class="sb-b" data-s="close"><img alt=""></div><div class="sb-n">보기 전용 화면이에요. 누르거나 입력하려면 「원격 조작 열기」를 눌러 주세요. (Esc 또는 화면을 누르면 닫혀요)</div>';
   document.body.append(b);b.addEventListener('click',scrClick);
   addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
 function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100;const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
-  let W=SCS.W;if(on){const ids=Object.keys(SCR);const hh=36,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/SCR[d].ar,0);
+  let W=SCS.W;if(on){const ids=Object.keys(SCR).concat('health');const hh=54,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/(d==='health'?HL_VIEW:SCR[d]).ar,0);
     W=wide?Math.max(200,Math.min(innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
-    document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/SCR[d].ar)+'px';});}
-  if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
+    document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/(d==='health'?HL_VIEW:SCR[d]).ar)+'px';});}
+  hlViewFit();if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
 function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
 function scrState(d){const x=SCR[d].meta;if(SCS.err)return {c:'stop',t:SCS.err,m:SCR[d].src?'':SCS.err};
   if(!x)return {c:'stop',t:'꺼짐',m:'아직 화면이 안 와요. 기기가 꺼져 있거나 인터넷이 끊겼어요.'};
@@ -1718,10 +1729,11 @@ function scrPaint(d){const a=document.getElementById('scrCol');if(!a)return;cons
   sec.classList.toggle('stop',st.c==='stop');const s=sec.querySelector('.scr-st');s.className='scr-st '+st.c;s.textContent=st.t;
   const im=sec.querySelector('img');if(SCR[d].src&&im.getAttribute('src')!==SCR[d].src)im.src=SCR[d].src;sec.querySelector('.scr-m').textContent=st.m;
   if(SCS.big===d){const b=document.getElementById('scrBig');const bi=b.querySelector('img');if(SCR[d].src&&bi.getAttribute('src')!==SCR[d].src)bi.src=SCR[d].src;const bs=b.querySelector('.scr-st');bs.className='scr-st '+st.c;bs.textContent=st.t;}}
-function scrBigOpen(d){SCS.big=d;const b=document.getElementById('scrBig');if(!b)return;b.classList.toggle('show',!!d);if(!d)return;
-  b.querySelector('.sb-h b').textContent=SCR[d].name;b.querySelector('.sb-b img').removeAttribute('src');scrPaint(d);}
+function scrBigOpen(d){const b=document.getElementById('scrBig');if(!b)return;const was=SCS.big;if(was==='health'&&HL_VIEW.frame){document.querySelector('#scrCol .scr[data-dev="health"] .scr-b').prepend(HL_VIEW.frame);}SCS.big=d;b.classList.toggle('show',!!d);b.querySelector('.sb-b').classList.toggle('hl-big',d==='health');hlViewFit();if(!d)return;
+  const isHl=d==='health';b.querySelector('.sb-h b').textContent=isHl?HL_VIEW.name:SCR[d].name;b.querySelector('.sb-h [data-s="open"]').textContent=isHl?'건강일지 앱 열기':'원격 조작 열기';b.querySelector('.sb-n').textContent=isHl?'오늘의 건강일지 메인화면 미리보기입니다. 기록을 입력하려면 「건강일지 앱 열기」를 누르세요. Esc 또는 화면을 누르면 닫혀요.':'보기 전용 화면이에요. 누르거나 입력하려면 「원격 조작 열기」를 눌러 주세요. Esc 또는 화면을 누르면 닫혀요.';
+  if(isHl){if(HL_VIEW.frame)b.querySelector('.sb-b').prepend(HL_VIEW.frame);const st=b.querySelector('.scr-st');st.className='scr-st live';st.textContent='메인화면 · 보기 전용';hlViewFit();return;}b.querySelector('.sb-b img').removeAttribute('src');scrPaint(d);}
 function scrClick(e){const t=e.target.closest&&e.target.closest('[data-s]');if(!t)return;const k=t.dataset.s;const sec=t.closest('.scr');const d=sec?sec.dataset.dev:SCS.big;
-  if(k==='open'){if(d&&SCR[d])SCR[d].open();}else if(k==='big'){if(d)scrBigOpen(d);}else if(k==='close'){if(e.target.tagName!=='IMG'||t.tagName==='BUTTON')scrBigOpen('');}}
+  if(k==='open'){if(d==='health'){if(HL_VIEW.key)window.open(hlViewUrl(true),'dbhealth','noopener');}else if(d&&SCR[d])SCR[d].open();}else if(k==='big'){if(d)scrBigOpen(d);}else if(k==='close'){if(e.target.tagName!=='IMG'||t.tagName==='BUTTON')scrBigOpen('');}}
 async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;SCS.busy=true;
   try{const r=await fetch(SCR_API,{method:'POST',body:JSON.stringify({op:'get',rt:SCS.rt,have:SCS.have}),cache:'no-store',credentials:'omit'});const j=await r.json();
     if(!j||!j.ok){SCS.err=j&&j.err==='auth'?'보기 권한이 안 맞아요':'잠시 연결이 안 돼요';}
@@ -1732,7 +1744,7 @@ async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;SCS.busy=
   }catch(_){SCS.err='잠시 연결이 안 돼요 (인터넷 확인)';}finally{SCS.busy=false;Object.keys(SCR).forEach(scrPaint);}}
 (async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;
   const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('scr|'+k));SCS.rt=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
-  scrBuild();scrSize();scrPull();setInterval(scrPull,8000);setInterval(()=>{try{Object.keys(SCR).forEach(scrPaint);}catch(_){}},5000);
+  scrBuild();scrSize();hlViewInit(k);scrPull();setInterval(scrPull,8000);setInterval(()=>{try{Object.keys(SCR).forEach(scrPaint);}catch(_){}},5000);
   addEventListener('resize',scrSize);document.addEventListener('fullscreenchange',scrSize);document.addEventListener('visibilitychange',()=>{if(!document.hidden)scrPull();});}catch(_){}})();
 
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
