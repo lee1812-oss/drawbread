@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 22:17 중요 전달사항·가독성·회사 Gmail">
+<meta name="dash-build" content="2026-11-08 22:18 메일·전달사항·PC별 인쇄예약">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -678,7 +678,7 @@ async function verCheck(force){if(!force&&Date.now()-verAt<240e3)return false;ve
       const nb=((await r.text()).match(/name="dash-build" content="([^"]+)"/)||[])[1]||'',tag=r.headers.get('etag')||'';
       if(nb&&BUILD&&nb!==BUILD)to=nb;
       else if(tag&&tag!==verTag){const p=await srvPage();verTag=p.tag||tag;if(p.h!==verHash)to='#'+p.h;}}   // 표시 값 없이 고친 경우: 내용으로 비교 (자료만 올린 날은 내용이 같아서 그대로)
-    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#workPrintPreview,#noticeDialog.show'))))return false;
+    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#workPrintPreview,#noticeDialog.show,.ap-overlay:not([hidden])'))))return false;
     let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}
     if(!force&&lt&&lt.to===to&&Date.now()-lt.at<180e3)return false;
     try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:to,at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:to,at:Date.now()}));}catch(_){}
@@ -1976,5 +1976,6 @@ function refit(){try{if(typeof fitSoon==='function')fitSoon(80);}catch(_){}}
 try{var mm=document.getElementById('main');if(mm){new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(function(){try{run();}catch(_){}},80);}).observe(mm,{childList:true,subtree:true});}run();}catch(_){}
 })();
 </script>
+<script src="dash_auto_print.js?v=20261108-01"></script>
 </body>
 </html>
