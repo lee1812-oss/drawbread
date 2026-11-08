@@ -1,0 +1,14 @@
+{
+ "name": "K-HACCP 전일 일지 현황",
+ "short_name": "전일일지",
+ "start_url": "./khday.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f3f5f9",
+ "theme_color": "#ffffff",
+ "lang": "ko",
+ "icons": [
+  {"src": "khday-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "khday-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+ ]
+}
