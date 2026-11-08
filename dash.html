@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 20:15">
+<meta name="dash-build" content="2026-11-08 20:16">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1683,9 +1683,9 @@ function pCards(){const cur=CD.cur.slice();const ids=new Set(cur.map(x=>x.id));
   const on=cur.filter(x=>!CD.hide.has(x.id)).length;
   const st=CD.st==='저장 중…'?'<div class="note gray">저장 중…</div>':CD.st==='ok'?'<div class="note ok">모든 화면에 저장했어요 '+hm(CD.stAt)+' · 키오스크·태블릿은 5분 안에 바뀌어요</div>':CD.st?'<div class="note amb">'+esc(CD.st)+'</div>':'';
   const h=st+'<div class="cdtop"><b>'+on+'</b>개 보이는 중 · <b>'+CD.hide.size+'</b>개 뺌<span class="sp"></span><button class="cdbtn" id="cdAll"'+(CD.hide.size?'':' disabled')+'>모두 보이기</button></div>'+
-    groups.map(g=>'<div class="cdg"><h3>'+esc(g.g)+'</h3>'+g.a.map(x=>'<button type="button" class="cdr'+(CD.hide.has(x.id)?' off':'')+'" role="checkbox" aria-checked="'+(!CD.hide.has(x.id))+'" aria-label="'+esc(x.n)+'" data-cd-toggle="'+esc(x.id)+'"><span class="cdstate" aria-hidden="true">'+(CD.hide.has(x.id)?'숨김':'보임')+'</span><span class="cdn">'+esc(x.n)+'</span>'+(x.hot?'<em class="cdhot">⚠ 지금 빨간 경고</em>':'')+'</button>').join('')+'</div>').join('')+
-    '<div class="box" style="margin-top:14px"><h3>알아 두세요</h3><div class="t2">1. 체크를 끄면 그 칸이 사무실 PC·생산실 키오스크·태블릿 대시보드에서 같이 빠져요.<br>2. 빨간 경고 중인 칸을 빼면 위쪽 붉은 경고 띠에서도 빠지니 조심해 주세요.<br>3. 칸 고르기는 대표 화면에서만 할 수 있어요. 직원용 화면은 보기만 해요.</div></div>';
-  return {s:'체크한 칸만 대시보드에 보여요',h};}
+    groups.map(g=>'<div class="cdg"><h3>'+esc(g.g)+'</h3>'+g.a.map(x=>'<button type="button" class="cdr'+(CD.hide.has(x.id)?' off':'')+'" aria-pressed="'+(!CD.hide.has(x.id))+'" aria-label="'+esc(x.n)+'" data-cd-toggle="'+esc(x.id)+'"><span class="cdstate" aria-hidden="true">'+(CD.hide.has(x.id)?'숨김':'보임')+'</span><span class="cdn">'+esc(x.n)+'</span>'+(x.hot?'<em class="cdhot">⚠ 지금 빨간 경고</em>':'')+'</button>').join('')+'</div>').join('')+
+    '<div class="box" style="margin-top:14px"><h3>알아 두세요</h3><div class="t2">1. 「숨김」으로 바꾸면 그 칸이 사무실 PC·생산실 키오스크·태블릿 대시보드에서 같이 빠져요.<br>2. 빨간 경고 중인 칸을 빼면 위쪽 붉은 경고 띠에서도 빠지니 조심해 주세요.<br>3. 칸 고르기는 대표 화면에서만 할 수 있어요. 직원용 화면은 보기만 해요.</div></div>';
+  return {s:'각 칸을 눌러 보임 / 숨김을 바꿔요. 변경은 자동 저장돼요.',h};}
 PANELS.cards=['대시보드 칸 고르기',pCards,'cards'];
 // 2026-11-08 조조: 칸 선택은 큰 버튼으로 명확히 표시하고 문서 위임으로 클릭 연결 유지.
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-cd-toggle],#cdAll');if(!t||STAFF)return;e.preventDefault();if(t.id==='cdAll'){cdSet(new Set());return;}const n=new Set(CD.hide),id=t.dataset.cdToggle;if(n.has(id))n.delete(id);else n.add(id);cdSet(n);});
