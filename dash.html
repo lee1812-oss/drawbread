@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 21:57 좌우 배치·인쇄 복구">
+<meta name="dash-build" content="2026-11-08 22:10 중요 전달사항·슬랙·회사 Gmail">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -602,6 +602,7 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
   <div class="pb" id="pB"></div>
 </aside>
 <script src="dash_company_gmail.js?v=20261108-01"></script>
+<script src="dash_notice.js?v=20261108-01"></script>
 <script>
 (function(){
 'use strict';
@@ -677,7 +678,7 @@ async function verCheck(force){if(!force&&Date.now()-verAt<240e3)return false;ve
       const nb=((await r.text()).match(/name="dash-build" content="([^"]+)"/)||[])[1]||'',tag=r.headers.get('etag')||'';
       if(nb&&BUILD&&nb!==BUILD)to=nb;
       else if(tag&&tag!==verTag){const p=await srvPage();verTag=p.tag||tag;if(p.h!==verHash)to='#'+p.h;}}   // 표시 값 없이 고친 경우: 내용으로 비교 (자료만 올린 날은 내용이 같아서 그대로)
-    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#workPrintPreview'))))return false;
+    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#workPrintPreview,#noticeDialog.show'))))return false;
     let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}
     if(!force&&lt&&lt.to===to&&Date.now()-lt.at<180e3)return false;
     try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:to,at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:to,at:Date.now()}));}catch(_){}
@@ -1922,6 +1923,7 @@ render=(orig=>function(){orig();try{pjPaint();}catch(_){}})(render);scrSize=(ori
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
 if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyGmail({getData:()=>D,isStaff:()=>STAFF,getScreen:()=>companyScreenData,setScreen:f=>companyScreenData=f,getMail:()=>pMail,setMail:f=>pMail=f,getKpis:()=>kpis,setKpis:f=>kpis=f,setWide:f=>mailWide=f,setMailAll:f=>pMailAll=f,latest,nAct,esc,logoHtml,chev,acctLine,whenShort,render,pNaver,stat,empty,ui,panels:PANELS});
 
+if(typeof globalThis.installImportantNotice==='function')globalThis.installImportantNotice({getData:()=>D,isStaff:()=>STAFF,getKey:()=>{let k='';try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK)||'';}catch(_){}return k||window.__MEMKEY||'';},getRender:()=>render,setRender:f=>render=f});
 })();
 </script>
 
