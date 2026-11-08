@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 22:26 전달사항 방송·출력·Gmail·PC 인쇄예약">
+<meta name="dash-build" content="2026-11-09 00:25 전달사항 상단·배송 생산 균형">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -568,6 +568,58 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
 @container(max-width:309px){.dash-shortcuts-grid{grid-template-columns:1fr}.dash-shortcut-name{font-size:22px}.dash-shortcut-icon{width:48px;height:48px}}
 @media(prefers-reduced-motion:reduce){.dash-shortcut{transition:none}.dash-shortcut:hover{transform:none}}
 </style>
+
+<style id="dashboard-balance-20261109">
+/* 전달사항은 관리자 현황 왼쪽 위. 기존 K-HACCP와 업무 카드 순서는 유지. */
+#main>#importantNotice{margin:0 0 12px;width:100%;min-width:0}
+@media(min-width:1100px){
+#main>#importantNotice{display:grid;grid-template-columns:minmax(190px,.8fr) minmax(0,2fr) minmax(210px,1fr);align-items:stretch}
+#main>#importantNotice .nt-head{display:flex;flex-direction:column;justify-content:center;padding:12px 16px}
+#main>#importantNotice .nt-body{align-self:center;padding:12px 16px;min-width:0}
+#main>#importantNotice .nt-text{-webkit-line-clamp:3}
+#main>#importantNotice .nt-actions{padding:10px 12px;justify-content:center}
+#main>#importantNotice .nt-time{margin-bottom:5px}
+}
+/* 우측 자료는 스크롤로 숨기지 않고 같은 높이 두 행으로 맞춤. */
+body.ws-wide #workJournalCol{display:grid;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px;padding:0;overflow:visible}
+body.ws-wide #workJournalCol>#deliveryCol,body.ws-wide #workJournalCol>#productionCol{height:100%;min-height:0;min-width:0;display:flex;flex-direction:column}
+body.ws-wide #workJournalCol .ds-preview,body.ws-wide #workJournalCol .pj-preview{height:auto;min-height:0;flex:1 1 0;padding:8px;display:block}
+body.ws-wide #workJournalCol .ds-preview img,body.ws-wide #workJournalCol .pj-preview img{object-fit:contain;object-position:center}
+body.ws-wide #workJournalCol .ds-empty,body.ws-wide #workJournalCol .pj-empty{flex:1 1 0;min-height:0;overflow:auto;padding:10px;font-size:17px;line-height:1.5}
+body.ws-wide #workJournalCol .ds-head,body.ws-wide #workJournalCol .pj-head{padding:10px}
+body.ws-wide #workJournalCol h2{font-size:21px;margin:0 0 4px;line-height:1.35}
+body.ws-wide #workJournalCol .work-owner{display:inline;font-size:17px}
+body.ws-wide #workJournalCol .ds-from,body.ws-wide #workJournalCol .pj-who{font-size:17px;line-height:1.4}
+body.ws-wide #workJournalCol .ds-head .work-date{grid-template-columns:64px minmax(0,1fr) 64px;gap:6px;margin-top:6px;padding:0}
+body.ws-wide #workJournalCol .ds-head .work-date strong{grid-column:1/-1;grid-row:1;font-size:23px}
+body.ws-wide #workJournalCol .ds-head [data-dsch="prev"]{grid-column:1;grid-row:2}
+body.ws-wide #workJournalCol .ds-head [data-dsch="next"]{grid-column:3;grid-row:2}
+body.ws-wide #workJournalCol .ds-head [data-ds-date]{grid-column:2;grid-row:2;min-width:0;padding:4px;font-size:17px}
+body.ws-wide #workJournalCol .ds-head [data-dsch="latest"]{grid-column:1/3;grid-row:3}
+body.ws-wide #workJournalCol .ds-head [data-dsch="today"]{grid-column:3;grid-row:3}
+body.ws-wide #workJournalCol .ds-head .work-date button{padding:4px 2px;font-size:17px}
+body.ws-wide #workJournalCol .ds-status{margin-top:6px;padding:4px 8px;font-size:17px;line-height:1.4}
+body.ws-wide #workJournalCol .pj-date{margin:6px 0 3px;font-size:23px;line-height:1.4}
+body.ws-wide #workJournalCol .pj-sub{font-size:17px;margin:0 0 6px;line-height:1.4}
+body.ws-wide #workJournalCol .pj-controls{grid-template-columns:64px minmax(0,1fr) 64px;gap:6px}
+body.ws-wide #workJournalCol .pj-controls [data-pj="prev"]{grid-column:1;grid-row:1}
+body.ws-wide #workJournalCol .pj-controls [data-pj="next"]{grid-column:3;grid-row:1}
+body.ws-wide #workJournalCol .pj-controls input{grid-column:2;grid-row:1;min-width:0;padding:4px;font-size:17px}
+body.ws-wide #workJournalCol .pj-controls .pj-auto{grid-column:1/-1;grid-row:2}
+body.ws-wide #workJournalCol .ds-foot,body.ws-wide #workJournalCol .pj-foot{padding:8px 10px;font-size:17px;line-height:1.4}
+body.ws-wide #workJournalCol .ds-foot p,body.ws-wide #workJournalCol .pj-foot p{margin:0 0 4px}
+body.ws-wide #workJournalCol .ds-foot button,body.ws-wide #workJournalCol .pj-foot button{font-size:17px;min-height:54px}
+body.ws-wide #workJournalCol .pj-latest{margin-top:4px}
+body.ws-inline #workJournalCol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+@media(max-width:749px){body.ws-inline #workJournalCol{grid-template-columns:1fr;margin:12px}}
+
+/* 낮은 PC 화면은 자료 전용 칸의 내부 비율만 맞춤. 위치·바깥 폭은 고정. */
+body.ws-wide #workJournalCol{zoom:var(--workZoom,1);top:calc(8px / var(--workZoom,1));bottom:calc(8px / var(--workZoom,1));right:calc((var(--scrW,250px) + 20px) / var(--workZoom,1));width:calc(var(--dsW,360px) / var(--workZoom,1))}
+@container(max-width:1090px) and (min-width:620px){.dash-top .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.dash-top .ib{width:100%;height:54px;min-width:0;font-size:14px}.dash-top .ib span{word-break:keep-all;line-height:1.25}.dash-top .now{gap:6px}.dash-top .now .d{font-size:15px}}
+@media(max-width:1099px){#main>#importantNotice .nt-actions{flex-direction:row;flex-wrap:wrap}#main>#importantNotice .nt-actions button{flex:1;min-width:0}}
+
+@container(max-width:1090px) and (min-width:620px){header .bk-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 12px;font-size:21px}header .bk-strip .bk-t{grid-column:1/-1;justify-content:center}header .bk-strip .bk-chip{font-size:17px;min-height:54px;padding:6px 8px;white-space:normal;line-height:1.35;word-break:keep-all}header .bk-strip .bk-chip em,header .bk-strip .bk-chip b{display:inline-block;margin:2px}}
+</style>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
@@ -602,7 +654,7 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
   <div class="pb" id="pB"></div>
 </aside>
 <script src="dash_company_gmail.js?v=20261108-01"></script>
-<script src="dash_notice.js?v=20261108-03"></script>
+<script src="dash_notice.js?v=20261109-01"></script>
 <script>
 (function(){
 'use strict';
@@ -1434,7 +1486,7 @@ function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=
   if(i===0){const s=gs('핵심 4품목').split(' · ')[0];return (s?'<span class="fs">'+esc2(s)+'</span>':'')+'<span class="lgd"><span><i style="background:var(--green)"></i>7일치 이상</span><span><i style="background:var(--amber)"></i>3~7일치</span><span><i style="background:var(--red)"></i>3일치 미만</span></span>';}
   if(i===1){const a=gs('생산 계획').split(' · ').filter(x=>x.includes('전표'));const b=gs('공장 운영');return (a.length?'<span class="fs">'+esc2(a[0])+'</span>':'')+(b?'<span class="fs">공장 '+esc2(b)+'</span>':'');}
   return '';}
-function fitTpl(m,k){if(innerWidth<1400)return false;
+function fitTpl(m,k){if(innerWidth<1100)return false;
   const top=[...k.children];const used=new Set();const rows=[];let hit=0;
   FIT_ROWS.forEach((R,i)=>{const its=[];R.items.forEach(([s,sp])=>{const el=[...k.querySelectorAll(s)].find(e=>!used.has(e));if(el){used.add(el);its.push([el,sp]);hit++;}});rows.push({R,i,its});});
   if(hit<8)return false;
@@ -1450,11 +1502,11 @@ function fitTpl(m,k){if(innerWidth<1400)return false;
   const grps=top.filter(e=>e.classList.contains('grp'));
   if(rest.length)mk('기타','var(--faint)','',rest.map(e=>[e,e.classList.contains('note')?6:2]));
   k.innerHTML='';if(kh)k.appendChild(kh);k.appendChild(wrap);grps.forEach(g=>k.appendChild(g));
-  let lo=0.4,hi=1.3;m.style.zoom=String(hi);if(!fitFits()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);}
+  let lo=0.2,hi=1.3;m.style.zoom=String(hi);if(!fitFits()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);}
   return true;}
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   FIT_BUSY=true;let ok=false;
-  try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1400&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
+  try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1100&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
   finally{FIT_BUSY=false;}
   if(!ok){document.body.classList.remove('ftpl');fitAllAuto();}}
 function fitSoon(ms){clearTimeout(FIT_T);FIT_T=setTimeout(fitAll,ms||60);}
@@ -1897,7 +1949,7 @@ render=(orig=>function(){orig();try{dsSchedulePaint();}catch(_){}})(render);scrS
 // ===== 2026-11-08 이정현 과장 생산·소모 일지 =====
 const PJS={mode:'auto',date:'',cache:{},busy:{},err:{},errAt:{},focus:null};try{const v=JSON.parse(localStorage.getItem('dash_pj_ui_v1')||'null');if(v&&v.mode==='manual'&&/^20\d\d-\d\d-\d\d$/.test(v.date||'')){PJS.mode='manual';PJS.date=v.date;}}catch(_){}
 function pjToday(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}function pjAdd(d,n){return new Date(new Date(d+'T12:00:00Z').getTime()+n*864e5).toISOString().slice(0,10);}function pjEntries(){return (D&&D.productionJournal&&D.productionJournal.entries)||[];}function pjDate(){const t=pjToday();return PJS.mode==='manual'?PJS.date:(pjEntries().some(e=>e.date===t)?t:pjAdd(t,-1));}function pjLabel(d){const k=new Date(d+'T12:00:00Z');return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일 ('+'일월화수목금토'[k.getUTCDay()]+')';}function pjSave(){try{localStorage.setItem('dash_pj_ui_v1',JSON.stringify({mode:PJS.mode,date:PJS.date}));}catch(_){}}
-function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn();document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
+function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn();document.documentElement.style.setProperty('--workZoom',String(Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
 function pjValidImg(s){return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s||'');}
 async function pjLoad(d,e){if(PJS.busy[d])return;PJS.busy[d]=true;delete PJS.err[d];try{let doc=null;if(window.__PRODUCTION_TEST)doc=window.__PRODUCTION_TEST[d];else{if(!/^production_20\d{6}\.enc\.json$/.test(e.file||''))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('원본을 못 읽었어요');doc=await decrypt(await r.json(),k);}if(!doc||doc.date!==d||!(doc.images||[]).some(pjValidImg))throw new Error('원본 날짜·사진 확인 필요');PJS.cache[d]={rev:e.revision,doc};}catch(err){PJS.err[d]=String(err.message||err);PJS.errAt[d]=Date.now();}finally{delete PJS.busy[d];if(pjDate()===d)pjPaint();}}
 function pjPaint(){if(!D||STAFF){const old=document.getElementById('productionCol');if(old)old.remove();document.body.classList.remove('pj-wide','pj-inline');return;}let a=document.getElementById('productionCol');if(!a){a=document.createElement('aside');a.id='productionCol';a.setAttribute('aria-label','이정현 과장 생산일지');document.getElementById('main').after(a);}const d=pjDate(),today=pjToday(),idx=D.productionJournal||{},rows=pjEntries(),e=rows.find(x=>x.date===d),latest=rows.slice().sort((a,b)=>b.date.localeCompare(a.date))[0];const cached=PJS.cache[d],doc=e&&cached&&cached.rev===e.revision?cached.doc:null;const imgs=doc?(doc.images||[]).filter(pjValidImg):[];const auto=PJS.mode==='auto',notToday=!rows.some(x=>x.date===today);const sub=auto&&notToday?'오늘 일지가 아직 없어 전일자로 표시':auto?'오늘 생산일지': '날짜를 직접 선택했어요';
