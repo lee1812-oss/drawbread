@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-08 21:43 고급 바로가기·최대 인쇄">
+<meta name="dash-build" content="2026-11-08 21:55 좌우 배치·최대 인쇄">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -329,6 +329,27 @@ body.rsc #scrCol{overflow-y:auto}.hl-frame{position:absolute;left:0;top:0;width:
 .cdr.off{background:transparent;color:var(--sub)}.cdr.off .cdn{text-decoration:line-through}
 .cdr .cdn{flex:1;min-width:0;word-break:keep-all}
 .cdhot{font-style:normal;font-size:.8rem;font-weight:800;color:#fff;background:var(--red);border-radius:999px;padding:3px 9px;white-space:nowrap}
+
+/* 상단 좌우 배치: 실제 업무 영역 폭을 기준으로 정돈 */
+header{container-type:inline-size}
+.dash-top{display:grid;grid-template-columns:440px minmax(0,1fr);align-items:center;gap:24px;padding:14px 20px;max-width:none;margin:0}
+.dash-top .hd{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:12px;max-width:none;margin:0;padding:0;min-width:0}
+.dash-top .brand{grid-column:1;grid-row:1;display:grid;grid-template-columns:52px minmax(0,1fr);column-gap:12px;row-gap:2px;align-items:center}
+.dash-top .brand img{grid-row:1/3;width:52px;height:52px}.dash-top .brand .nm{font-size:24px;line-height:1.3}.dash-top .brand .dv,.dash-top .hd>.sp{display:none}
+.dash-top .brand-meta{grid-column:2;display:grid;grid-template-columns:1fr auto;gap:2px 8px}.dash-top .brand .tt{display:block;grid-column:1/-1;font-size:18px;line-height:1.3}.dash-top .dash-version,.dash-top .dash-mode{font-size:17px;line-height:1.35;white-space:nowrap}
+.dash-top .now{grid-column:2;grid-row:1;text-align:right;align-self:center}.dash-top .now .t{font-size:25px}.dash-top .now .d{font-size:17px;white-space:normal}
+.dash-top .tools{grid-column:1/-1;grid-row:2;display:flex;justify-content:flex-start;flex-wrap:nowrap;gap:6px}.dash-top .ib{width:auto;min-width:54px;height:54px;flex:1;justify-content:center;padding:0 10px;gap:6px;font-size:17px}.dash-top .ib span{display:inline}.dash-top .ib svg{width:21px;height:21px;flex:none}.dash-top .ib:focus-visible{outline:3px solid #BF913C;outline-offset:2px}
+.dash-top .dash-shortcuts{margin:0;max-width:none;min-width:0;padding:0 0 0 24px;border-left:1px solid var(--line);align-self:center}.dash-top .dash-shortcuts-head{margin-bottom:10px}.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.dash-top .dash-shortcut-name{font-size:22px}
+@container(max-width:1190px){.dash-top .dash-shortcut{flex-direction:column;text-align:center;justify-content:center;gap:6px;min-height:126px;padding:10px 6px}.dash-top .dash-shortcut-icon{width:40px;height:40px;border-radius:11px}.dash-top .dash-shortcut-icon svg{width:30px;height:30px}.dash-top .dash-shortcut-copy{gap:3px;align-items:center}.dash-top .dash-shortcut-name{font-size:20px}.dash-top .dash-shortcut-desc{font-size:17px}}
+@container(max-width:779px){.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-top .dash-shortcuts-hint{display:none}.dash-top .dash-shortcut{min-height:120px}}
+@container(min-width:450px) and (max-width:779px){.dash-top .dash-shortcut{flex-direction:row;text-align:left;justify-content:flex-start;gap:8px;min-height:84px;padding:10px 8px}.dash-top .dash-shortcut-icon{width:34px;height:34px}.dash-top .dash-shortcut-icon svg{width:28px;height:28px}.dash-top .dash-shortcut-copy{align-items:flex-start}.dash-top .dash-shortcut-name{font-size:20px}}
+@container(max-width:339px){.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container(max-width:1490px){.dash-top{grid-template-columns:350px minmax(0,1fr);gap:16px;padding:12px 14px}.dash-top .hd{grid-template-columns:minmax(0,1fr) 70px;gap:10px}.dash-top .brand{grid-template-columns:44px minmax(0,1fr);column-gap:9px}.dash-top .brand img{width:44px;height:44px}.dash-top .brand-meta{grid-template-columns:1fr}.dash-top .brand .tt,.dash-top .dash-mode{grid-column:1}.dash-top .ib{padding:0 7px;gap:4px}.dash-top .ib svg{width:18px;height:18px}.dash-top .dash-shortcuts{padding-left:16px}.dash-top .now .t{font-size:23px}}
+@container(max-width:1090px) and (min-width:620px){.dash-top{grid-template-columns:230px minmax(0,1fr);gap:14px;padding:12px 14px}.dash-top .hd{grid-template-columns:1fr;gap:10px}.dash-top .brand{grid-column:1;grid-row:1}.dash-top .brand .nm{font-size:23px}.dash-top .brand-meta{grid-template-columns:1fr auto;column-gap:4px}.dash-top .brand .tt{grid-column:1;white-space:nowrap}.dash-top .dash-mode{grid-column:2}.dash-top .dash-version{grid-column:1/-1}.dash-top .now{grid-column:1;grid-row:2;display:flex;align-items:baseline;justify-content:space-between;text-align:left;gap:8px}.dash-top .now .d{white-space:nowrap}.dash-top .tools{grid-row:3}.dash-top .ib{min-width:44px;height:54px;font-size:17px;flex-direction:column;gap:2px;padding:4px 2px}.dash-top .dash-shortcuts{padding-left:14px}}
+@container(max-width:619px){.dash-top{grid-template-columns:minmax(0,1fr);gap:12px;padding:12px}.dash-top .hd{grid-template-columns:minmax(0,1fr) 80px;gap:10px}.dash-top .brand-meta{grid-template-columns:1fr auto}.dash-top .brand .tt{grid-column:1/-1}.dash-top .dash-mode{grid-column:2}.dash-top .dash-shortcuts{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-top .ib{flex-direction:column;gap:2px;font-size:17px;padding:4px 2px}}
+@media(max-width:479px){.dash-top .brand-meta{grid-template-columns:1fr}.dash-top .dash-mode{grid-column:1}.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-top .dash-shortcut{flex-direction:row;text-align:left;justify-content:flex-start;min-height:90px;padding:10px;gap:9px}.dash-top .dash-shortcut-copy{align-items:flex-start}.dash-top .dash-shortcut-icon{width:38px;height:38px}.dash-top .dash-shortcut-name{font-size:19px}.dash-top .dash-shortcut-desc{white-space:normal;word-break:keep-all}.dash-top .dash-shortcuts-title{font-size:18px}}
+@media(max-width:359px){.dash-top .dash-shortcuts-grid{grid-template-columns:1fr}}
+
 </style>
 <style id="c4css">
 /* 2026-10-22 핵심 4품목 현황판 (Aside) */
@@ -549,7 +570,7 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
 </style>
 </head>
 <body>
-<header><div class="hd">
+<header><div class="dash-top"><div class="hd">
   <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><span class="nm">빵을그리다</span><span class="dv"></span><div class="brand-meta"><span class="tt">업무 대시보드</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span></div></div>
   <div class="sp"></div>
   <div class="now"><div class="t num" id="ct"></div><div class="d" id="cd"></div></div>
@@ -572,7 +593,7 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
 <a class="dash-shortcut" id="shortcut-chrome" href="https://www.google.com/" target="_blank" rel="noopener noreferrer" title="크롬에서 새 검색 창 열기" aria-label="크롬에서 새 검색 창 열기"><span class="dash-shortcut-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#DB4437"/><path d="M12 12h10A10 10 0 0 1 7 20.7z" fill="#F4B400"/><path d="M12 12L7 20.7A10 10 0 0 1 3.3 7z" fill="#0F9D58"/><circle cx="12" cy="12" r="4.7" fill="#4285F4" stroke="white" stroke-width="1.5"/></svg></span><span class="dash-shortcut-copy"><span class="dash-shortcut-name">크롬</span><span class="dash-shortcut-desc">새 검색 창</span></span><span class="dash-shortcut-arrow" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h8v8M13 3L3 13"/></svg></span></a>
   </div>
 </nav>
-</header>
+</div></header>
 <div class="access-note" id="accessNote" hidden>직원용 화면입니다. 기기 화면·건강일지 미리보기는 관리자 연결 후 볼 수 있어요. <a href="?admin=1">관리자 연결</a></div>
 <main id="main"></main>
 <div class="scrim" id="scrim"></div>
@@ -640,7 +661,8 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
 // dash.html 맨 위 dash-build 값이 바뀌면(새 화면을 올리면) 열려 있는 대시보드가 5분 안에 스스로 새로고침해요.
 // 화면 안 「새로고침」 버튼은 누를 때 바로 확인. 자세한 창을 보고 있을 때는 닫힌 뒤에 바꿔요.
 const BUILD=((document.querySelector('meta[name="dash-build"]')||{}).content)||'';
-$('#dashVersion').textContent='버전 '+BUILD;
+$('#dashVersion').textContent='업데이트 '+BUILD.slice(5,16).replace('-','/');
+$('#dashVersion').title='버전 '+BUILD;
 $('#dashMode').textContent=STAFF?'직원용 화면':(ADMIN_ENTRY&&!k0&&!localStorage.getItem(LS_KEY)&&!localStorage.getItem(LS_KEY_BAK)?'관리자 연결 대기':'관리자 화면');
 $('#accessNote').hidden=!STAFF;
 let verAt=0,verTag=null,verHash=null;
