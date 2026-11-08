@@ -601,6 +601,7 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
   <div class="ph"><button class="back" id="pClose" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button><span id="pL"></span><div><h2 id="pT"></h2><div class="s" id="pS"></div></div></div>
   <div class="pb" id="pB"></div>
 </aside>
+<script src="dash_company_gmail.js?v=20261108-01"></script>
 <script>
 (function(){
 'use strict';
@@ -1919,6 +1920,7 @@ render=(orig=>function(){orig();try{pjPaint();}catch(_){}})(render);scrSize=(ori
 
 
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
+if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyGmail({getData:()=>D,isStaff:()=>STAFF,getScreen:()=>companyScreenData,setScreen:f=>companyScreenData=f,getMail:()=>pMail,setMail:f=>pMail=f,getKpis:()=>kpis,setKpis:f=>kpis=f,setWide:f=>mailWide=f,setMailAll:f=>pMailAll=f,latest,nAct,esc,logoHtml,chev,acctLine,whenShort,render,pNaver,stat,empty,ui,panels:PANELS});
 
 })();
 </script>
