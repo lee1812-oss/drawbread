@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-09 00:25 전달사항 상단·배송 생산 균형">
+<meta name="dash-build" content="2026-11-10 19:51 재고 현황 칸">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -620,6 +620,141 @@ body.ws-wide #workJournalCol{zoom:var(--workZoom,1);top:calc(8px / var(--workZoo
 
 @container(max-width:1090px) and (min-width:620px){header .bk-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 12px;font-size:21px}header .bk-strip .bk-t{grid-column:1/-1;justify-content:center}header .bk-strip .bk-chip{font-size:17px;min-height:54px;padding:6px 8px;white-space:normal;line-height:1.35;word-break:keep-all}header .bk-strip .bk-chip em,header .bk-strip .bk-chip b{display:inline-block;margin:2px}}
 </style>
+<style id="stock-report-style">
+/* 2026-11-10 조조: 재고 현황 칸 (완제품·생지 일일 보고) — 관리자 전용, 배송정보 왼쪽 */
+:root{--sk-red:#c0262d;--sk-red-bg:#fdeeee;--sk-red-ln:#f1c4c4;--sk-amb:#a85a00;--sk-amb-bg:#fff3df;--sk-amb-ln:#f3d39c;--sk-grn:#17763f;--sk-grn-bg:#e8f5ed;--sk-grn-ln:#bfe2cc;--sk-gry:#3f4a5a;--sk-gry-bg:#f1f3f7;--sk-gry-ln:#d8dde6;--sk-nv:#22396F;--sk-nv-bg:#eef2fa;--sk-gold:#BF913C}
+body.night{--sk-red:#f4877f;--sk-red-bg:#2d1a1e;--sk-red-ln:#5b2b2e;--sk-amb:#f6bd55;--sk-amb-bg:#30250f;--sk-amb-ln:#5c4519;--sk-grn:#61d394;--sk-grn-bg:#10281b;--sk-grn-ln:#24513a;--sk-gry:#d3dbe7;--sk-gry-bg:#182133;--sk-gry-ln:#2c3a52;--sk-nv:#9db8f2;--sk-nv-bg:#16213a}
+#stockCol{display:none;box-sizing:border-box;color:var(--ink);background:var(--card,#fff);border:1px solid var(--line,#d1d5db);border-radius:14px;overflow:hidden;container-type:inline-size;word-break:keep-all;overflow-wrap:break-word}
+#stockCol *{box-sizing:border-box}
+body.ws-wide.sk-wide{padding-right:calc(var(--scrW,250px) + var(--dsW,280px) + var(--skW,340px) + 34px)}
+body.sk-wide #stockCol{display:flex;flex-direction:column;position:fixed;top:8px;bottom:8px;right:calc(var(--scrW,250px) + var(--dsW,280px) + 30px);width:var(--skW,340px);z-index:18}
+body.sk-inline #stockCol{display:flex;flex-direction:column;margin:16px 20px}
+@media(max-width:749px){body.sk-inline #stockCol{margin:12px}}
+.sk-head{flex:none;padding:14px 14px 12px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--sk-nv-bg),var(--card,#fff))}
+.sk-head h2{margin:0 0 4px;font-size:22px;line-height:1.3;color:var(--ink);display:flex;align-items:center;gap:8px}
+.sk-head h2::before{content:"";width:5px;height:22px;border-radius:3px;background:var(--sk-gold);flex:none}
+.sk-from{font-size:17px;line-height:1.45;color:var(--ink2)}
+.sk-date{font-size:26px;font-weight:900;line-height:1.25;margin:8px 0 6px;color:var(--ink);white-space:nowrap}
+.sk-stat{display:block;font-size:17px;font-weight:800;line-height:1.45;padding:7px 10px;border-radius:9px;background:var(--sk-grn-bg);color:var(--sk-grn)}
+.sk-stat.old{background:var(--sk-amb-bg);color:var(--sk-amb)}
+.sk-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:12px}
+body.sk-inline .sk-body{overflow:visible}
+.sk-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sk-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:96px;padding:10px 12px 10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card,#fff);color:var(--ink);cursor:pointer;text-align:left;font:inherit;overflow:hidden}
+.sk-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tc)}
+.sk-tile b{font-size:36px;line-height:1.05;font-weight:900;color:var(--tc);font-variant-numeric:tabular-nums}
+.sk-tile b small{font-size:17px;font-weight:800;margin-left:2px}
+.sk-tile span{font-size:17px;font-weight:800;line-height:1.3}
+.sk-tile em{font-style:normal;font-size:16px;font-weight:700;color:var(--ink2);line-height:1.3}
+.sk-tile.t-loss{--tc:var(--sk-amb);background:var(--sk-amb-bg);border-color:var(--sk-amb-ln)}
+.sk-tile.t-short{--tc:var(--sk-red);background:var(--sk-red-bg);border-color:var(--sk-red-ln)}
+.sk-tile.t-over{--tc:var(--sk-grn);background:var(--sk-grn-bg);border-color:var(--sk-grn-ln)}
+.sk-tile.t-rest{--tc:var(--sk-gry);background:var(--sk-gry-bg);border-color:var(--sk-gry-ln)}
+.sk-tile.zero b{opacity:.55}
+.sk-tile:focus-visible,.sk-sec-h button:focus-visible,.sk-foot button:focus-visible{outline:3px solid var(--sk-gold);outline-offset:2px}
+@media(hover:hover){.sk-tile:hover{filter:brightness(.98);box-shadow:0 3px 12px rgba(13,28,66,.12)}}
+.sk-dough{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--soft,#f8fafc);margin-bottom:14px}
+.sk-dough .dl{grid-column:1/-1;font-size:17px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sk-dough .dv{font-size:40px;font-weight:900;line-height:1;color:var(--sk-nv);font-variant-numeric:tabular-nums;white-space:nowrap}.sk-dough .dv small{font-size:18px;margin-left:2px}
+.sk-dough .ds{font-size:17px;line-height:1.45;color:var(--ink2)}
+.sk-dough .ds b{color:var(--ink)}
+.sk-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:999px;font-size:16px;font-weight:800;line-height:1.5;white-space:nowrap;border:1px solid transparent}
+.sk-pill.red{background:var(--sk-red-bg);color:var(--sk-red);border-color:var(--sk-red-ln)}.sk-pill.amb{background:var(--sk-amb-bg);color:var(--sk-amb);border-color:var(--sk-amb-ln)}.sk-pill.grn{background:var(--sk-grn-bg);color:var(--sk-grn);border-color:var(--sk-grn-ln)}.sk-pill.gry{background:var(--sk-gry-bg);color:var(--sk-gry);border-color:var(--sk-gry-ln)}
+.sk-sec{margin:0 0 16px;scroll-margin-top:8px}
+.sk-sec-h{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:0 0 6px;border-bottom:2px solid var(--sc,var(--line))}
+.sk-sec-h h3{margin:0;font-size:19px;font-weight:900;color:var(--sc,var(--ink));flex:1;line-height:1.3}
+.sk-sec-h .n{font-size:22px;font-weight:900;color:var(--sc,var(--ink))}.sk-sec-h .n small{font-size:16px;margin-left:1px}
+.sk-sec.s-loss{--sc:var(--sk-amb)}.sk-sec.s-short{--sc:var(--sk-red)}.sk-sec.s-over{--sc:var(--sk-grn)}.sk-sec.s-rest{--sc:var(--sk-gry)}
+.sk-grp{border:1px solid var(--line);border-radius:11px;margin-bottom:8px;overflow:hidden;background:var(--card,#fff)}
+.sk-grp-h{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--gc-bg);color:var(--gc);font-size:17px;font-weight:900}
+.sk-grp-h span{flex:1}.sk-grp-h b{font-size:20px}.sk-grp-h small{font-size:16px;font-weight:700;color:var(--ink2);display:block}
+.sk-grp.g-expired{--gc:var(--sk-red);--gc-bg:var(--sk-red-bg)}.sk-grp.g-n31{--gc:var(--sk-amb);--gc-bg:var(--sk-amb-bg)}.sk-grp.g-n60{--gc:var(--sk-nv);--gc-bg:var(--sk-nv-bg)}.sk-grp.g-defect{--gc:var(--sk-gry);--gc-bg:var(--sk-gry-bg)}
+.sk-lr{padding:8px 10px;border-top:1px solid var(--line)}
+.sk-lr .a{display:flex;gap:8px;align-items:flex-start}.sk-lr .a .nm{flex:1;font-size:17px;font-weight:800;line-height:1.35}.sk-lr .a .q{font-size:17px;font-weight:800;white-space:nowrap;color:var(--ink)}
+.sk-lr .b{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px;font-size:16px;color:var(--ink2)}
+.sk-dd{display:inline-block;padding:1px 7px;border-radius:6px;font-size:16px;font-weight:900;background:var(--gc,#4b5563);color:#fff;white-space:nowrap}
+body.night .sk-dd{color:#0b0f17}
+.sk-plan{margin-top:4px;font-size:16px;font-weight:800;line-height:1.4}.sk-plan.ok{color:var(--sk-grn)}.sk-plan.no{color:var(--sk-amb)}
+.sk-more{display:block;width:100%;min-height:44px;border:0;border-top:1px dashed var(--line);background:transparent;color:var(--sk-nv);font:inherit;font-size:17px;font-weight:800;cursor:pointer}
+.sk-it{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--card,#fff)}
+.sk-it.big{border-color:var(--sk-red-ln);background:var(--sk-red-bg)}
+.sk-th{width:52px;height:52px;border-radius:10px;object-fit:cover;background:#fff;border:1px solid var(--line);grid-row:span 2}
+.sk-th.ph0{display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ink2);background:var(--soft,#f3f4f6)}
+.sk-it .nm{font-size:17px;font-weight:800;line-height:1.3;display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+.sk-it .nm span{min-width:0}
+.sk-it .ln{font-size:17px;line-height:1.4;color:var(--ink2)}.sk-it .ln b{color:var(--ink);font-variant-numeric:tabular-nums}
+.sk-it .full{grid-column:1/-1}
+.sk-res{font-size:20px;font-weight:900;white-space:nowrap}.sk-res.red{color:var(--sk-red)}.sk-res.grn{color:var(--sk-grn)}.sk-res.gry{color:var(--sk-gry)}
+.sk-gauge{position:relative;height:12px;border-radius:7px;background:var(--sk-gry-bg);border:1px solid var(--sk-gry-ln);overflow:visible;margin:6px 0 2px}
+.sk-gauge i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--fc)}
+.sk-gauge u{position:absolute;left:50%;top:-4px;bottom:-4px;width:3px;margin-left:-1px;background:var(--ink);border-radius:2px;text-decoration:none}
+.sk-gauge.red{--fc:var(--sk-red)}.sk-gauge.grn{--fc:var(--sk-grn)}.sk-gauge.gry{--fc:#94a3b8}
+.sk-gl{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:var(--ink2)}
+.sk-ship{margin-top:6px;padding:7px 9px;border-radius:9px;background:var(--card,#fff);border:1px solid var(--sk-red-ln);font-size:16px;line-height:1.45}
+.sk-ship b{color:var(--sk-red)}
+.sk-sub{font-size:16px;font-weight:800;color:var(--ink2);margin:10px 0 6px;padding-top:8px;border-top:1px dashed var(--line)}
+.sk-empty{padding:12px;border-radius:10px;background:var(--soft,#f8fafc);font-size:17px;color:var(--ink2);text-align:center}
+.sk-up{font-weight:900;color:var(--sk-grn)}.sk-dn{font-weight:900;color:var(--sk-red)}
+.sk-foot{flex:none;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.sk-foot button{width:100%;min-height:56px;border:0;border-radius:11px;background:var(--sk-nv);color:#fff;font:inherit;font-size:19px;font-weight:900;cursor:pointer;letter-spacing:-.02em}
+body.night .sk-foot button{background:#2b4a8f}
+.sk-foot p{margin:0 0 8px;font-size:16px;line-height:1.45;color:var(--ink2)}
+@container(min-width:760px){.sk-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;align-items:start}.sk-tiles,.sk-dough{grid-column:1/-1}}
+@container(min-width:480px){.sk-tiles{grid-template-columns:repeat(4,1fr)}.sk-tile{min-height:104px}.sk-th{width:64px;height:64px}.sk-date{font-size:28px}}
+/* 크게 보기 */
+#stockBig{display:none;position:fixed;inset:0;z-index:166;background:var(--bg,#f3f4f6);color:var(--ink);box-sizing:border-box;padding:12px;word-break:keep-all;overflow-wrap:break-word}
+#stockBig.show{display:flex;flex-direction:column}
+#stockBig *{box-sizing:border-box}
+.skb-head{flex:none;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:6px 6px 12px}
+.skb-head .tt{flex:1;min-width:280px}
+.skb-head h2{margin:0;font-size:28px;font-weight:900;line-height:1.25;display:flex;align-items:center;gap:10px}
+.skb-head h2::before{content:"";width:6px;height:28px;border-radius:3px;background:var(--sk-gold)}
+.skb-head .sb{font-size:18px;color:var(--ink2);margin-top:4px}
+.skb-head button,.skb-head a{min-height:54px;padding:0 20px;border:1px solid #9ca3af;border-radius:11px;background:var(--card,#fff);color:var(--ink);font:inherit;font-size:18px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.skb-head .x{background:var(--sk-nv);color:#fff;border-color:var(--sk-nv)}
+.skb-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 6px 16px}
+.skb-kpi{display:grid;grid-template-columns:minmax(300px,1.6fr) repeat(5,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.skb-k{position:relative;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;border-radius:14px;padding:16px 16px 14px;background:var(--card,#fff);border:1px solid var(--line);overflow:hidden;cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.skb-k::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--tc,var(--sk-nv))}
+.nw{white-space:nowrap}.sk-th.sm{width:40px;height:40px;border-radius:8px;font-size:18px}
+.skb-k .l{font-size:18px;font-weight:800}.skb-k .v{font-size:52px;font-weight:900;line-height:1.1;color:var(--tc,var(--ink));font-variant-numeric:tabular-nums;white-space:nowrap}.skb-k .v small{font-size:20px;margin-left:3px}.skb-k .s{font-size:17px;color:var(--ink2);line-height:1.45}
+.skb-k.t-loss{--tc:var(--sk-amb)}.skb-k.t-short{--tc:var(--sk-red)}.skb-k.t-over{--tc:var(--sk-grn)}.skb-k.t-rest{--tc:var(--sk-gry)}.skb-k.t-plan{--tc:var(--sk-amb)}.skb-k.t-dough{--tc:var(--sk-nv);cursor:default}
+.skb-bar{display:flex;height:22px;border-radius:7px;overflow:hidden;margin-top:8px;font-size:15px;font-weight:800;color:#fff}
+.skb-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;white-space:nowrap;overflow:hidden}
+.skb-h3{display:flex;align-items:baseline;gap:10px;margin:6px 0 10px;font-size:23px;font-weight:900;scroll-margin-top:6px}
+.skb-h3 small{font-size:17px;font-weight:700;color:var(--ink2)}
+.skb-h3 .tag{margin-left:auto}
+.skb-loss{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:12px;margin-bottom:20px;align-items:start}
+.skb-loss .sk-grp{margin:0}
+.skb-cols{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1.5fr) minmax(300px,1.2fr);gap:14px;align-items:start}
+.skb-lane{border-radius:14px;border:1px solid var(--lc-ln);background:var(--lc-bg);padding:12px;scroll-margin-top:6px}
+.skb-lane>h3{margin:0 0 10px;font-size:22px;font-weight:900;color:var(--lc);display:flex;align-items:center;gap:8px}.skb-lane>h3 span{flex:1}.skb-lane>h3 b{font-size:26px}
+.skb-lane.l-short{--lc:var(--sk-red);--lc-bg:var(--sk-red-bg);--lc-ln:var(--sk-red-ln)}.skb-lane.l-over{--lc:var(--sk-grn);--lc-bg:var(--sk-grn-bg);--lc-ln:var(--sk-grn-ln)}.skb-lane.l-rest{--lc:var(--sk-gry);--lc-bg:var(--sk-gry-bg);--lc-ln:var(--sk-gry-ln)}
+.skb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.skc{background:var(--card,#fff);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.skc-top{display:flex;gap:12px;align-items:center}
+.skc-top img,.skc-top .ph0{width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid var(--line);background:#fff;flex:none}
+.skc-top .ph0{display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--ink2);background:var(--soft,#f3f4f6)}
+.skc-top h4{margin:0 0 6px;font-size:19px;font-weight:900;line-height:1.3}
+.skc-n{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:center}
+.skc-n div{padding:6px 4px;border-left:1px solid var(--line)}.skc-n div:first-child{border-left:0}
+.skc-n small{display:block;font-size:16px;font-weight:800;color:var(--ink2)}.skc-n b{display:block;font-size:26px;font-weight:900;line-height:1.2;font-variant-numeric:tabular-nums}.skc-n i{font-style:normal;font-size:15px;color:var(--ink2);display:block}
+.skc-n .ecv{color:var(--sk-nv)}
+.skc .sk-res{font-size:22px;text-align:center;padding:6px;border-radius:9px;background:var(--rbg)}
+.skc .sk-res.red{--rbg:var(--sk-red-bg)}.skc .sk-res.grn{--rbg:var(--sk-grn-bg)}.skc .sk-res.gry{--rbg:var(--sk-gry-bg)}
+.skc-meta{font-size:16px;line-height:1.5;color:var(--ink2)}
+.skb-mini{display:flex;gap:10px;align-items:center;background:var(--card,#fff);border:1px solid var(--line);border-radius:11px;padding:8px 10px}
+.skb-mini img,.skb-mini .ph0{width:48px;height:48px;border-radius:9px;object-fit:cover;border:1px solid var(--line);flex:none;background:#fff}
+.skb-mini .ph0{display:flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--soft,#f3f4f6)}
+.skb-mini .t{flex:1;min-width:0;font-size:17px;font-weight:800;line-height:1.35}.skb-mini .t small{display:block;font-size:16px;font-weight:700;color:var(--ink2)}
+.skb-minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.skb-rule{margin-top:18px;padding:12px 14px;border-radius:12px;background:var(--card,#fff);border:1px solid var(--line);font-size:17px;line-height:1.6;color:var(--ink2)}
+.skb-rule b{color:var(--ink)}
+.skb-rule ol{margin:4px 0 0;padding-left:22px}
+@media(max-width:1500px){.skb-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}.skb-kpi .t-dough{grid-column:1/-1}.skb-cols{grid-template-columns:1fr}.skb-loss{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){#stockBig{padding:8px}.skb-head h2{font-size:23px}.skb-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.skb-k .v{font-size:40px}.skb-loss{grid-template-columns:1fr}.skb-cards{grid-template-columns:1fr}.skb-head button,.skb-head a{padding:0 14px;font-size:17px}}
+</style>
+
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
@@ -730,7 +865,7 @@ async function verCheck(force){if(!force&&Date.now()-verAt<240e3)return false;ve
       const nb=((await r.text()).match(/name="dash-build" content="([^"]+)"/)||[])[1]||'',tag=r.headers.get('etag')||'';
       if(nb&&BUILD&&nb!==BUILD)to=nb;
       else if(tag&&tag!==verTag){const p=await srvPage();verTag=p.tag||tag;if(p.h!==verHash)to='#'+p.h;}}   // 표시 값 없이 고친 경우: 내용으로 비교 (자료만 올린 날은 내용이 같아서 그대로)
-    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#workPrintPreview,#noticeDialog.show,.ap-overlay:not([hidden])'))))return false;
+    if(!to||(!force&&(openKind||document.querySelector('#productionBig.show,#deliveryBig.show,#stockBig.show,#workPrintPreview,#noticeDialog.show,.ap-overlay:not([hidden])'))))return false;
     let lt=null;try{lt=JSON.parse(sessionStorage.getItem('dash_upd_last')||'null');}catch(_){}
     if(!force&&lt&&lt.to===to&&Date.now()-lt.at<180e3)return false;
     try{sessionStorage.setItem('dash_upd_last',JSON.stringify({to:to,at:Date.now()}));sessionStorage.setItem('dash_upd',JSON.stringify({board:document.body.classList.contains('board'),from:BUILD,to:to,at:Date.now()}));}catch(_){}
@@ -1970,6 +2105,91 @@ document.addEventListener('change',ev=>{if(STAFF||(ev.target.id!=='pjDate'&&!ev.
 addEventListener('keydown',ev=>{const b=document.getElementById('productionBig');if(!b?.classList.contains('show'))return;if(ev.key==='Escape'){pjBig(false);return;}if(['ArrowLeft','ArrowRight'].includes(ev.key)&&!ev.target.closest('input,textarea,select,[contenteditable="true"]')){ev.preventDefault();pjMove(ev.key==='ArrowLeft'?'prev':'next');}if(ev.key==='Tab')workTrapTab(b,ev);});
 render=(orig=>function(){orig();try{pjPaint();}catch(_){}})(render);scrSize=(orig=>function(){orig();pjSize();})(scrSize);addEventListener('resize',pjSize);setInterval(()=>{try{pjPaint();}catch(_){}},60e3);dsSchedulePaint();pjPaint();
 // ===== 생산일지 끝 =====
+
+// ===== 2026-11-10 조조: 재고 현황 칸 (완제품·생지 일일 보고 → 대시보드, 대표님 요청) =====
+// 자료 = D.stockReport (dashboard/stock_report.js 가 통합재고관리 「완제품·생지」 일일 보고와 같은 규칙으로 만듦). 관리자 전용: 직원용(STAFF) 화면에는 칸이 없음.
+// 넓은 PC 화면: 배송정보·생산일지 칸 왼쪽 세로 칸. 좁은 화면: 본문 아래 카드. 「크게 보기」 = 일일 보고 전체 화면.
+const SK={more:{}};
+function skE(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function skN(n){if(n==null||n==='')return '–';const v=Math.round(Number(n)*10)/10;return (v<0?'−':'')+Math.abs(v).toLocaleString('ko-KR');}
+function skR(){return (typeof D!=='undefined'&&D&&!STAFF&&D.stockReport&&D.stockReport.cols)?D.stockReport:null;}
+function skToday(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}
+function skMd(d){if(!d)return '';const t=new Date(d+'T00:00:00');return (t.getMonth()+1)+'월 '+t.getDate()+'일 ('+'일월화수목금토'[t.getDay()]+')';}
+function skShort(d){return d?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';}
+function skQ(x){return skN(x.q)+x.u+(x.each?' '+skN(x.each)+'낱개':'');}
+function skLossQ(r){return [r.box?skN(r.box)+'박스':'',r.bag?skN(r.bag)+'봉':'',r.each?skN(r.each)+'낱개':''].filter(Boolean).join(' ')||'수량 —';}
+function skImg(x,cls){const R=skR(),src=R&&R.img&&R.img[x.id];return src&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(src)?'<img class="'+cls+'" src="'+src+'" alt="" loading="lazy">':'<span class="'+cls+' ph0" aria-hidden="true">🥐</span>';}
+function skKind(x){return x.sh<0?'short':(x.sf&&x.sh>0)?'over':'rest';}
+function skPill(x){const k=skKind(x);if(k==='short')return '<span class="sk-pill red">부족</span>';if(k==='over')return '<span class="sk-pill grn">여유</span>';return x.q<=0&&!x.each?'<span class="sk-pill gry">재고無</span>':'<span class="sk-pill gry">적정</span>';}
+function skResult(x){const k=skKind(x);if(k==='short')return '<span class="sk-res red">− '+skN(-x.sh)+x.u+' 부족</span>';if(k==='over')return '<span class="sk-res grn">+ '+skN(x.sh)+x.u+' 여유</span>';return '<span class="sk-res gry">'+(!x.sf?'안전재고 미설정':(x.q<=0&&!x.each?'재고 없음':'적정'))+'</span>';}
+function skGauge(x){if(!x.sf)return '';const k=skKind(x),base=x.hs&&x.hs.length?x.aq:x.q,p=Math.max(0,Math.min(2,base/x.sf))/2*100;return '<div class="sk-gauge '+(k==='short'?'red':k==='over'?'grn':'gry')+'" role="img" aria-label="안전재고 '+skN(x.sf)+x.u+' 대비 '+skN(base)+x.u+'"><i style="width:'+p.toFixed(1)+'%"></i><u></u></div><div class="sk-gl"><span>0</span><span>안전재고 '+skN(x.sf)+'</span><span>2배</span></div>';}
+function skDelta(x){if(x.pq==null)return '';const d=Math.round((x.q-x.pq)*10)/10;if(!d)return '<span>어제와 같음</span>';return d>0?'<span class="sk-up">어제보다 ▲'+skN(d)+'</span>':'<span class="sk-dn">어제보다 ▼'+skN(-d)+'</span>';}
+function skEc(x){if(x.ec==null)return x.ecNone?'전산 미관리':'전산 —';return '전산 <b>'+skN(x.ec)+'</b>'+(x.ecEa!=null?' ('+skN(x.ecEa)+'EA)':'');}
+// 이카운트 출고 예정 (가용 재고 카드 자료 D.stock 에서 같은 품목)
+function skShip(x){const s=D&&D.stock&&D.stock.rows;if(!s)return null;const r=s.find(v=>v.id===x.id);if(!r)return null;const t=skToday();const ls=(r.lines||[]).filter(l=>l.d>=t&&l.st!=='done');return {r,ls};}
+function skShipHtml(x,max){const o=skShip(x);if(!o||!o.ls.length)return '';const ls=o.ls.slice(0,max||3);return '<div class="sk-ship"><b>다가오는 출고</b> '+ls.map(l=>skE(skShort(l.d)+' '+String(l.c||'').replace(/^\([^)]*\)/,'').replace(/_.*$/,'').trim()+' '+skN(l.box)+'박스'+(l.st==='pulled'?'(미리 뺌)':''))).join(' · ')+(o.ls.length>ls.length?' 외 '+(o.ls.length-ls.length)+'건':'')+(o.r.avail?'<br>출고 후 예상 <b>'+skE(o.r.avail.txt)+'</b>':'')+'</div>';}
+function skLossRow(r){const plan=r.plan?'<div class="sk-plan ok">✔ 조치 · '+skE(r.plan)+'</div>':'<div class="sk-plan no">⚠ 조치 계획 미입력</div>';return '<div class="sk-lr"><div class="a"><span class="nm">'+skE(r.n)+'</span><span class="q">'+skE(skLossQ(r))+'</span></div>'+(r.k==='defect'?'':'<div class="b">'+(r.ddt?'<span class="sk-dd">'+skE(r.ddt)+'</span>':'')+'<span>'+(r.exp?'소비기한 '+skE(r.exp):'소비기한 미기재')+'</span></div>')+plan+'</div>';}
+function skGrp(g,lim){const n=g.rows.length;const tb=g.rows.reduce((a,r)=>a+(+r.box||0),0),tg=g.rows.reduce((a,r)=>a+(+r.bag||0),0),te=g.rows.reduce((a,r)=>a+(+r.each||0),0);const sum=[tb?skN(tb)+'박스':'',tg?skN(tg)+'봉':'',te?skN(te)+'낱개':''].filter(Boolean).join(' ');const show=lim&&!SK.more[g.k]?g.rows.slice(0,lim):g.rows;
+  return '<div class="sk-grp g-'+g.k+'"><div class="sk-grp-h"><span>'+skE(g.title)+'<small>'+(n?skE(sum):skE(g.sub))+'</small></span><b>'+n+'</b>건</div>'+(n?show.map(skLossRow).join(''):'<div class="sk-lr" style="font-size:17px;color:var(--ink2)">없음</div>')+(lim&&n>lim?'<button class="sk-more" data-skmore="'+g.k+'">'+(SK.more[g.k]?'접기':'나머지 '+(n-lim)+'건 더 보기')+'</button>':'')+'</div>';}
+function skDoughHtml(R,big){const g=R.dough;if(!g)return '';const SN={normal:['정상','grn'],caution:['주의','amb'],low:['부족','red']}[g.status]||['정상','grn'];const out=(g.sale||0)+(g.prod||0)+(g.adj||0);
+  if(big)return '<div class="skb-k t-dough"><div class="l">🔥 데니쉬200 생지 <span class="sk-pill '+SN[1]+'">'+SN[0]+'</span></div><div class="v">'+skN(g.cur)+'<small>봉</small></div><div class="s"><span class="nw">안전재고 <b>'+skN(g.sf)+'봉</b></span>'+(g.days!=null?' · <span class="nw">약 <b>'+skN(g.days)+'일분</b> (최근 7일 사용)</span>':'')+'<br><span class="nw">오늘 입고 <b>'+skN(g.tin)+'</b></span> · <span class="nw">출고 <b>'+skN(out)+'</b> (판매 '+skN(g.sale)+' · 생산 '+skN(g.prod)+')</span>'+(g.ec!=null?'<br><span class="nw">전산(이카운트) '+skN(g.ec)+'봉</span> · <span class="nw">차이 '+(g.cur-g.ec>0?'+':'')+skN(Math.round((g.cur-g.ec)*10)/10)+'</span>':'')+'</div>'+(out?'<div class="skb-bar">'+(g.sale?'<i style="flex:'+g.sale+';background:#2f6fd6">판매 '+skN(g.sale)+'</i>':'')+(g.prod?'<i style="flex:'+g.prod+';background:#c0262d">생산 '+skN(g.prod)+'</i>':'')+(g.adj?'<i style="flex:'+g.adj+';background:#6b7280">조정 '+skN(g.adj)+'</i>':'')+'</div>':'')+'</div>';
+  return '<div class="sk-dough"><div class="dl">🔥 데니쉬200 생지 <span class="sk-pill '+SN[1]+'">'+SN[0]+'</span></div><div class="dv">'+skN(g.cur)+'<small>봉</small></div><div class="ds">안전재고 <b>'+skN(g.sf)+'봉</b>'+(g.days!=null?'<br>약 <b>'+skN(g.days)+'일분</b>':'')+'<br>오늘 판매 '+skN(g.sale)+' · 생산 '+skN(g.prod)+'</div></div>';}
+function skMiniRail(x){return '<div class="sk-it" style="padding:8px 10px">'+skImg(x,'sk-th sm')+'<div class="nm"><span>'+skE(x.n)+'</span>'+skPill(x)+'</div><div class="ln">실물 <b>'+skE(skQ(x))+'</b> · '+skEc(x)+'</div></div>';}
+function skItemRail(x){const k=skKind(x);if(k==='short')return '<div class="sk-it big">'+skImg(x,'sk-th')+'<div class="nm"><span>'+skE(x.n)+'</span>'+skPill(x)+'</div><div class="ln">실물 <b>'+skE(skQ(x))+'</b> · 안전 '+skN(x.sf)+x.u+'</div><div class="full">'+skGauge(x)+'</div><div class="full" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'+skResult(x)+'<span class="ln">'+skEc(x)+'</span></div>'+(x.hs&&x.hs.length?'<div class="full ln">출고 예정 반영 가용 <b>'+skN(x.aq)+x.u+'</b></div>':'')+'<div class="full">'+skShipHtml(x,2)+'</div></div>';
+  return '<div class="sk-it">'+skImg(x,'sk-th')+'<div class="nm"><span>'+skE(x.n)+'</span>'+skPill(x)+'</div><div class="ln">실물 <b>'+skE(skQ(x))+'</b>'+(x.sf?' / 안전 '+skN(x.sf):'')+' · '+skEc(x)+'</div>'+(x.sf?'<div class="full">'+skGauge(x)+'</div>':'')+'<div class="full" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">'+skResult(x)+'<span class="ln">'+skDelta(x)+'</span></div></div>';}
+function skRail(){const R=skR();if(!R)return '<div class="sk-head"><h2>재고 현황</h2><div class="sk-from">완제품·생지 일일 보고 (김명우 대리)</div></div><div class="sk-body"><div class="sk-empty">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 통합재고관리에서 읽어 와요.</div></div>';
+  const C=R.cols,L=R.loss,old=R.date<skToday();const own=C.rest.filter(x=>!x.oo),oo=C.rest.filter(x=>x.oo);
+  let h='<div class="sk-head"><h2>재고 현황 <span class="work-owner" style="display:inline;font-size:17px;font-weight:700">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고 · 통합재고관리</div><div class="sk-date">'+skMd(R.date)+'</div><span class="sk-stat'+(old?' old':'')+'">'+(old?'⚠ 오늘 실물 입력 전 · '+skShort(R.date)+' 기준':'✔ 오늘 실물 '+skE((R.at||'').slice(-5))+' 입력')+(R.ecAt?' · 전산 '+skE(R.ecAt.slice(-5)):'')+'</span></div><div class="sk-body">';
+  h+='<div class="sk-tiles"><button class="sk-tile t-loss'+(L.total?'':' zero')+'" data-skgo="loss"><b>'+L.total+'<small>건</small></b><span>관리 요망</span><em>'+(L.noPlan?'조치 미입력 '+L.noPlan:'조치 모두 입력')+'</em></button><button class="sk-tile t-short'+(C.short.length?'':' zero')+'" data-skgo="short"><b>'+C.short.length+'<small>품목</small></b><span>부족</span><em>안전재고 아래</em></button><button class="sk-tile t-over'+(C.over.length?'':' zero')+'" data-skgo="over"><b>'+C.over.length+'<small>품목</small></b><span>과잉·여유</span><em>안전재고 위</em></button><button class="sk-tile t-rest'+(C.rest.length?'':' zero')+'" data-skgo="rest"><b>'+C.rest.length+'<small>품목</small></b><span>적정·재고無</span><em>미설정 포함</em></button></div>';
+  h+=skDoughHtml(R,false);
+  h+='<section class="sk-sec s-loss" id="sk-loss"><div class="sk-sec-h"><h3>⚠ 관리 요망 재고</h3><span class="n">'+L.total+'<small>건</small></span></div>'+L.secs.map(g=>skGrp(g,3)).join('')+'</section>';
+  h+='<section class="sk-sec s-short" id="sk-short"><div class="sk-sec-h"><h3>↘ 부족 품목</h3><span class="n">'+C.short.length+'</span></div>'+(C.short.map(skItemRail).join('')||'<div class="sk-empty">부족 품목 없음</div>')+'</section>';
+  h+='<section class="sk-sec s-over" id="sk-over"><div class="sk-sec-h"><h3>👍 과잉·여유 품목</h3><span class="n">'+C.over.length+'</span></div>'+(C.over.map(skItemRail).join('')||'<div class="sk-empty">여유 품목 없음</div>')+'</section>';
+  h+='<section class="sk-sec s-rest" id="sk-rest"><div class="sk-sec-h"><h3>✔ 적정·재고無 품목</h3><span class="n">'+C.rest.length+'</span></div>'+(own.map(skItemRail).join('')||(oo.length?'':'<div class="sk-empty">없음</div>'))+(oo.length?'<div class="sk-sub">발주 시 관리 '+oo.length+'</div>'+oo.map(skMiniRail).join(''):'')+'</section>';
+  h+='</div><div class="sk-foot"><p>부족 = 실물(출고 예정 뺀 것)이 안전재고보다 적음 · 기준 '+skE(R.built||'')+'</p><button type="button" data-skbig="1">📋 재고 일일 보고 크게 보기</button></div>';return h;}
+function skCard(x){const k=skKind(x);return '<article class="skc">'+'<div class="skc-top">'+skImg(x,'')+'<div><h4>'+skE(x.n)+'</h4>'+skPill(x)+(x.oo?' <span class="sk-pill gry">발주 시 관리</span>':'')+'</div></div>'+
+  '<div class="skc-n"><div><small>안전재고</small><b>'+(x.sf?skN(x.sf):'–')+'</b><i>'+x.u+'</i></div><div><small>실물</small><b>'+skN(x.q)+'</b><i>'+x.u+(x.each?' +'+skN(x.each)+'낱개':'')+'</i></div><div><small>전산</small><b class="ecv">'+(x.ec==null?(x.ecNone?'미관리':'–'):skN(x.ec))+'</b><i>'+(x.ecEa!=null?skN(x.ecEa)+'EA':x.u)+'</i></div></div>'+skGauge(x)+skResult(x)+
+  '<div class="skc-meta">'+[skDelta(x),x.ec!=null?'전산 대비 '+(x.q-x.ec>0?'+':'')+skN(Math.round((x.q-x.ec)*10)/10):'',x.hs&&x.hs.length?'출고 예정 '+x.hs.map(hh=>skE((hh.c||'미기재')+' '+skN(hh.q)+x.u+(hh.d?' '+skShort(hh.d):''))).join(', ')+' → 가용 '+skN(x.aq)+x.u:''].filter(Boolean).join(' · ')+'</div>'+(k==='short'?skShipHtml(x,4):'')+'</article>';}
+function skMini(x){return '<div class="skb-mini">'+skImg(x,'')+'<div class="t">'+skE(x.n)+'<small>실물 '+skE(skQ(x))+' · '+skEc(x).replace(/<[^>]+>/g,'')+'</small></div>'+skPill(x)+'</div>';}
+function skBigHtml(){const R=skR();if(!R)return '<div class="sk-empty" style="margin:40px auto;max-width:600px">재고 현황 자료가 아직 없어요.</div>';const C=R.cols,L=R.loss;const own=C.rest.filter(x=>!x.oo),oo=C.rest.filter(x=>x.oo);
+  let h='<div class="skb-kpi">'+skDoughHtml(R,true)+
+  '<button class="skb-k t-loss" data-skjump="loss"><div class="l">⚠ 관리 요망</div><div class="v">'+L.total+'<small>건</small></div><div class="s">경과 '+L.secs[0].rows.length+' · 임박 '+(L.secs[1].rows.length+L.secs[2].rows.length)+' · 비상품 '+L.secs[3].rows.length+'</div></button>'+
+  '<button class="skb-k t-plan" data-skjump="loss"><div class="l">조치 계획 미입력</div><div class="v">'+L.noPlan+'<small>건</small></div><div class="s">'+(L.noPlan?'김명우 대리 확인 필요':'모두 입력됨')+'</div></button>'+
+  '<button class="skb-k t-short" data-skjump="short"><div class="l">↘ 부족 품목</div><div class="v">'+C.short.length+'<small>품목</small></div><div class="s">안전재고 아래</div></button>'+
+  '<button class="skb-k t-over" data-skjump="over"><div class="l">👍 과잉·여유</div><div class="v">'+C.over.length+'<small>품목</small></div><div class="s">안전재고 위</div></button>'+
+  '<button class="skb-k t-rest" data-skjump="rest"><div class="l">✔ 적정·재고無</div><div class="v">'+C.rest.length+'<small>품목</small></div><div class="s">안전재고 미설정 포함</div></button></div>';
+  h+='<div class="skb-h3" id="skb-loss">⚠ 관리 요망 재고 <small>소비기한 경과·임박·비상품 · 조치 계획'+(L.nOut?' · 60일 넘는 임박·미기재 '+L.nOut+'건은 통합재고관리 소비기한 탭':'')+'</small>'+(L.noPlan?'<span class="tag sk-pill amb">조치 계획 미입력 '+L.noPlan+'건</span>':'<span class="tag sk-pill grn">조치 계획 모두 입력</span>')+'</div><div class="skb-loss">'+L.secs.map(g=>skGrp(g,0)).join('')+'</div>';
+  h+='<div class="skb-cols"><section class="skb-lane l-short" id="skb-short"><h3><span>↘ 부족 품목</span><b>'+C.short.length+'</b></h3><div class="skb-cards">'+(C.short.map(skCard).join('')||'<div class="sk-empty">부족 품목 없음</div>')+'</div></section>'+
+  '<section class="skb-lane l-over" id="skb-over"><h3><span>👍 과잉·여유 품목</span><b>'+C.over.length+'</b></h3><div class="skb-cards">'+(C.over.map(skCard).join('')||'<div class="sk-empty">여유 품목 없음</div>')+'</div></section>'+
+  '<section class="skb-lane l-rest" id="skb-rest"><h3><span>✔ 적정·재고無 품목</span><b>'+C.rest.length+'</b></h3><div class="skb-cards">'+own.map(skCard).join('')+'</div>'+(oo.length?'<div class="sk-sub">발주 시 관리 '+oo.length+'</div><div class="skb-minis">'+oo.map(skMini).join('')+'</div>':'')+(own.length||oo.length?'':'<div class="sk-empty">없음</div>')+'</section></div>';
+  h+='<div class="skb-rule"><b>판단 기준</b> (통합재고관리 「완제품·생지」 일일 보고와 같음)<ol><li><b>부족</b>: 실물에서 출고 예정을 뺀 수량이 안전재고보다 적어요.</li><li><b>과잉·여유</b>: 안전재고가 정해져 있고 그보다 많아요.</li><li><b>적정·재고無</b>: 안전재고와 같거나 안전재고가 아직 정해지지 않은 품목이에요.</li><li><b>막대</b>: 가운데 검은 선이 안전재고, 끝이 안전재고의 2배예요.</li><li><b>관리 요망</b>: 김명우 대리가 넣은 소비기한 경과·임박(60일 이내)·비상품 목록이에요. 조치 계획은 통합재고관리에서 넣어요.</li><li><b>전산</b>: 이카운트 재고('+skE(R.ecAt||'—')+' 확인). 다가오는 출고는 이카운트에 미리 넣은 판매 전표 기준이에요.</li></ol></div>';return h;}
+function skBigPaint(){const b=document.getElementById('stockBig');if(!b||!b.classList.contains('show'))return;const R=skR();const bd=b.querySelector('.skb-body'),y=bd?bd.scrollTop:0;
+  b.querySelector('.skb-head .tt').innerHTML='<h2>'+skE((R&&R.company)||'빵을그리다')+' 자사(DB)·200생지 재고 일일 보고</h2><div class="sb">'+(R?skMd(R.date)+' 기준 · 담당 '+skE(R.by||'')+(R.at?' · 실물 입력 '+skE(R.at):'')+(R.ecAt?' · 이카운트 '+skE(R.ecAt):'')+(R.date<skToday()?' · ⚠ 오늘 실물 입력 전':''):'')+'</div>';
+  bd.innerHTML=skBigHtml();bd.scrollTop=y;}
+function skBig(open,jump){let b=document.getElementById('stockBig');if(!b){b=document.createElement('section');b.id='stockBig';b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');b.setAttribute('aria-label','재고 일일 보고 크게 보기');
+    b.innerHTML='<div class="skb-head"><div class="tt"></div><a href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기</a><button type="button" class="x" data-skclose="1">닫기 (Esc)</button></div><div class="skb-body"></div>';document.body.appendChild(b);
+    b.addEventListener('click',ev=>{const t=ev.target.closest('[data-skclose],[data-skjump],[data-skmore]');if(!t)return;if(t.dataset.skclose){skBig(false);return;}if(t.dataset.skjump){const s=document.getElementById('skb-'+t.dataset.skjump);if(s)s.scrollIntoView({behavior:'smooth',block:'start'});}});}
+  if(!open){b.classList.remove('show');document.body.style.overflow='';const f=SK.back;SK.back=null;if(f&&f.focus)f.focus();return;}
+  SK.back=document.activeElement;b.classList.add('show');document.body.style.overflow='hidden';skBigPaint();b.querySelector('[data-skclose]').focus();
+  if(jump){const s=document.getElementById('skb-'+jump);if(s)setTimeout(()=>s.scrollIntoView({block:'start'}),30);}}
+function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
+  const rs=getComputedStyle(document.documentElement),skW=Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
+  const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=860;
+  document.documentElement.style.setProperty('--skW',skW+'px');
+  document.body.classList.toggle('sk-wide',wide);document.body.classList.toggle('sk-inline',!wide);
+  if(!wide){const m=document.getElementById('main'),rail=document.getElementById('workJournalCol');const ref=rail&&rail.parentElement===m?.parentElement?rail:null;if(ref&&a.nextElementSibling!==ref)ref.before(a);else if(!ref&&m&&a.previousElementSibling!==m)m.after(a);}}
+function skPaint(){if(typeof D==='undefined'||!D||STAFF){document.getElementById('stockCol')?.remove();document.getElementById('stockBig')?.remove();document.body.classList.remove('sk-wide','sk-inline');return;}
+  let a=document.getElementById('stockCol');
+  if(!a){a=document.createElement('aside');a.id='stockCol';a.setAttribute('aria-label','재고 현황 (완제품·생지 일일 보고)');const m=document.getElementById('main');m.after(a);
+    a.addEventListener('click',ev=>{const t=ev.target.closest('[data-skgo],[data-skbig],[data-skmore]');if(!t)return;if(t.dataset.skmore){SK.more[t.dataset.skmore]=!SK.more[t.dataset.skmore];skPaint();return;}if(t.dataset.skbig){skBig(true);return;}if(t.dataset.skgo){if(document.body.classList.contains('sk-wide')){const s=document.getElementById('sk-'+t.dataset.skgo);const bd=a.querySelector('.sk-body');if(s&&bd)bd.scrollTo({top:s.offsetTop-bd.offsetTop-6,behavior:'smooth'});}else skBig(true,t.dataset.skgo);}});}
+  const R=skR(),sig=R?(R.built||'')+'|'+JSON.stringify(SK.more)+'|'+((D.stock&&D.stock.built)||''):'none';
+  if(a.dataset.sig!==sig){const bd=a.querySelector('.sk-body'),y=bd?bd.scrollTop:0;a.innerHTML=skRail();a.dataset.sig=sig;const nb=a.querySelector('.sk-body');if(nb)nb.scrollTop=y;skBigPaint();}
+  skSize();}
+addEventListener('keydown',ev=>{const b=document.getElementById('stockBig');if(!b?.classList.contains('show'))return;if(ev.key==='Escape'){ev.stopPropagation();skBig(false);return;}if(ev.key==='Tab'){const c=[...b.querySelectorAll('button,a[href]')],f=c[0],l=c.at(-1);if(ev.shiftKey&&document.activeElement===f){ev.preventDefault();l?.focus();}else if(!ev.shiftKey&&document.activeElement===l){ev.preventDefault();f?.focus();}}},true);
+render=(orig=>function(){orig();try{skPaint();}catch(_){}})(render);scrSize=(orig=>function(){orig();try{skSize();}catch(_){}})(scrSize);addEventListener('resize',()=>{try{skSize();}catch(_){}});try{skPaint();}catch(_){}
+// ===== 재고 현황 칸 끝 =====
+
 
 
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
