@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-10 20:25 재고 현황·관리 요망 분리">
+<meta name="dash-build" content="2026-11-10 20:32 재고 인쇄 가로·세로 한 장">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -730,6 +730,21 @@ body.sk-inline .sk-prev{flex:none;max-height:none;overflow:visible}
 .skp .sk-empty{background:#fff}
 .skb-rule{margin-top:16px;padding:10px 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:16px;line-height:1.6;color:var(--ink2)}
 .skb-rule b{color:var(--ink)}
+/* 세로 인쇄용 배치 (폭 1300px): 부족·적정은 위 두 칸, 과잉·여유는 아래 넓게 */
+.skp.pt{width:1300px}.skp.pt .skb-cols{grid-template-columns:1fr 1fr}.skp.pt .l-short{grid-row:1;grid-column:1}.skp.pt .l-rest{grid-row:1;grid-column:2}.skp.pt .l-over{grid-row:2;grid-column:1/-1}.skp.pt .l-over .skb-cards{grid-template-columns:repeat(3,1fr)}.skp.pt .skb-kpi.k5{grid-template-columns:repeat(5,1fr)}
+/* 인쇄 방향 고르기 창 */
+#skPick{position:fixed;inset:0;z-index:300;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+#skPick *{box-sizing:border-box}
+.pk-box{background:#fff;color:#111827;border-radius:16px;padding:22px;width:min(560px,100%);box-shadow:0 20px 60px rgba(0,0,0,.3);word-break:keep-all}
+.pk-box h3{margin:0 0 6px;font-size:23px;font-weight:900;color:#22396F}.pk-box p{margin:0 0 14px;font-size:17px;line-height:1.5;color:#374151}.pk-box .pk-note{margin:14px 0 0;font-size:17px;color:#4b5563}
+.pk-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pk-row button{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:170px;padding:16px 10px;border:2px solid #cbd5e1;border-radius:14px;background:#fff;color:#111827;font:inherit;cursor:pointer}
+.pk-row button b{font-size:20px;font-weight:900}.pk-row button span{font-size:16px;color:#4b5563;line-height:1.35;text-align:center}
+.pk-row button.best{border-color:#22396F;background:#eef2fa}.pk-row button em{position:absolute;top:8px;right:8px;font-style:normal;font-size:15px;font-weight:900;color:#fff;background:#BF913C;border-radius:999px;padding:2px 10px}
+.pk-row .pg{display:block;border:3px solid #22396F;border-radius:4px;background:repeating-linear-gradient(180deg,#fff 0 9px,#dbe3f1 9px 11px)}.pk-l .pg{width:84px;height:60px}.pk-p .pg{width:60px;height:84px}
+.pk-row button:focus-visible,.pk-x:focus-visible{outline:3px solid #BF913C;outline-offset:2px}
+.pk-x{display:block;width:100%;min-height:54px;margin-top:12px;border:1px solid #9ca3af;border-radius:11px;background:#fff;color:#111827;font:inherit;font-size:18px;font-weight:800;cursor:pointer}
+@media(hover:hover){.pk-row button:hover{border-color:#22396F}}
 </style>
 
 </head>
@@ -2148,15 +2163,27 @@ function skFit(){document.querySelectorAll('#stockCol .sk-prev').forEach(p=>{con
 function skBigPaint(){const b=document.getElementById('stockBig');if(!b||!b.classList.contains('show'))return;const k=SK.kind||'stock';b.querySelector('.skb-head .tt').textContent=SK_KIND[k].t+' (김명우 대리) · 화면을 한 번 더 누르면 닫혀요';b.setAttribute('aria-label',SK_KIND[k].t+' 크게 보기');const bd=b.querySelector('.skb-body'),y=bd.scrollTop;bd.innerHTML=skPaper(k)||'<div class="work-empty">재고 현황 자료가 아직 없어요.</div>';bd.scrollTop=y;skFit();requestAnimationFrame(skFit);}
 function skBig(open,kind){let b=document.getElementById('stockBig');if(!b){b=document.createElement('section');b.id='stockBig';b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');
     b.innerHTML='<div class="skb-head"><span class="tt"></span><button type="button" data-skprint="cur">🖨 인쇄</button><a href="https://lee1812-oss.github.io/wonryo/index.html" target="_blank" rel="noopener">통합재고관리 열기</a><button type="button" class="x" data-skclose="1">닫기 (Esc)</button></div><div class="skb-body" title="누르면 닫혀요"></div>';document.body.appendChild(b);
-    b.addEventListener('click',ev=>{if(ev.target.closest('[data-skprint]')){skPrint(SK.kind);return;}if(ev.target.closest('[data-skclose]')||ev.target.closest('.skb-body')){skBig(false);}});}
+    b.addEventListener('click',ev=>{if(ev.target.closest('[data-skprint]')){skPick(SK.kind,true);return;}if(ev.target.closest('[data-skclose]')||ev.target.closest('.skb-body')){skBig(false);}});}
   if(!open){b.classList.remove('show');document.body.style.overflow='';const f=SK.back;SK.back=null;if(f&&f.focus)f.focus();return;}
   SK.kind=kind==='loss'?'loss':'stock';SK.back=document.activeElement;b.classList.add('show');document.body.style.overflow='hidden';b.querySelector('.skb-body').scrollTop=0;skBigPaint();b.querySelector('[data-skclose]').focus();}
-// 인쇄: 고른 보고서 한 장만 따로 만들어 A4 가로로 (화면 배율과 무관)
-function skPrintHtml(kind){const css=(document.getElementById('stock-report-style')||{}).textContent||'';const k=kind==='loss'?'loss':'stock';
-  return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>'+SK_KIND[k].t+' '+skE(skR().date)+'</title><style>'+css+'@page{size:A4 landscape;margin:7mm}html,body{margin:0;background:#fff}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.skp{zoom:.665;border:0;border-radius:0;box-shadow:none;padding:0;background:#fff}.sk-lr,.skc,.skb-k,.skb-mini,.skb-rule,.sk-grp-h,.skb-lane>h3,.skp-title{break-inside:avoid}</style></head><body>'+skPaper(k)+'</body></html>';}
-function skPrint(kind){if(!skR())return;const html=skPrintHtml(kind);
+// 인쇄: 가로·세로를 고르면 보고서 한 장을 A4 한 쪽에 맞춰 줄여서 인쇄 (화면 배율과 무관). 세로는 품목 배치를 세로 용지에 맞게 바꿈
+const SK_PG={l:{w:1069,h:740,size:'A4 landscape',t:'가로'},p:{w:741,h:1069,size:'A4 portrait',t:'세로'}};
+function skPaperFor(kind,o){const h=skPaper(kind);return o==='p'?h.replace('<div class="skp">','<div class="skp pt">'):h;}
+function skFitZoom(kind,o){const d=document.createElement('div');d.style.cssText='position:absolute;left:-40000px;top:0;visibility:hidden;zoom:1';d.innerHTML=skPaperFor(kind,o);document.body.appendChild(d);const e=d.firstElementChild,w=e.offsetWidth,h=e.offsetHeight;d.remove();const P=SK_PG[o];return Math.min(P.w/w,P.h/h)*0.98;}
+function skPrintHtml(kind,o){const css=(document.getElementById('stock-report-style')||{}).textContent||'';const k=kind==='loss'?'loss':'stock';o=o==='p'?'p':'l';const P=SK_PG[o],z=skFitZoom(k,o),ff=String(getComputedStyle(document.body).fontFamily||'sans-serif').replace(/[<>{}]/g,'');
+  return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>'+SK_KIND[k].t+' '+skE(skR().date)+'</title><style>'+css+'@page{size:'+P.size+';margin:7mm}html,body{margin:0;background:#fff;overflow:hidden}body{font-family:'+ff+'}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.skp{zoom:'+z.toFixed(4)+';border:0;border-radius:0;box-shadow:none;background:#fff;break-inside:avoid;page-break-after:avoid}</style></head><body>'+skPaperFor(k,o)+'</body></html>';}
+function skPrint(kind,o){if(!skR())return;const html=skPrintHtml(kind,o);
   const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';document.body.appendChild(f);
   const url=URL.createObjectURL(new Blob([html],{type:'text/html'}));f.onload=()=>{setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print();}catch(_){}setTimeout(()=>{f.remove();URL.revokeObjectURL(url);},60000);},500);};f.src=url;}
+// 인쇄 방향 고르기 창: 가로·세로 중 글자가 더 크게 들어가는 쪽에 「추천」
+function skPick(kind,open){let m=document.getElementById('skPick');if(open===false){if(m)m.remove();if(SK.pickBack&&SK.pickBack.focus)SK.pickBack.focus();SK.pickBack=null;return;}if(!skR())return;
+  const k=kind==='loss'?'loss':'stock',zl=skFitZoom(k,'l'),zp=skFitZoom(k,'p'),best=zl>=zp?'l':'p';
+  if(m)m.remove();SK.pickBack=document.activeElement;m=document.createElement('div');m.id='skPick';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','인쇄 방향 고르기');
+  const btn=o=>'<button type="button" data-pk="'+o+'" class="pk-'+o+(o===best?' best':'')+'"><i class="pg"></i><b>'+SK_PG[o].t+'로 한 장</b><span>A4 '+SK_PG[o].t+' · 글자 크기 약 '+Math.round((o==='l'?zl:zp)*100)+'%</span>'+(o===best?'<em>추천</em>':'')+'</button>';
+  m.innerHTML='<div class="pk-box"><h3>🖨 '+SK_KIND[k].t+' 인쇄</h3><p>용지 방향을 고르면 A4 한 장에 맞춰 인쇄돼요.</p><div class="pk-row">'+btn('l')+btn('p')+'</div><p class="pk-note">단면·양면은 다음에 뜨는 인쇄창에서 골라 주세요.</p><button type="button" class="pk-x" data-pk="x">취소</button></div>';
+  m.addEventListener('click',ev=>{const b=ev.target.closest('[data-pk]');if(!b){if(ev.target===m)skPick(k,false);return;}const o=b.dataset.pk;skPick(k,false);if(o!=='x')skPrint(k,o);});
+  document.body.appendChild(m);m.querySelector('.best').focus();}
+addEventListener('keydown',ev=>{const m=document.getElementById('skPick');if(!m)return;if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();skPick(null,false);return;}if(ev.key==='Tab'){const c=[...m.querySelectorAll('button')],f=c[0],l=c.at(-1);if(ev.shiftKey&&document.activeElement===f){ev.preventDefault();l.focus();}else if(!ev.shiftKey&&document.activeElement===l){ev.preventDefault();f.focus();}}},true);
 function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday();const K=SK_KIND[kind];
   const chips=kind==='loss'?'<div class="sk-chips"><span class="c-short"><b>'+S[0].rows.length+'</b>경과</span><span class="c-loss"><b>'+(S[1].rows.length+S[2].rows.length)+'</b>임박</span><span class="c-rest"><b>'+S[3].rows.length+'</b>비상품</span><span class="c-loss"><b>'+L.noPlan+'</b>조치 미입력</span></div>'
     :'<div class="sk-chips"><span class="c-short"><b>'+C.short.length+'</b>부족</span><span class="c-over"><b>'+C.over.length+'</b>과잉·여유</span><span class="c-rest"><b>'+C.rest.length+'</b>적정·재고無</span><span class="c-nv"><b>'+(R.dough?skN(R.dough.cur):'–')+'</b>200생지(봉)</span></div>';
@@ -2178,7 +2205,7 @@ function skSize(){const a=document.getElementById('stockCol');if(!a){document.bo
 function skPaint(){if(typeof D==='undefined'||!D||STAFF){document.getElementById('stockCol')?.remove();document.getElementById('stockBig')?.remove();document.body.classList.remove('sk-wide','sk-inline');return;}
   let a=document.getElementById('stockCol');
   if(!a){a=document.createElement('aside');a.id='stockCol';a.setAttribute('aria-label','재고 현황과 관리 요망 재고 (김명우 대리)');const m=document.getElementById('main');m.after(a);
-    a.addEventListener('click',ev=>{const p=ev.target.closest('[data-skprint]');if(p){skPrint(p.dataset.skprint);return;}const g=ev.target.closest('[data-skbig]');if(g)skBig(true,g.dataset.skbig);});
+    a.addEventListener('click',ev=>{const p=ev.target.closest('[data-skprint]');if(p){skPick(p.dataset.skprint,true);return;}const g=ev.target.closest('[data-skbig]');if(g)skBig(true,g.dataset.skbig);});
     a.addEventListener('keydown',ev=>{if((ev.key==='Enter'||ev.key===' ')&&ev.target.classList.contains('sk-prev')){ev.preventDefault();skBig(true,ev.target.dataset.skbig);}});}
   const R=skR(),sig=R?(R.built||'')+'|'+((D.stock&&D.stock.built)||''):'none';
   if(a.dataset.sig!==sig){const y=a.scrollTop;a.innerHTML=skRail();a.dataset.sig=sig;a.scrollTop=y;skBigPaint();}
@@ -2186,6 +2213,7 @@ function skPaint(){if(typeof D==='undefined'||!D||STAFF){document.getElementById
 addEventListener('keydown',ev=>{const b=document.getElementById('stockBig');if(!b?.classList.contains('show'))return;if(ev.key==='Escape'){ev.stopPropagation();skBig(false);return;}if(ev.key==='Tab'){const c=[...b.querySelectorAll('button,a[href]')],f=c[0],l=c.at(-1);if(ev.shiftKey&&document.activeElement===f){ev.preventDefault();l?.focus();}else if(!ev.shiftKey&&document.activeElement===l){ev.preventDefault();f?.focus();}}},true);
 render=(orig=>function(){orig();try{skPaint();}catch(_){}})(render);scrSize=(orig=>function(){orig();try{skSize();}catch(_){}})(scrSize);addEventListener('resize',()=>{try{skSize();}catch(_){}});try{skPaint();}catch(_){}
 // ===== 재고 현황 칸 끝 =====
+
 
 
 
