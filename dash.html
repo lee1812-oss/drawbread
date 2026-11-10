@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-10 19:51 재고 현황 칸">
+<meta name="dash-build" content="2026-11-10 19:54 재고 현황 칸">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -700,7 +700,8 @@ body.night .sk-dd{color:#0b0f17}
 body.night .sk-foot button{background:#2b4a8f}
 .sk-foot p{margin:0 0 8px;font-size:16px;line-height:1.45;color:var(--ink2)}
 @container(min-width:760px){.sk-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;align-items:start}.sk-tiles,.sk-dough{grid-column:1/-1}}
-@container(min-width:480px){.sk-tiles{grid-template-columns:repeat(4,1fr)}.sk-tile{min-height:104px}.sk-th{width:64px;height:64px}.sk-date{font-size:28px}}
+@container(min-width:600px){.sk-tiles{grid-template-columns:repeat(4,1fr)}}
+@container(min-width:480px){.sk-tile{min-height:104px}.sk-th{width:64px;height:64px}.sk-date{font-size:28px}}
 /* 크게 보기 */
 #stockBig{display:none;position:fixed;inset:0;z-index:166;background:var(--bg,#f3f4f6);color:var(--ink);box-sizing:border-box;padding:12px;word-break:keep-all;overflow-wrap:break-word}
 #stockBig.show{display:flex;flex-direction:column}
