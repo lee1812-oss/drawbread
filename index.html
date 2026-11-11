@@ -3,65 +3,228 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f6feb">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="빵을그리다">
+<meta name="apple-mobile-web-app-title" content="업무 앱">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>빵을그리다 앱 모음</title>
+<link rel="icon" href="hub-192.png">
+<link rel="apple-touch-icon" href="hub-192.png">
+<title>빵을그리다 업무 앱</title>
 <style>
-:root{--blue:#1f6feb;--ink:#1d2433;--sub:#667085;--bg:#f4f6fa}
+:root{--brown:#6B3F1D;--brown2:#9A6534;--ink:#111827;--sub:#374151;--line:#d9dde3;--bg:#f2f3f5;--ok:#1a7f37;--okbg:#e7f6ec;--warn:#b54708;--warnbg:#fff4e5;--info:#1d4ed8;--infobg:#e8effd;--gray:#4b5563;--graybg:#eceef1;--red:#b42318;--redbg:#fdecec}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
-header{background:var(--blue);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 22px}
-header .in,main{max-width:1100px;margin:0 auto}
-header h1{margin:0;font-size:24px}
-header p{margin:6px 0 0;opacity:.9;font-size:15px}
-main{padding:16px 14px 40px}
-h2{font-size:15px;color:var(--sub);margin:18px 4px 8px;font-weight:700}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-a.tile{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:18px;padding:18px 16px;text-decoration:none;color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.08);min-height:132px;border:2px solid transparent}
-a.tile:active{border-color:var(--blue)}
-.ico{font-size:34px;line-height:1}
-.t{font-size:18px;font-weight:800;word-break:keep-all}
-.d{font-size:13.5px;color:var(--sub);line-height:1.45;word-break:keep-all}
-.where{font-size:12px;font-weight:700;color:var(--blue);margin-top:auto}
-.unlock{border-radius:14px;padding:14px 16px;margin:4px 0 6px;font-size:16px;font-weight:700;line-height:1.5;word-break:keep-all}.unlock.ok{background:#e7f6ec;color:#1a7f37}.unlock.bad{background:#fdecec;color:#c62828}
-.note{background:#fff;border-radius:14px;padding:14px 16px;margin-top:18px;font-size:14px;color:var(--sub);line-height:1.6}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:17px;word-break:keep-all;overflow-wrap:break-word}
+button{font:inherit;cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+.hin,main{max-width:1100px;margin:0 auto}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top img{width:40px;height:40px;border-radius:10px}
+.top h1{margin:0;font-size:21px;font-weight:800;color:var(--brown);white-space:nowrap}
+.ver{margin-left:auto;font-size:14px;font-weight:700;color:var(--sub);background:var(--graybg);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.today{margin:4px 0 0;font-size:15px;color:var(--sub);font-weight:600}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tabs button{min-height:54px;border-radius:14px;border:2px solid var(--line);background:#fff;font-size:18px;font-weight:800;color:var(--sub)}
+.tabs button.on{background:var(--brown);border-color:var(--brown);color:#fff}
+main{padding:12px 12px 140px}
+h2{font-size:17px;color:var(--sub);margin:20px 4px 8px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+a.tile{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:18px;padding:14px;text-decoration:none;color:var(--ink);border:2px solid var(--line);min-height:150px}
+a.tile:active{border-color:var(--brown)}
+.ic{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;background:var(--graybg)}
+.emo{display:flex;align-items:center;justify-content:center;font-size:32px}
+.t{font-size:18px;font-weight:800;line-height:1.3}
+.d{font-size:15px;color:var(--sub);line-height:1.45}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+.tag{font-size:13px;font-weight:800;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.tag.key{background:var(--warnbg);color:var(--warn)}
+.tag.adm{background:var(--infobg);color:var(--info)}
+.tag.beta{background:var(--redbg);color:var(--red)}
+.tag.lnk{background:var(--graybg);color:var(--gray)}
+.tag.ok{background:var(--okbg);color:var(--ok)}
+.box{border-radius:14px;padding:14px 16px;margin:6px 0;font-size:17px;font-weight:700;line-height:1.5}
+.box.ok{background:var(--okbg);color:var(--ok)}.box.bad{background:var(--redbg);color:var(--red)}
+.box.tip{background:#fff;border:2px solid var(--line);color:var(--ink);font-weight:600}
+.box.tip b{color:var(--brown)}
+.empty{background:#fff;border-radius:16px;padding:22px;text-align:center;font-size:18px;font-weight:700;border:2px dashed var(--line)}
+.row{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;min-height:76px;cursor:pointer}
+.row.on{border-color:var(--brown);background:#fffaf2}
+.row input{width:28px;height:28px;flex:none;accent-color:var(--brown)}
+.row .tx{flex:1;min-width:0}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.bar .in{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bar .cnt{grid-column:1/-1;font-size:16px;font-weight:800;color:var(--sub)}
+.btn{min-height:56px;border-radius:14px;border:2px solid var(--brown);background:#fff;color:var(--brown);font-size:17px;font-weight:800;padding:6px 10px;line-height:1.3}
+.btn.main{background:var(--brown);color:#fff}
+.btn:disabled{opacity:.45}
+.small{font-size:15px;color:var(--sub);font-weight:600}
+#wiz{position:fixed;inset:0;z-index:50;background:rgba(17,24,39,.55);display:flex;align-items:flex-end;justify-content:center}
+#wiz[hidden]{display:none}
+.wc{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:700px){#wiz{align-items:center}.wc{border-radius:22px}}
+.step{font-size:16px;font-weight:800;color:var(--brown)}
+.wh{display:flex;align-items:center;gap:14px;margin:12px 0}
+.wh .ic{width:72px;height:72px;border-radius:18px}
+.wh .t{font-size:22px}
+.how{background:var(--bg);border-radius:14px;padding:12px 14px;margin:10px 0;line-height:1.6}
+.how ol{margin:6px 0 0;padding-left:22px}
+.wb{display:grid;gap:8px;margin-top:12px}
+.wb .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dot{font-size:13px;font-weight:800;border-radius:999px;padding:3px 9px;background:var(--graybg);color:var(--gray)}
+.dot.cur{background:var(--brown);color:#fff}.dot.done{background:var(--okbg);color:var(--ok)}
+@media(max-width:380px){.top h1{font-size:19px}.grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<header><div class="in"><h1>🍞 빵을그리다 앱 모음</h1><p id="today"></p></div></header>
+<header><div class="hin">
+  <div class="top"><img src="hub-192.png" alt=""><h1>빵을그리다 업무 앱</h1><span class="ver" id="ver"></span></div>
+  <p class="today" id="today"></p>
+  <div class="tabs"><button id="tMy" class="on">📱 내 앱</button><button id="tPick">✅ 앱 고르기·설치</button></div>
+</div></header>
 <main>
-  <div id="unlock" class="unlock" hidden></div>
-  <h2>배송·출고</h2>
-  <div class="grid">
-    <a class="tile" href="../dongseon/#board"><span class="ico">🚚</span><span class="t">출고 보드</span><span class="d">오늘 코스별 품목 체크, 적재 완료, 특이사항 공유</span><span class="where">출고장 태블릿 추천</span></a>
-    <a class="tile" href="../dongseon/#delivery"><span class="ico">🗺️</span><span class="t">배송 코스</span><span class="d">이카운트 전표 기준 요일별 코스 만들기·순서 바꾸기</span><span class="where">사무실 · 담당자</span></a>
-    <a class="tile" href="../dongseon/#cust"><span class="ico">📍</span><span class="t">거래처 길안내</span><span class="d">거래처 이름 입력 → 티맵으로 바로 안내</span><span class="where">기사님 휴대폰</span></a>
-    <a class="tile" href="../dongseon/#plan"><span class="ico">🧭</span><span class="t">길찾기</span><span class="d">여러 곳 들르는 순서·도착 시간 계산</span><span class="where">누구나</span></a>
-  </div>
-  <h2>재고·생산</h2>
-  <div class="grid">
-    <a class="tile" href="../wonryo/index.html"><span class="ico">📦</span><span class="t">통합 재고관리</span><span class="d">원료·완제품·생지 재고, 출고 예정, 일일 보고</span><span class="where">전 직원</span></a>
-    <a class="tile" href="use.html"><span class="ico">⚖️</span><span class="t">원료 사용 기록</span><span class="d">원료를 쓸 때마다 저울 무게만 적으면, 재고가 틀어지는 때를 찾아 줘요</span><span class="where">생산실 · 휴대폰·태블릿</span></a>
-  </div>
-  <h2>테스트 중 (의견 주세요)</h2>
-  <div class="grid">
-    <a class="tile" href="../dongseon/beta/" style="border-color:#ffd43b"><span class="ico">🧪</span><span class="t">배송 앱 테스트판</span><span class="d">배송일 확정, 기사 「출발→도착 예정 문자」, 배송 완료 사진, 적재 순서</span><span class="where">시범 운영</span></a>
-  </div>
-  <div class="note">
-    · 처음 한 번 <b>홈 화면에 추가</b>해 두면 앱처럼 쓸 수 있어요. (안드로이드: 크롬 ⋮ → 앱 설치 / 아이폰·아이패드: 사파리 공유 → 홈 화면에 추가)<br>
-    · 담당자에게 받은 <b>「바로 열기」 링크</b>를 한 번 누르면, 그 기기에서는 배송·출고·거래처 앱이 암호 없이 열려요. 「원료 사용 기록」 링크도 담당자에게 받으세요.<br>
-    · 새 앱이 생기면 이 화면에 버튼이 추가돼요. 다시 설치할 필요 없어요.
-  </div>
+  <div id="unlock" class="box" hidden></div>
+  <section id="vMy"></section>
+  <section id="vPick" hidden>
+    <div class="box tip">✔ 체크한 앱은 이 <b>「업무 앱」 안</b>에 들어가요. 바탕화면 아이콘은 이것 하나면 충분해요.<br><span class="small">꼭 따로 아이콘이 필요한 앱만 아래 「바탕화면에 따로 설치」를 눌러 하나씩 설치하세요.</span></div>
+    <div id="pickList"></div>
+  </section>
 </main>
+<div class="bar" id="bar" hidden><div class="in">
+  <div class="cnt" id="cnt"></div>
+  <button class="btn main" id="bSave">업무 앱 안에 넣기<br><span style="font-size:14px">(추천 · 설치 필요 없음)</span></button>
+  <button class="btn" id="bInst">바탕화면에<br>따로 설치</button>
+</div></div>
+<div id="wiz" hidden><div class="wc" id="wc"></div></div>
 <script>
-const d = new Date(); document.getElementById('today').textContent = `${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]}) · 필요한 앱을 눌러 주세요`;
+/* 빵을그리다 업무 앱 (통합 아이콘) */
+const VER='v001', UPDATED='2026-11-11 19:06';
+document.getElementById('ver').textContent=VER+' · '+UPDATED+' 업데이트';
+const d=new Date();document.getElementById('today').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]}) · 필요한 앱을 눌러 주세요`;
+
+/* 앱 목록: 새 앱이 생기면 여기에 한 줄 추가 (url=여는 주소, inst=설치 주소, ic=아이콘, tags: key 열쇠·암호 / adm 관리자 / beta 시험판 / lnk 바로가기만) */
+const R='https://lee1812-oss.github.io/';
+const GROUPS=[
+ ['배송·거래처',[
+  {id:'board',n:'출고 보드',d:'오늘 코스별 품목 체크, 적재 완료, 특이사항 공유',u:R+'dongseon/#board',inst:R+'dongseon/',grp:'내 동선',ic:R+'dongseon/icon-192.png',w:'출고장 태블릿'},
+  {id:'delivery',n:'배송 코스',d:'이카운트 전표 기준 요일별 코스 만들기·순서 바꾸기',u:R+'dongseon/#delivery',inst:R+'dongseon/',grp:'내 동선',ic:R+'dongseon/icon-192.png',w:'사무실 · 담당자'},
+  {id:'cust',n:'거래처 길안내',d:'거래처 이름 입력 → 티맵으로 바로 안내',u:R+'dongseon/#cust',inst:R+'dongseon/',grp:'내 동선',ic:R+'dongseon/icon-192.png',w:'기사님 휴대폰'},
+  {id:'plan',n:'길찾기',d:'여러 곳 들르는 순서·도착 시간 계산',u:R+'dongseon/#plan',inst:R+'dongseon/',grp:'내 동선',ic:R+'dongseon/icon-192.png',w:'누구나'},
+  {id:'tmap',n:'배송앱',d:'기사님용 배송 코스와 티맵 길안내',u:R+'dongseon/tmap/',inst:R+'dongseon/tmap/',ic:R+'dongseon/tmap/icon_192.png',w:'기사님 휴대폰',tags:['key']},
+  {id:'tmapoff',n:'배송앱 사무실 화면',d:'사무실에서 배송 현황 보기',u:R+'dongseon/tmap/office.html',ic:R+'dongseon/tmap/icon_192.png',w:'사무실',tags:['key','lnk']},
+  {id:'beta',n:'배송 앱 테스트판',d:'배송일 확정, 도착 예정 문자, 배송 완료 사진, 적재 순서',u:R+'dongseon/beta/',inst:R+'dongseon/beta/',ic:R+'dongseon/beta/icon-192.png',w:'시범 운영',tags:['beta']},
+  {id:'order',n:'거래처 주문서',d:'거래처 주문 받기',u:R+'wonryo/order.html?app=2',inst:R+'wonryo/order.html?app=2',ic:R+'wonryo/order_192.png',w:'담당자'},
+  {id:'baro',n:'바로연락',d:'명함을 넣어 두고 바로 전화·길안내',u:R+'baro/',inst:R+'baro/',ic:R+'baro/icon-192.png',w:'누구나'}]],
+ ['재고·생산',[
+  {id:'wonryo',n:'통합 재고관리',d:'원료·완제품·생지 재고, 출고 예정, 일일 보고',u:R+'wonryo/index.html',inst:R+'wonryo/index.html',ic:R+'wonryo/admin_192.png',w:'전 직원',tags:['key']},
+  {id:'field',n:'생산실',d:'생산실 태블릿용 재고·생산 화면',u:R+'wonryo/field.html',inst:R+'wonryo/field.html',ic:R+'wonryo/field_192.png',w:'생산실 태블릿',tags:['key']},
+  {id:'silsa',n:'금요일 실사',d:'금요일 실물 재고 조사',u:R+'wonryo/silsa.html',inst:R+'wonryo/silsa.html',ic:R+'wonryo/silsa_192.png',w:'재고 담당',tags:['key']},
+  {id:'finished',n:'완제품·생지 재고',d:'완제품·생지 재고 따로 보기',u:R+'wonryo/finished.html',e:'🥐',w:'재고 담당',tags:['key','lnk']},
+  {id:'use',n:'원료 사용 기록',d:'원료를 쓸 때마다 저울 무게만 적으면 재고가 틀어지는 때를 찾아 줘요',u:R+'drawbread/use.html',inst:R+'drawbread/use.html',ic:R+'drawbread/dash-icon-192.png',w:'생산실',tags:['key']},
+  {id:'cost',n:'원가 계산기',d:'로스까지 넣은 현실적인 원가 계산',u:R+'wonryo/cost.html',inst:R+'wonryo/cost.html',ic:R+'wonryo/cost_192.png',w:'관리자',tags:['adm','key']},
+  {id:'send',n:'생산실 방송 보내기',d:'생산실 포스기 화면에 알림 보내기',u:R+'pos/send.html',inst:R+'pos/send.html',ic:R+'pos/bang-192.png',w:'관리자',tags:['adm','key']},
+  {id:'bang',n:'생산실 방송 받는 화면',d:'생산실 포스기에 띄워 두는 화면',u:R+'pos/bang.html',ic:R+'pos/bang-192.png',w:'생산실 포스기',tags:['lnk']}]],
+ ['HACCP·위생',[
+  {id:'health',n:'건강상태확인일지',d:'종사자 매일 건강 체크',u:R+'health/',inst:R+'health/',ic:R+'health/icon-192.png',w:'전 직원',tags:['key'],note:'처음엔 팀장에게 받은 QR·링크로 한 번 열어야 해요'},
+  {id:'edu',n:'월별 위생교육',d:'휴대폰으로 위생교육 듣고 확인',u:R+'edu/',inst:R+'edu/',ic:R+'edu/icon-192.png',w:'전 직원',tags:['key']},
+  {id:'khday',n:'K-HACCP 전일 일지',d:'어제 HACCP 일지 작성 현황',u:R+'drawbread/khday.html',inst:R+'drawbread/khday.html',ic:R+'drawbread/khday-icon-192.png',w:'HACCP 담당'},
+  {id:'inspect',n:'육안검사일지',d:'육안검사 기록',u:R+'wonryo/inspect.html',e:'🔍',w:'HACCP 담당',tags:['lnk']},
+  {id:'haccpboard',n:'HACCP 인증 현황판',d:'HACCP 인증 업체 현황',u:'https://haccp-board.pages.dev/',inst:'https://haccp-board.pages.dev/',ic:'https://haccp-board.pages.dev/icon-192.png',w:'관리자',tags:['adm','key']},
+  {id:'freezer',n:'냉동고 온도 지킴이',d:'카메라로 냉동고 온도 읽기',u:R+'freezer/',e:'🧊',w:'시범 운영',tags:['beta','lnk']},
+  {id:'qr',n:'QR 바로 찍기',d:'현장 QR을 바로 찍어 열기',u:R+'qr/',inst:R+'qr/',ic:R+'qr/icon-192.png',w:'누구나'}]],
+ ['사무실·관리',[
+  {id:'dash',n:'업무 대시보드',d:'매출·생산·HACCP 한눈에 보기',u:R+'drawbread/dash.html',inst:R+'drawbread/dash.html',ic:R+'drawbread/dash-icon-192.png',w:'관리자',tags:['adm','key']},
+  {id:'devices',n:'기기 전원 관리',d:'키오스크·포스기·PC 켜고 끄기',u:R+'pos/devices.html',inst:R+'pos/devices.html',ic:R+'pos/devices_icon_192.png',w:'관리자',tags:['adm','key']},
+  {id:'mypc',n:'내 컴퓨터',d:'휴대폰으로 내 PC 켜기',u:R+'pos/mypc.html',inst:R+'pos/mypc.html',ic:R+'pos/devices_icon_192.png',w:'등록된 직원',tags:['key']},
+  {id:'call',n:'영상통화',d:'현장 PC끼리 바로 영상통화',u:R+'wonryo/call.html',inst:R+'wonryo/call.html',ic:R+'wonryo/call_192.png',w:'현장 PC'},
+  {id:'workquiz',n:'내 업무 문제집',d:'업무 내용 반복 학습',u:R+'workquiz/',inst:R+'workquiz/',ic:R+'workquiz/icon-192.png',w:'개인 학습',tags:['key']}]]
+];
+const ALL=GROUPS.flatMap(g=>g[1]);const BY=Object.fromEntries(ALL.map(a=>[a.id,a]));
+const TAGT={key:'🔑 열쇠·암호 필요',adm:'관리자용',beta:'시험판',lnk:'바로가기만'};
+const DEF=['board','delivery','cust','plan','wonryo','use','beta']; /* 예전 앱 모음과 같은 기본 화면 */
+const LS='drawbread_hub_v1';
+let st;try{st=JSON.parse(localStorage.getItem(LS))||{}}catch(e){st={}}
+if(!Array.isArray(st.my))st.my=DEF.slice();st.my=st.my.filter(x=>BY[x]);st.done=st.done||{};
+const save=()=>localStorage.setItem(LS,JSON.stringify(st));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const icon=(a,cls='ic')=>a.ic?`<img class="${cls}" src="${a.ic}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'${cls} emo',textContent:'📱'}))">`:`<span class="${cls} emo">${a.e||'📱'}</span>`;
+const tagsH=a=>(a.tags||[]).map(t=>`<span class="tag ${t}">${TAGT[t]}</span>`).join('')+(st.done[a.inst||a.u]?'<span class="tag ok">✔ 따로 설치함</span>':'');
+
+function renderMy(){
+  const box=document.getElementById('vMy');let h='';
+  for(const [g,list] of GROUPS){const l=list.filter(a=>st.my.includes(a.id));if(!l.length)continue;
+    h+=`<h2>${g}</h2><div class="grid">`+l.map(a=>`<a class="tile" href="${a.u}">${icon(a)}<span class="t">${esc(a.n)}</span><span class="d">${esc(a.w)}</span><span class="tags">${tagsH(a)}</span></a>`).join('')+'</div>';}
+  if(!h)h='<div class="empty">아직 고른 앱이 없어요.<br>위의 「✅ 앱 고르기·설치」를 눌러 주세요.</div>';
+  h+='<div class="box tip" style="margin-top:18px">· 앱을 더 넣거나 빼려면 「✅ 앱 고르기·설치」를 누르세요.<br>· 🔑 표시 앱은 처음 한 번 담당자에게 받은 링크(또는 암호)가 필요해요.<br>· 새 앱이 생기면 이 목록에 자동으로 추가돼요. 다시 설치할 필요 없어요.</div>';
+  box.innerHTML=h;
+}
+let sel=new Set();
+function renderPick(){
+  const box=document.getElementById('pickList');let h='';
+  for(const [g,list] of GROUPS){h+=`<h2>${g}</h2>`+list.map(a=>`<label class="row${sel.has(a.id)?' on':''}" data-id="${a.id}"><input type="checkbox" ${sel.has(a.id)?'checked':''}>${icon(a)}<span class="tx"><span class="t">${esc(a.n)}</span><br><span class="d">${esc(a.d)}</span><span class="tags" style="margin-top:4px">${tagsH(a)}</span></span></label>`).join('');}
+  box.innerHTML=h;
+  box.querySelectorAll('.row').forEach(r=>r.querySelector('input').addEventListener('change',e=>{const id=r.dataset.id;e.target.checked?sel.add(id):sel.delete(id);r.classList.toggle('on',e.target.checked);cnt();}));
+  cnt();
+}
+function cnt(){const n=sel.size;const k=instList().length;document.getElementById('cnt').textContent=`선택 ${n}개`+(n?` · 따로 설치할 수 있는 앱 ${k}개`:'');document.getElementById('bInst').disabled=!k;}
+function show(v){const my=v==='my';document.getElementById('vMy').hidden=!my;document.getElementById('vPick').hidden=my;document.getElementById('bar').hidden=my;
+  document.getElementById('tMy').classList.toggle('on',my);document.getElementById('tPick').classList.toggle('on',!my);
+  if(my)renderMy();else{sel=new Set(st.my);renderPick();}scrollTo(0,0);}
+document.getElementById('tMy').onclick=()=>show('my');
+document.getElementById('tPick').onclick=()=>show('pick');
+document.getElementById('bSave').onclick=()=>{st.my=ALL.map(a=>a.id).filter(id=>sel.has(id));save();show('my');};
+
+/* 바탕화면에 따로 설치: 고른 앱을 하나씩 차례로 */
+function instList(){const m=new Map();for(const a of ALL){if(!sel.has(a.id))continue;const k=a.inst||a.u;if(!m.has(k))m.set(k,{k,a,names:[a.n],lnk:!a.inst});else m.get(k).names.push(a.n);}return [...m.values()];}
+const UA=navigator.userAgent,isAnd=/Android/i.test(UA),isIOS=/iPhone|iPad|iPod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isApp=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+let Q=[],qi=0;
+function howHTML(it){
+  if(isIOS)return '<ol><li>아래 「설치 화면 열기」를 누르면 <b>사파리</b>로 열려요.</li><li>아래쪽 <b>공유 버튼(□↑)</b> → <b>「홈 화면에 추가」</b> → 「추가」.</li><li>이 화면으로 돌아와 「설치했어요 → 다음」을 누르세요.</li></ol>';
+  if(isAnd)return `<ol><li>아래 「설치 화면 열기」를 누르면 <b>크롬</b>으로 열려요.</li><li>오른쪽 위 <b>⋮</b> → <b>${it.lnk?'「홈 화면에 추가」':'「앱 설치」 (없으면 「홈 화면에 추가」)'}</b> → 「설치」.</li><li>이 화면으로 돌아와 「설치했어요 → 다음」을 누르세요.</li></ol>`;
+  return `<ol><li>아래 「설치 화면 열기」를 누르면 새 탭으로 열려요.</li><li>${it.lnk?'크롬 ⋮ → 「전송, 공유 및 저장」 → 「바로가기 만들기」':'주소창 오른쪽 <b>설치 아이콘(⊕)</b> 또는 크롬 ⋮ → 「전송, 공유 및 저장」 → 「페이지를 앱으로 설치」'}.</li><li>이 탭으로 돌아와 「설치했어요 → 다음」을 누르세요.</li></ol>`;
+}
+function wizShow(){
+  const w=document.getElementById('wiz'),c=document.getElementById('wc');w.hidden=false;
+  if(qi>=Q.length){const n=Q.filter(x=>st.done[x.k]).length;
+    c.innerHTML=`<div class="step">끝</div><div class="box ok" style="margin-top:10px">✔ ${n}개 앱을 따로 설치했다고 표시했어요.</div><p class="small">설치한 앱도 이 「업무 앱」 안에 그대로 남아 있어요.</p><div class="wb"><button class="btn main" id="wClose">닫기</button></div>`;
+    document.getElementById('wClose').onclick=()=>{w.hidden=true;show('my');};return;}
+  const it=Q[qi],a=it.a;
+  c.innerHTML=`<div class="step">바탕화면에 따로 설치 · ${qi+1} / ${Q.length}</div>
+   <div class="dots">${Q.map((x,i)=>`<span class="dot ${i===qi?'cur':st.done[x.k]?'done':''}">${i+1}. ${esc(x.a.grp||x.a.n)}</span>`).join('')}</div>
+   <div class="wh">${icon(a)}<div><div class="t">${esc(a.grp||a.n)}</div><div class="small">${esc(it.names.join(' · '))}</div></div></div>
+   ${it.lnk?'<div class="box" style="background:var(--graybg);color:var(--gray);font-size:16px">이 화면은 앱 설치가 안 돼서 「홈 화면 바로가기」로만 만들 수 있어요.</div>':''}
+   ${a.note?`<div class="box" style="background:var(--warnbg);color:var(--warn);font-size:16px">🔑 ${esc(a.note)}</div>`:''}
+   <div class="how"><b>설치 방법</b>${howHTML(it)}</div>
+   <div class="wb"><button class="btn main" id="wOpen">설치 화면 열기</button>
+   <div class="two"><button class="btn" id="wSkip">건너뛰기</button><button class="btn" id="wDone">설치했어요 → 다음</button></div>
+   <button class="btn" id="wStop" style="border-color:var(--line);color:var(--sub)">그만하기</button></div>`;
+  document.getElementById('wOpen').onclick=()=>openInstall(it);
+  document.getElementById('wSkip').onclick=()=>{qi++;wizShow();};
+  document.getElementById('wDone').onclick=()=>{st.done[it.k]=1;save();qi++;wizShow();};
+  document.getElementById('wStop').onclick=()=>{w.hidden=true;show('my');};
+}
+async function openInstall(it){
+  /* 크롬·엣지에 「다른 앱 설치」 기능이 생기면 바로 설치 창을 띄움 (아직 시험 기능) */
+  if(!it.lnk&&'install' in navigator){try{await navigator.install(it.k);st.done[it.k]=1;save();qi++;wizShow();return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  if(isAnd&&isApp){const u=new URL(it.k);location.href=`intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(it.k)};end`;return;}
+  window.open(it.k,'_blank','noopener');
+}
+document.getElementById('bInst').onclick=()=>{st.my=ALL.map(a=>a.id).filter(id=>sel.has(id));save();wizPick();};
+/* 0단계: 고른 앱 중에서 바탕화면에 따로 둘 것만 다시 고르기 */
+function wizPick(){
+  const w=document.getElementById('wiz'),c=document.getElementById('wc'),L=instList(),ch=new Set();w.hidden=false;
+  c.innerHTML=`<div class="step">바탕화면에 따로 설치</div><p style="margin:8px 0 12px;font-weight:700">어떤 앱을 바탕화면에 <b>따로</b> 둘까요?<br><span class="small">고른 앱을 하나씩 차례로 설치해 드려요. 안 고른 앱도 「업무 앱」 안에서는 그대로 열려요.</span></p>`+
+   L.map((it,i)=>`<label class="row" data-i="${i}"><input type="checkbox">${icon(it.a)}<span class="tx"><span class="t">${esc(it.a.grp||it.a.n)}</span><br><span class="tags">${it.lnk?'<span class="tag lnk">바로가기만</span>':''}${st.done[it.k]?'<span class="tag ok">✔ 따로 설치함</span>':''}</span></span></label>`).join('')+
+   `<div class="wb"><button class="btn main" id="wGo" disabled>앱을 골라 주세요</button><button class="btn" id="wStop0" style="border-color:var(--line);color:var(--sub)">닫기</button></div>`;
+  const go=document.getElementById('wGo');
+  c.querySelectorAll('.row').forEach(r=>r.querySelector('input').addEventListener('change',e=>{const i=+r.dataset.i;e.target.checked?ch.add(i):ch.delete(i);r.classList.toggle('on',e.target.checked);go.disabled=!ch.size;go.textContent=ch.size?`고른 ${ch.size}개 차례로 설치 시작`:'앱을 골라 주세요';}));
+  go.onclick=()=>{Q=L.filter((x,i)=>ch.has(i));qi=0;wizShow();};
+  document.getElementById('wStop0').onclick=()=>{w.hidden=true;};
+}
 
 /* 바로 열기 주소 (2026-10-24): ?k=열쇠 로 한 번 열면 이 기기의 배송·출고·거래처·티맵 앱이 암호 없이 열림 */
-(async()=>{const box=document.getElementById('unlock');const say=(c,t)=>{box.className='unlock '+c;box.textContent=t;box.hidden=false};
+(async()=>{const box=document.getElementById('unlock');const say=(c,t)=>{box.className='box '+c;box.textContent=t;box.hidden=false};
 let h=location.href;try{h=decodeURIComponent(h)}catch(e){}
 const m=h.match(/[?&#]k=([A-Za-z0-9_-]{16,})/);
 if(m){history.replaceState(null,'',location.pathname);
@@ -74,9 +237,10 @@ localStorage.setItem('drawbread_pass',D.p);localStorage.setItem('tmapgo_k',m[1])
 for(const k of ['dongseon_v1','dongseon_beta_v1']){try{const o=JSON.parse(localStorage.getItem(k));if(o&&o.dv){o.dv.pass=D.p;localStorage.setItem(k,JSON.stringify(o))}}catch(x){}}
 say('ok','✅ 이 기기에 등록됐어요. 이제 배송·출고·거래처 앱이 암호 없이 열려요.');
 }catch(x){say('bad',x&&x.message==='net'?'인터넷 연결을 확인하고 링크를 다시 눌러 주세요.':'링크가 맞지 않아요. 담당자에게 「바로 열기」 링크를 다시 받아 주세요.')}}
-else if(localStorage.getItem('drawbread_pass'))say('ok','✅ 이 기기는 암호 없이 열리도록 등록돼 있어요.');
+else if(localStorage.getItem('drawbread_pass'))say('ok','✅ 이 기기는 배송·출고·거래처 앱이 암호 없이 열리도록 등록돼 있어요.');
 })();
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+show('my');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
