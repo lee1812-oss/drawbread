@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>회사소개서·단가표 보내기 · 빵을그리다</title>
+<style>
+:root{--br:#6B3A12;--br2:#8A4B1A;--or:#E8690F;--bg:#F5F5F4;--ln:#D6D3D1;--tx:#1C1917;--ok:#15803D;--wa:#C2410C;--bad:#B91C1C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-size:17px;line-height:1.55;word-break:keep-all;overflow-wrap:break-word}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:3px solid var(--br);padding:10px 14px}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top img{height:34px}
+.top h1{font-size:20px;margin:0;color:var(--br)}
+.ver{font-size:14px;color:#44403C;font-weight:600;white-space:nowrap}
+main{max-width:640px;margin:0 auto;padding:12px 14px 40px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:14px;margin:12px 0}
+.card h2{font-size:18px;margin:0 0 10px;color:var(--br)}
+.num{display:inline-block;background:var(--br);color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;font-size:15px;margin-right:6px}
+label.item{display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 10px;border:1px solid var(--ln);border-radius:10px;margin:8px 0;cursor:pointer}
+label.item input{width:26px;height:26px;accent-color:var(--br);flex:none}
+.item b{display:block}
+.item small{color:#44403C;font-size:15px}
+.item a{margin-left:auto;font-size:15px;color:var(--br2);white-space:nowrap;padding:8px}
+input.tel,input.txt{width:100%;font-size:22px;padding:12px;border:2px solid var(--ln);border-radius:10px;letter-spacing:1px}
+input.txt{font-size:18px;letter-spacing:0}
+input.tel:focus,input.txt:focus,textarea:focus{outline:none;border-color:var(--br)}
+textarea{width:100%;min-height:250px;font-size:16px;line-height:1.5;padding:10px;border:2px solid var(--ln);border-radius:10px;font-family:inherit}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:58px;border:0;border-radius:12px;font-size:19px;font-weight:700;margin:10px 0;cursor:pointer;text-decoration:none}
+.b-sms{background:var(--br);color:#fff}
+.b-kakao{background:#FEE500;color:#191919}
+.b-file{background:#fff;color:var(--tx);border:2px solid #A8A29E}
+.b-copy{background:#fff;color:var(--br);border:2px solid var(--br)}
+.hint{font-size:15px;color:#44403C;margin:2px 0 6px}
+.lab{display:inline-block;font-size:13px;font-weight:700;border-radius:6px;padding:1px 7px;margin-right:4px;vertical-align:1px}
+.l-warn{background:#FFEDD5;color:var(--wa)}
+.l-ok{background:#DCFCE7;color:var(--ok)}
+.l-info{background:#E7E5E4;color:#292524}
+#msg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1C1917;color:#fff;padding:12px 18px;border-radius:10px;font-size:17px;display:none;max-width:90%;z-index:9}
+.err{color:var(--bad);font-weight:700;font-size:15px;min-height:20px}
+ol.how{margin:6px 0 0;padding-left:22px}ol.how li{margin:4px 0}
+</style></head><body>
+<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>회사소개서·단가표 보내기</h1>
+<span class="ver">v001 · 업데이트 2026-11-18 16:05</span></div></header>
+<main>
+<div class="card"><h2><span class="num">1</span>보낼 자료 고르기</h2>
+<label class="item"><input type="checkbox" class="doc" data-k="company" checked><span><b>회사소개서</b><small>PDF 48쪽 · 약 13MB</small></span><a href="company.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<label class="item"><input type="checkbox" class="doc" data-k="saengji" checked><span><b>생지 단가표</b><small>기준일 2026.11.18 · VAT 별도</small></span><a href="price_saengji.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<label class="item"><input type="checkbox" class="doc" data-k="wanje" checked><span><b>완제품 단가표</b><small>기준일 2026.11.18 · VAT 별도</small></span><a href="price_wanje.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<p class="hint"><span class="lab l-info">참고</span>자료 기준일은 단가표 날짜이고, 위 업데이트 시각은 이 화면을 고친 시각입니다.</p>
+</div>
+<div class="card"><h2><span class="num">2</span>받는 분 정보</h2>
+<p class="hint">받는 분 휴대폰 번호 <span class="lab l-warn">문자일 때 필요</span></p>
+<input class="tel" id="tel" type="tel" inputmode="numeric" placeholder="010-0000-0000" autocomplete="off">
+<div class="err" id="telErr"></div>
+<p class="hint">상호 또는 성함 <span class="lab l-info">선택</span></p>
+<input class="txt" id="who" type="text" placeholder="예: 행복베이커리 대표님" autocomplete="off">
+</div>
+<div class="card"><h2><span class="num">3</span>보낼 글 확인</h2>
+<p class="hint">자동으로 채워집니다. 필요하면 고쳐서 보내세요.</p>
+<textarea id="body"></textarea>
+</div>
+<div class="card"><h2><span class="num">4</span>보내기</h2>
+<button class="btn b-sms" id="bSms">📱 문자로 보내기</button>
+<p class="hint">휴대폰 문자 앱이 열리고 번호·글이 채워집니다. 문자 앱에서 「보내기」만 누르세요.</p>
+<button class="btn b-kakao" id="bKakao">💬 카카오톡으로 링크 보내기</button>
+<p class="hint">공유 창에서 「카카오톡」 → 받을 친구나 방을 고르세요. 카톡은 친구로 저장된 분께만 보낼 수 있습니다.</p>
+<button class="btn b-file" id="bFile">📎 카카오톡으로 PDF 파일 자체 보내기</button>
+<p class="hint">링크 대신 파일을 보냅니다. 회사소개서는 크기가 커서 받는 데 시간이 걸릴 수 있습니다.</p>
+<button class="btn b-copy" id="bCopy">📋 글 복사하기 (PC 카톡용)</button>
+<p class="hint">PC에서는 문자 보내기가 안 됩니다. 복사한 뒤 카카오톡 PC 대화창에 붙여 넣으세요.</p>
+</div>
+<div class="card"><h2>쓰는 순서</h2>
+<ol class="how"><li>슬랙 #영업-자료 → 「회사소개서&amp;단가표」 탭 → 「회사소개서·단가표 보내기」를 누릅니다.</li>
+<li>보낼 자료를 고르고 받는 분 휴대폰 번호를 넣습니다.</li>
+<li>「문자로 보내기」 또는 「카카오톡으로 링크 보내기」를 누릅니다.</li>
+<li>열린 문자·카톡 화면에서 받는 분을 확인하고 「보내기」를 누릅니다.</li></ol>
+<p class="hint"><span class="lab l-warn">주의</span>거래처별 할인 단가나 매입 단가는 이 화면에 없습니다. 필요하면 이사님께 확인해 주세요.</p>
+</div>
+</main>
+<div id="msg"></div>
+<script>
+const BASE=new URL('./',location.href).href;
+const DOCS={company:{t:'회사소개서',f:'company.pdf',n:'빵을그리다_회사소개서.pdf'},
+ saengji:{t:'생지 단가표 (2026.11.18)',f:'price_saengji.pdf',n:'빵을그리다_생지단가표_2026-11-18.pdf'},
+ wanje:{t:'완제품 단가표 (2026.11.18)',f:'price_wanje.pdf',n:'빵을그리다_완제품단가표_2026-11-18.pdf'}};
+const $=id=>document.getElementById(id);
+let edited=false;
+function picked(){return [...document.querySelectorAll('.doc')].filter(c=>c.checked).map(c=>DOCS[c.dataset.k]);}
+function build(){const who=$('who').value.trim();const ds=picked();
+ let s=(who?who+', 안녕하세요.\n빵을그리다입니다.':'안녕하세요. 빵을그리다입니다.')+'\n요청하신 자료 보내드립니다.\n';
+ ds.forEach((d,i)=>{s+='\n'+(i+1)+'. '+d.t+'\n'+BASE+d.f;});
+ s+='\n\n※ 단가는 VAT 별도입니다.\n발주 및 납품 문의 010-9999-8639\n감사합니다.';return s;}
+function refresh(){if(!edited)$('body').value=build();}
+$('body').addEventListener('input',()=>{edited=true;});
+document.querySelectorAll('.doc').forEach(c=>c.addEventListener('change',()=>{edited=false;refresh();}));
+$('who').addEventListener('input',()=>{edited=false;refresh();});
+function telDigits(){return $('tel').value.replace(/[^0-9]/g,'');}
+$('tel').addEventListener('input',()=>{const d=telDigits();$('tel').value=d.length>7?d.replace(/^(\d{3})(\d{3,4})(\d{4}).*$/,'$1-$2-$3'):d;$('telErr').textContent='';});
+function toast(t){const m=$('msg');m.textContent=t;m.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>m.style.display='none',2600);}
+function need(){if(!picked().length){toast('보낼 자료를 하나 이상 고르세요');return false;}return true;}
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+$('bSms').onclick=()=>{if(!need())return;const d=telDigits();
+ if(!/^01\d{8,9}$/.test(d)){$('telErr').textContent='휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)';$('tel').focus();return;}
+ if(!isMobile){toast('PC에서는 문자가 안 됩니다. 「글 복사하기」를 쓰세요');return;}
+ location.href='sms:'+d+(isIOS?'&':'?')+'body='+encodeURIComponent($('body').value);};
+$('bKakao').onclick=async()=>{if(!need())return;const text=$('body').value;
+ if(navigator.share){try{await navigator.share({text});}catch(e){if(e.name!=='AbortError')toast('공유 창을 열지 못했습니다. 「글 복사하기」를 쓰세요');}}
+ else{await copy(text);toast('글을 복사했습니다. 카카오톡 대화창에 붙여 넣으세요');}};
+$('bFile').onclick=async()=>{if(!need())return;
+ if(!navigator.canShare){toast('이 기기는 파일 보내기를 지원하지 않습니다. 링크로 보내 주세요');return;}
+ toast('파일을 준비하고 있습니다…');
+ try{const fs=[];for(const d of picked()){const r=await fetch(d.f+'?v=001');const b=await r.blob();fs.push(new File([b],d.n,{type:'application/pdf'}));}
+  if(!navigator.canShare({files:fs})){toast('이 기기는 파일 보내기를 지원하지 않습니다. 링크로 보내 주세요');return;}
+  await navigator.share({files:fs});}catch(e){if(e.name!=='AbortError')toast('파일 보내기에 실패했습니다. 링크로 보내 주세요');}};
+async function copy(t){try{await navigator.clipboard.writeText(t);return true;}catch(e){const a=$('body');a.select();document.execCommand('copy');return true;}}
+$('bCopy').onclick=async()=>{if(!need())return;await copy($('body').value);toast('복사했습니다. 카카오톡 대화창에 붙여 넣으세요');};
+refresh();
+</script></body></html>
