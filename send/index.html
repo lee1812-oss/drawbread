@@ -32,8 +32,9 @@ textarea{width:100%;min-height:150px;font-size:16px;line-height:1.5;padding:10px
 #msg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1C1917;color:#fff;padding:12px 18px;border-radius:10px;font-size:17px;display:none;max-width:90%;z-index:9}
 ol{margin:4px 0 0;padding-left:22px}li{margin:3px 0}
 </style></head><body>
-<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보내기</h1><span class="ver">v004 · 업데이트 2026-11-18 16:56</span></div></header>
+<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보내기</h1><span class="ver">v005 · 업데이트 2026-11-18 17:08</span></div></header>
 <main>
+<div class="card" id="fromPC" style="display:none;border:3px solid #15803D;background:#F0FDF4"><h2 style="color:#15803D">PC에서 넘어왔습니다</h2><p style="margin:0">번호와 자료가 채워져 있습니다. 아래 「📱 문자 보내기」를 누르고 문자 앱에서 「전송」을 누르세요.</p></div>
 <div class="card"><h2>1. 받는 분 휴대폰 번호</h2>
 <input class="tel" id="tel" type="tel" inputmode="numeric" placeholder="010-0000-0000" autocomplete="off">
 <div class="err" id="telErr"></div>
@@ -55,7 +56,7 @@ ol{margin:4px 0 0;padding-left:22px}li{margin:3px 0}
 <ol><li>휴대폰 크롬에서 이 화면을 엽니다.</li><li>오른쪽 위 ⋮ → 「홈 화면에 추가」를 누릅니다.</li><li>바탕화면 「자료 보내기」 아이콘으로 바로 엽니다.</li></ol></div>
 </main><div id="qrBox"><div id="qrCard"><h3>휴대폰 카메라로 찍어 주세요</h3>
 <div id="qrImg"></div><p class="hint" id="qrTo"></p>
-<ol><li>휴대폰 카메라(또는 네이버·카카오 QR)로 위 그림을 찍습니다.</li><li>화면에 뜨는 「문자 보내기」 알림을 누릅니다.</li><li>문자 앱에 번호와 글이 채워져 있습니다. 「전송」을 누릅니다.</li></ol>
+<ol><li>휴대폰 카메라나 「QR 바로 찍기」로 위 그림을 찍습니다.</li><li>뜨는 주소를 「열기」로 엽니다. 휴대폰에 자료 보내기 화면이 번호가 채워진 채 열립니다.</li><li>「문자 보내기」 → 문자 앱에서 「전송」을 누릅니다.</li></ol>
 <button class="btn b-close" id="qrClose">닫기</button>
 <button class="btn b-pl" id="qrPL">PC 「휴대폰과 연결」로 열기 (연결돼 있을 때만)</button>
 </div></div><div id="msg"></div>
@@ -2387,11 +2388,14 @@ $('bKakao').onclick=async()=>{if(!need())return;const text=$('body').value;
  else{await copy(text);toast('글을 복사했습니다. 카카오톡 대화창에 붙여 넣으세요');}};
 async function copy(t){try{await navigator.clipboard.writeText(t);}catch(e){const a=$('body');a.closest('details').open=true;a.select();document.execCommand('copy');}}
 $('bCopy').onclick=async()=>{if(!need())return;await copy($('body').value);toast('복사했습니다. 카카오톡·문자 창에 붙여 넣으세요');};
-function showQR(d){const body=$('body').value;const q=qrcode(0,'L');q.addData('SMSTO:'+d+':'+body,'Byte');q.make();
+function showQR(d){const body=$('body').value;const q=qrcode(0,'M');q.addData(new URL('./',location.href).href+'?n='+d+'&k='+keys().join(''),'Byte');q.make();
  $('qrImg').innerHTML=q.createImgTag(6,8);$('qrTo').textContent='받는 분: '+fmt(d);$('qrBox').style.display='flex';
  $('qrPL').onclick=()=>{location.href='sms:'+d+'?body='+encodeURIComponent(body);};}
 $('qrClose').onclick=()=>{$('qrBox').style.display='none';};
 $('qrBox').onclick=e=>{if(e.target.id==='qrBox')$('qrBox').style.display='none';};
-if(!isMobile)$('smsHint').textContent='PC에서는 QR 그림이 나옵니다. 휴대폰 카메라로 찍으면 문자 앱이 열리고 번호·글이 채워집니다.';
+if(!isMobile)$('smsHint').textContent='PC에서는 QR 그림이 나옵니다. 휴대폰으로 찍으면 이 화면이 휴대폰에 번호가 채워진 채 열립니다.';
+(function(){const P=new URLSearchParams(location.search);const n=(P.get('n')||'').replace(/[^0-9]/g,'');if(!n)return;
+ $('tel').value=fmt(n);const k=P.get('k');if(k){document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',k.includes(b.dataset.k)));}
+ $('fromPC').style.display='block';setTimeout(()=>$('bSms').scrollIntoView({block:'center'}),300);})();
 refresh();
 </script></body></html>
