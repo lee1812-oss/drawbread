@@ -17,5 +17,9 @@
    "sizes": "512x512",
    "type": "image/png"
   }
- ]
+ ],
+ "id": "./",
+ "description": "거래처에 회사소개서·최신 단가표를 문자로 보내기",
+ "lang": "ko",
+ "orientation": "portrait"
 }
