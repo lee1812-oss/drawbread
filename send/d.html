@@ -17,7 +17,7 @@ main{max-width:560px;margin:0 auto;padding:12px 14px 40px}
 .tel{background:var(--br);color:#fff}
 footer{text-align:center;font-size:14px;color:#44403C;margin-top:18px}
 </style></head><body>
-<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보기</h1><span class="ver">v001 · 2026-11-18 16:48</span></div></header>
+<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보기</h1><span class="ver">v002 · 2026-11-18 17:45</span></div></header>
 <main>
 <div class="hero"><h2>빵을그리다 주식회사</h2><p>저온숙성 생지로 만든 고품질 베이커리</p></div>
 <div id="list"></div>
@@ -25,7 +25,13 @@ footer{text-align:center;font-size:14px;color:#44403C;margin-top:18px}
 <footer>누르면 PDF가 열립니다. 저장은 화면의 내려받기(⬇) 버튼을 누르세요.</footer>
 </main>
 <script>
+const API='https://script.google.com/macros/s/AKfycbwDMJvL6Qfey9lRTB_zmQeIGiT9Ys0HqXe-oEH1cvTs4nDAwu34h3v6neYeY-nXdNMwNQ/exec';
 const D={c:{i:'🏢',t:'회사소개서',s:'PDF 48쪽 · 약 13MB',f:'company.pdf'},s:{i:'🥐',t:'생지 단가표',s:'2026.11.18 기준 · VAT 별도',f:'price_saengji.pdf'},w:{i:'🍞',t:'완제품 단가표',s:'2026.11.18 기준 · VAT 별도',f:'price_wanje.pdf'}};
-let k=(new URLSearchParams(location.search).get('k')||'csw').split('').filter(x=>D[x]);if(!k.length)k=['c','s','w'];
-document.getElementById('list').innerHTML=[...new Set(k)].map(x=>'<a class="doc" href="'+D[x].f+'" target="_blank" rel="noopener"><span class="ic">'+D[x].i+'</span><span><b>'+D[x].t+'</b><small>'+D[x].s+'</small></span><span class="go">열기 ›</span></a>').join('');
+let k=(new URLSearchParams(location.search).get('k')||'csw').split('').filter(x=>D[x]);if(!k.length)k=['c','s','w'];k=[...new Set(k)];
+function draw(){document.getElementById('list').innerHTML=k.map(x=>'<a class="doc" href="'+D[x].f+'" target="_blank" rel="noopener"><span class="ic">'+D[x].i+'</span><span><b>'+D[x].t+'</b><small>'+D[x].s+'</small></span><span class="go">열기 ›</span></a>').join('');}
+draw();
+(async()=>{try{const c=new AbortController();setTimeout(()=>c.abort(),8000);
+ const r=await fetch(API+'?op=latest',{cache:'no-store',signal:c.signal});const j=await r.json();if(!j.ok||!j.docs)return;
+ for(const x of ['s','w']){const d=j.docs[x];if(d&&d.url){D[x].f=d.url;D[x].s=String(d.date||'').replace(/-/g,'.')+' 기준 · VAT 별도';}}
+ draw();}catch(e){}})();
 </script></body></html>

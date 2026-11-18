@@ -31,10 +31,35 @@ textarea{width:100%;min-height:150px;font-size:16px;line-height:1.5;padding:10px
 #qrCard ol{text-align:left;font-size:16px}.b-close{background:var(--br);color:#fff}.b-pl{background:#fff;color:var(--tx);border:2px solid #A8A29E;font-size:16px;min-height:54px}
 #msg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1C1917;color:#fff;padding:12px 18px;border-radius:10px;font-size:17px;display:none;max-width:90%;z-index:9}
 ol{margin:4px 0 0;padding-left:22px}li{margin:3px 0}
+
+.stat{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.lab{display:inline-block;font-size:15px;font-weight:800;padding:5px 10px;border-radius:8px}
+.lab.on{background:#DCFCE7;color:#14532D;border:1px solid #15803D}
+.lab.off{background:#FEE2E2;color:#7F1D1D;border:1px solid #B91C1C}
+.lab.wait{background:#F5F5F4;color:#44403C;border:1px solid #A8A29E}
+.lab.test{background:#FFEDD5;color:#7C2D12;border:1px solid #EA580C}
+.b-send{background:var(--br);color:#fff;font-size:24px;min-height:72px}
+.b-send:disabled{background:#78716C;cursor:default}
+input.pin{letter-spacing:8px;text-align:center}
+#res{display:none;border-width:3px}
+#res.ok{border-color:#15803D;background:#F0FDF4}#res.bad{border-color:#B91C1C;background:#FEF2F2}#res.ing{border-color:var(--br2);background:#FFFBEB}
+#res p{margin:0;font-size:20px;font-weight:800;line-height:1.45}
+#res.ok p{color:#14532D}#res.bad p{color:#7F1D1D}#res.ing p{color:var(--br)}
+#res small{display:block;margin-top:6px;font-size:16px;color:#292524;font-weight:600}
+.other{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:0 14px 6px;margin:16px 0}
+.other>summary{min-height:56px;display:flex;align-items:center;font-size:18px}
+.reset{display:block;text-align:center;font-size:16px;color:#44403C;margin:14px 0;min-height:44px}
 </style></head><body>
-<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보내기</h1><span class="ver">v005 · 업데이트 2026-11-18 17:08</span></div></header>
+<header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>자료 보내기</h1><span class="ver">v006 · 업데이트 2026-11-18 17:45</span></div>
+<div class="stat"><span class="lab wait" id="stRelay">문자 발송기: 확인 중…</span><span class="lab test" id="stTest" style="display:none">시험 모드: 실제 문자는 아직 나가지 않습니다</span></div></header>
 <main>
-<div class="card" id="fromPC" style="display:none;border:3px solid #15803D;background:#F0FDF4"><h2 style="color:#15803D">PC에서 넘어왔습니다</h2><p style="margin:0">번호와 자료가 채워져 있습니다. 아래 「📱 문자 보내기」를 누르고 문자 앱에서 「전송」을 누르세요.</p></div>
+<div class="card" id="fromPC" style="display:none;border:3px solid #15803D;background:#F0FDF4"><h2 style="color:#15803D">PC에서 넘어왔습니다</h2><p style="margin:0">번호와 자료가 채워져 있습니다. 아래 「다른 방법」의 「📱 문자 보내기」를 누르고 문자 앱에서 「전송」을 누르세요.</p></div>
+<div class="card" id="pinCard" style="display:none"><h2>처음 한 번만: 보내기 번호(직원용)</h2>
+<p class="hint">이사님께 받은 6자리 숫자를 넣어 주세요. 이 PC에 기억되어 다음부터는 묻지 않습니다.</p>
+<input class="tel pin" id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="6자리 숫자">
+<div class="err" id="pinErr"></div>
+<button class="btn b-send" id="pinSave" style="font-size:20px;min-height:60px">확인</button></div>
+<div id="mainFlow">
 <div class="card"><h2>1. 받는 분 휴대폰 번호</h2>
 <input class="tel" id="tel" type="tel" inputmode="numeric" placeholder="010-0000-0000" autocomplete="off">
 <div class="err" id="telErr"></div>
@@ -42,9 +67,15 @@ ol{margin:4px 0 0;padding-left:22px}li{margin:3px 0}
 </div>
 <div class="card"><h2>2. 보낼 자료 <span class="hint">(누르면 빼기·넣기)</span></h2>
 <div class="chips"><button class="chip on" data-k="c">회사소개서</button><button class="chip on" data-k="s">생지 단가표</button><button class="chip on" data-k="w">완제품 단가표</button></div>
-<p class="hint">단가표 기준일 <span class="nw">2026.11.18</span> · <span class="nw">VAT 별도</span></p>
+<p class="hint">단가표 기준일 <span class="nw" id="docDate">2026.11.18</span> · <span class="nw">VAT 별도</span></p>
 </div>
-<button class="btn b-sms" id="bSms">📱 문자 보내기</button>
+<button class="btn b-send" id="bSend">📤 전송</button>
+<p class="hint" id="sendHint">「전송」을 누르면 회사 번호로 문자가 바로 나갑니다. 휴대폰은 필요 없습니다.</p>
+<div class="card" id="res"><p id="resT"></p><small id="resS"></small></div>
+</div>
+<details class="other" id="other"><summary>다른 방법 (휴대폰 문자 앱 · 카카오톡 · QR)</summary>
+<p class="hint">문자 발송기가 꺼져 있을 때 씁니다. 직원 휴대폰이나 카카오톡으로 보냅니다.</p>
+<button class="btn b-sms" id="bSms">📱 문자 보내기 (휴대폰 문자 앱)</button>
 <p class="hint" id="smsHint">문자 앱이 열리면 번호와 글이 채워져 있습니다. 「전송」만 누르세요.</p>
 <button class="btn b-kakao" id="bKakao">💬 카카오톡으로 보내기</button>
 <button class="btn b-copy" id="bCopy">📋 글 복사 (PC에서 쓸 때)</button>
@@ -54,6 +85,8 @@ ol{margin:4px 0 0;padding-left:22px}li{margin:3px 0}
 <p class="hint"><a href="d.html?k=csw" target="_blank">받는 분 화면 미리보기</a></p></div>
 <div class="card"><h2>휴대폰 바탕화면에 두기</h2>
 <ol><li>휴대폰 크롬에서 이 화면을 엽니다.</li><li>오른쪽 위 ⋮ → 「홈 화면에 추가」를 누릅니다.</li><li>바탕화면 「자료 보내기」 아이콘으로 바로 엽니다.</li></ol></div>
+</details>
+<a href="#" class="reset" id="pinReset">보내기 번호(직원용) 다시 넣기</a>
 </main><div id="qrBox"><div id="qrCard"><h3>휴대폰 카메라로 찍어 주세요</h3>
 <div id="qrImg"></div><p class="hint" id="qrTo"></p>
 <ol><li>휴대폰 카메라나 「QR 바로 찍기」로 위 그림을 찍습니다.</li><li>뜨는 주소를 「열기」로 엽니다. 휴대폰에 자료 보내기 화면이 번호가 채워진 채 열립니다.</li><li>「문자 보내기」 → 문자 앱에서 「전송」을 누릅니다.</li></ol>
@@ -2362,6 +2395,8 @@ var qrcode = function() {
 qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
 </script>
 <script>
+const API='https://script.google.com/macros/s/AKfycbwDMJvL6Qfey9lRTB_zmQeIGiT9Ys0HqXe-oEH1cvTs4nDAwu34h3v6neYeY-nXdNMwNQ/exec';
+const PK='drawbread_send_pin';
 const LAND=new URL('d.html',location.href).href;
 const $=id=>document.getElementById(id);let edited=false;
 const NAMES={c:'회사소개서',s:'생지 단가표',w:'완제품 단가표'};
@@ -2374,13 +2409,66 @@ document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{b.classList.toggle(
 function fmt(d){return d.length>7?d.replace(/^(\d{3})(\d{3,4})(\d{4}).*$/,'$1-$2-$3'):d;}
 function digits(){let d=$('tel').value.replace(/[^0-9]/g,'');if(d.startsWith('82'))d='0'+d.slice(2);return d;}
 $('tel').addEventListener('input',()=>{$('tel').value=fmt(digits());$('telErr').textContent='';});
+$('tel').addEventListener('keydown',e=>{if(e.key==='Enter')$('bSend').click();});
 function toast(t){const m=$('msg');m.textContent=t;m.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>m.style.display='none',2600);}
 function need(){if(!keys().length){toast('보낼 자료를 하나 이상 고르세요');return false;}return true;}
+function telOk(){const d=digits();if(!/^01\d{8,9}$/.test(d)){$('telErr').textContent='휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)';$('tel').focus();return '';}return d;}
 const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent),isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
 if('contacts' in navigator&&'select' in navigator.contacts){$('bCon').style.display='flex';
  $('bCon').onclick=async()=>{try{const r=await navigator.contacts.select(['tel','name'],{multiple:false});if(r&&r[0]&&r[0].tel&&r[0].tel[0]){$('tel').value=fmt(r[0].tel[0].replace(/[^0-9]/g,'').replace(/^82/,'0'));toast((r[0].name&&r[0].name[0]||'')+' 번호를 넣었습니다');}}catch(e){}};}
-$('bSms').onclick=()=>{if(!need())return;const d=digits();
- if(!/^01\d{8,9}$/.test(d)){$('telErr').textContent='휴대폰 번호를 확인해 주세요 (예: 010-1234-5678)';$('tel').focus();return;}
+
+/* ---------- 자동 발송 (사무실 PC 문자 발송기) ---------- */
+function pinGet(){try{return localStorage.getItem(PK)||'';}catch(e){return '';}}
+function pinSet(v){try{if(v)localStorage.setItem(PK,v);else localStorage.removeItem(PK);}catch(e){}}
+function showPin(m){$('pinCard').style.display='block';$('mainFlow').style.display='none';$('pinErr').textContent=m||'';$('pin').value='';setTimeout(()=>$('pin').focus(),100);}
+function hidePin(){$('pinCard').style.display='none';$('mainFlow').style.display='block';}
+async function api(o){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)});return r.json();}
+$('pinSave').onclick=async()=>{const v=$('pin').value.replace(/\D/g,'');
+ if(v.length!==6){$('pinErr').textContent='6자리 숫자를 넣어 주세요.';return;}
+ $('pinSave').disabled=true;$('pinSave').textContent='확인 중…';
+ try{const j=await api({op:'status',pin:v,id:'-'});
+  if(j.code==='pin'||j.code==='locked'){$('pinErr').textContent=j.error;$('pin').value='';$('pin').focus();return;}
+  pinSet(v);hidePin();toast('보내기 번호를 저장했습니다');$('tel').focus();
+ }catch(e){$('pinErr').textContent='인터넷 연결을 확인해 주세요.';}
+ finally{$('pinSave').disabled=false;$('pinSave').textContent='확인';}};
+$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')$('pinSave').click();});
+$('pinReset').onclick=e=>{e.preventDefault();pinSet('');showPin('');window.scrollTo(0,0);};
+function showRes(cls,t,s){const r=$('res');r.className='card '+cls;r.style.display='block';$('resT').textContent=t;$('resS').textContent=s||'';r.scrollIntoView({block:'nearest'});}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function poll(id,masked,pin){
+ for(let i=0;i<40;i++){await sleep(2500);
+  let j;try{j=await api({op:'status',pin,id});}catch(e){continue;}
+  if(!j.ok)continue;
+  if(j.state==='완료'){const test=/시험/.test(j.result||'');
+   showRes('ok','✅ '+masked+' 님께 보냈습니다 ('+j.doneAt+')',(test?'시험 모드라 실제 문자는 나가지 않았습니다. ':'')+'보낸 자료: '+j.docs);
+   $('tel').value='';return;}
+  if(j.state==='실패'){showRes('bad','❌ '+masked+' 님께 보내지 못했습니다','사유: '+(j.result||'알 수 없음'));return;}
+  showRes('ing','보내는 중…',j.state==='대기'?'사무실 PC 문자 발송기가 받아 가기를 기다리고 있습니다.':'문자 회사로 보내고 있습니다.');}
+ showRes('bad','⏳ 결과 확인이 늦어지고 있습니다','잠시 뒤 슬랙 #영업-자료 방에서 결과를 확인해 주세요. 같은 번호로 바로 다시 보내지 마세요.');}
+let busy=false;
+$('bSend').onclick=async()=>{if(busy)return;if(!need())return;const d=telOk();if(!d)return;
+ const pin=pinGet();if(!pin){showPin('먼저 보내기 번호(직원용)를 넣어 주세요.');return;}
+ busy=true;$('bSend').disabled=true;$('bSend').textContent='보내는 중…';
+ showRes('ing','보내는 중…','사무실 PC 문자 발송기로 보내고 있습니다.');
+ try{const j=await api({op:'send',pin,to:d,keys:keys().join('')});
+  if(!j.ok){
+   if(j.code==='pin'){pinSet('');showRes('bad','❌ 보내지 못했습니다','보내기 번호(직원용)가 맞지 않습니다. 위에서 다시 넣어 주세요.');showPin('보내기 번호가 맞지 않습니다. 다시 넣어 주세요.');}
+   else{showRes('bad','❌ 보내지 못했습니다',j.error||'알 수 없는 오류가 났습니다.');if(j.code==='off')$('other').open=true;}
+   return;}
+  await poll(j.id,j.masked,pin);
+ }catch(e){showRes('bad','❌ 보내지 못했습니다','인터넷 연결을 확인하시고 잠시 뒤 다시 해 주세요.');}
+ finally{busy=false;$('bSend').disabled=false;$('bSend').textContent='📤 전송';}};
+function dt(s){return String(s||'').replace(/-/g,'.');}
+async function info(){const s=$('stRelay');
+ try{const r=await fetch(API+'?op=info',{cache:'no-store'});const j=await r.json();
+  const on=!!(j.relay&&j.relay.online);s.className='lab '+(on?'on':'off');s.textContent='문자 발송기: '+(on?'켜짐':'꺼짐')+' (사무실 PC)';
+  $('stTest').style.display=(j.relay&&j.relay.mode==='live')?'none':'inline-block';
+  if(j.docs){$('docDate').textContent=j.docs.s===j.docs.w?dt(j.docs.s):'생지 '+dt(j.docs.s)+' · 완제품 '+dt(j.docs.w);}
+ }catch(e){s.className='lab wait';s.textContent='문자 발송기: 확인 못 함 (인터넷 확인)';}}
+info();setInterval(info,30000);
+
+/* ---------- 다른 방법 (예전 방식) ---------- */
+$('bSms').onclick=()=>{if(!need())return;const d=telOk();if(!d)return;
  if(!isMobile){showQR(d);return;}
  location.href='sms:'+d+(isIOS?'&':'?')+'body='+encodeURIComponent($('body').value);};
 $('bKakao').onclick=async()=>{if(!need())return;const text=$('body').value;
@@ -2394,8 +2482,9 @@ function showQR(d){const body=$('body').value;const q=qrcode(0,'M');q.addData(ne
 $('qrClose').onclick=()=>{$('qrBox').style.display='none';};
 $('qrBox').onclick=e=>{if(e.target.id==='qrBox')$('qrBox').style.display='none';};
 if(!isMobile)$('smsHint').textContent='PC에서는 QR 그림이 나옵니다. 휴대폰으로 찍으면 이 화면이 휴대폰에 번호가 채워진 채 열립니다.';
-(function(){const P=new URLSearchParams(location.search);const n=(P.get('n')||'').replace(/[^0-9]/g,'');if(!n)return;
+const fromQR=(function(){const P=new URLSearchParams(location.search);const n=(P.get('n')||'').replace(/[^0-9]/g,'');if(!n)return false;
  $('tel').value=fmt(n);const k=P.get('k');if(k){document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',k.includes(b.dataset.k)));}
- $('fromPC').style.display='block';setTimeout(()=>$('bSms').scrollIntoView({block:'center'}),300);})();
+ $('fromPC').style.display='block';$('other').open=true;setTimeout(()=>$('bSms').scrollIntoView({block:'center'}),300);return true;})();
 refresh();
+if(!pinGet()&&!fromQR)showPin('');
 </script></body></html>
