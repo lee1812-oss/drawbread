@@ -19,7 +19,7 @@ main{max-width:640px;margin:0 auto;padding:12px 14px 40px}
 label.item{display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 10px;border:1px solid var(--ln);border-radius:10px;margin:8px 0;cursor:pointer}
 label.item input{width:26px;height:26px;accent-color:var(--br);flex:none}
 .item b{display:block}
-.item small{color:#44403C;font-size:15px}
+.item small{color:#44403C;font-size:15px}.nw{white-space:nowrap}
 .item a{margin-left:auto;font-size:15px;color:var(--br2);white-space:nowrap;padding:8px}
 input.tel,input.txt{width:100%;font-size:22px;padding:12px;border:2px solid var(--ln);border-radius:10px;letter-spacing:1px}
 input.txt{font-size:18px;letter-spacing:0}
@@ -40,12 +40,12 @@ textarea{width:100%;min-height:250px;font-size:16px;line-height:1.5;padding:10px
 ol.how{margin:6px 0 0;padding-left:22px}ol.how li{margin:4px 0}
 </style></head><body>
 <header><div class="top"><img src="../brand_logo.png" alt="빵을그리다"><h1>회사소개서·단가표 보내기</h1>
-<span class="ver">v001 · 업데이트 2026-11-18 16:05</span></div></header>
+<span class="ver">v002 · 업데이트 2026-11-18 16:07</span></div></header>
 <main>
 <div class="card"><h2><span class="num">1</span>보낼 자료 고르기</h2>
-<label class="item"><input type="checkbox" class="doc" data-k="company" checked><span><b>회사소개서</b><small>PDF 48쪽 · 약 13MB</small></span><a href="company.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
-<label class="item"><input type="checkbox" class="doc" data-k="saengji" checked><span><b>생지 단가표</b><small>기준일 2026.11.18 · VAT 별도</small></span><a href="price_saengji.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
-<label class="item"><input type="checkbox" class="doc" data-k="wanje" checked><span><b>완제품 단가표</b><small>기준일 2026.11.18 · VAT 별도</small></span><a href="price_wanje.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<label class="item"><input type="checkbox" class="doc" data-k="company" checked><span><b>회사소개서</b><small><span class="nw">PDF 48쪽</span> · <span class="nw">약 13MB</span></small></span><a href="company.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<label class="item"><input type="checkbox" class="doc" data-k="saengji" checked><span><b>생지 단가표</b><small><span class="nw">기준일 2026.11.18</span> · <span class="nw">VAT 별도</span></small></span><a href="price_saengji.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
+<label class="item"><input type="checkbox" class="doc" data-k="wanje" checked><span><b>완제품 단가표</b><small><span class="nw">기준일 2026.11.18</span> · <span class="nw">VAT 별도</span></small></span><a href="price_wanje.pdf" target="_blank" onclick="event.stopPropagation()">미리보기</a></label>
 <p class="hint"><span class="lab l-info">참고</span>자료 기준일은 단가표 날짜이고, 위 업데이트 시각은 이 화면을 고친 시각입니다.</p>
 </div>
 <div class="card"><h2><span class="num">2</span>받는 분 정보</h2>
@@ -64,8 +64,8 @@ ol.how{margin:6px 0 0;padding-left:22px}ol.how li{margin:4px 0}
 <p class="hint">휴대폰 문자 앱이 열리고 번호·글이 채워집니다. 문자 앱에서 「보내기」만 누르세요.</p>
 <button class="btn b-kakao" id="bKakao">💬 카카오톡으로 링크 보내기</button>
 <p class="hint">공유 창에서 「카카오톡」 → 받을 친구나 방을 고르세요. 카톡은 친구로 저장된 분께만 보낼 수 있습니다.</p>
-<button class="btn b-file" id="bFile">📎 카카오톡으로 PDF 파일 자체 보내기</button>
-<p class="hint">링크 대신 파일을 보냅니다. 회사소개서는 크기가 커서 받는 데 시간이 걸릴 수 있습니다.</p>
+<button class="btn b-file" id="bFile">📎 PDF 파일로 보내기</button>
+<p class="hint">링크 대신 파일 자체를 보냅니다. 공유 창에서 「카카오톡」을 고르세요. 회사소개서는 크기가 커서 받는 데 시간이 걸릴 수 있습니다.</p>
 <button class="btn b-copy" id="bCopy">📋 글 복사하기 (PC 카톡용)</button>
 <p class="hint">PC에서는 문자 보내기가 안 됩니다. 복사한 뒤 카카오톡 PC 대화창에 붙여 넣으세요.</p>
 </div>
