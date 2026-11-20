@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-20 14:48 바로가기 단가표 최신본(관리자)">
+<meta name="dash-build" content="2026-11-20 15:29 사내방송 받기 화면">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -2350,5 +2350,48 @@ try{var mm=document.getElementById('main');if(mm){new MutationObserver(function(
 })();
 </script>
 <script src="dash_auto_print.js?v=20261108-01"></script>
+<script>
+/* 2026-11-20 조조: 업무 대시보드에서 사내방송(빵을그리다 방송실) 받기 — 관리자 화면만.
+   방송실 받는 화면(pos/bang.html?pc=1, 사무실 PC 보기 전용)을 대시보드 안에 숨겨 두고, 새 전달이 오면 화면 가운데에 크게 띄움.
+   대시보드 아무 곳이나 한 번 누르면 방송 화면 소리도 같이 켜짐(같은 주소라 허용됨). 방송 상태는 같은 PC의 BroadcastChannel 'bang_tv'로 받음(TV 같이 보기와 같은 방식). 왼쪽 아래 「사내방송」 단추로 언제든 열어 볼 수 있음. */
+(function(){'use strict';
+function start(){if(document.body.classList.contains('staff')||document.getElementById('dbBang'))return;
+  var URL='https://lee1812-oss.github.io/pos/bang.html?pc=1&embed=dash';
+  var st=document.createElement('style');st.textContent=
+   '#dbBang{position:fixed;left:-12000px;top:0;width:960px;height:640px;z-index:9000;background:#0b1220;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column}'+
+   '#dbBang.open{left:50%;top:50%;width:min(1200px,88vw);height:min(820px,84vh);transform:translate(-50%,-50%)}'+
+   '#dbBang .bh{flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0D1C42;color:#FCF1D0;font-size:17px;font-weight:800}'+
+   '#dbBang .bh span{flex:1}#dbBang .bh button{min-height:44px;padding:0 16px;border:0;border-radius:10px;background:#FCF1D0;color:#0D1C42;font:inherit;font-size:16px;font-weight:800;cursor:pointer}'+
+   '#dbBang iframe{flex:1;width:100%;border:0;background:#fff}'+
+   '#dbBangDim{position:fixed;inset:0;z-index:8999;background:rgba(2,6,23,.55);display:none}#dbBangDim.on{display:block}'+
+   '#dbBangBtn{position:fixed;left:12px;bottom:12px;z-index:8998;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;border:2px solid #BF913C;background:#0D1C42;color:#FCF1D0;font-size:16px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.3);cursor:pointer}'+
+   '#dbBangBtn i{width:11px;height:11px;border-radius:50%;background:#9ca3af;display:inline-block}#dbBangBtn.live i{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}#dbBangBtn.on{background:#dc2626;border-color:#fff;animation:dbbp 1s infinite}'+
+   '@keyframes dbbp{50%{transform:scale(1.06)}}@media print{#dbBang,#dbBangBtn,#dbBangDim{display:none!important}}';
+  document.head.appendChild(st);
+  var dim=document.createElement('div');dim.id='dbBangDim';
+  var box=document.createElement('section');box.id='dbBang';box.setAttribute('aria-label','빵을그리다 사내방송 받기');
+  box.innerHTML='<div class="bh">📢 <span id="dbBangT">빵을그리다 사내방송 · 받는 화면</span><button type="button" id="dbBangX">작게 접기</button></div>';
+  var f=document.createElement('iframe');f.title='빵을그리다 방송실 받는 화면';f.setAttribute('allow','autoplay');f.src=URL;box.appendChild(f);
+  var btn=document.createElement('button');btn.type='button';btn.id='dbBangBtn';btn.innerHTML='<i></i><span>사내방송</span>';btn.title='빵을그리다 사내방송 받는 화면 열기';
+  document.body.appendChild(dim);document.body.appendChild(box);document.body.appendChild(btn);
+  var manual=false,live=0,onNow=false,seen=0,lastId='';
+  function paint(){var open=manual||onNow;box.classList.toggle('open',open);dim.classList.toggle('on',open);btn.classList.toggle('on',onNow);btn.classList.toggle('live',Date.now()-seen<15000);
+    btn.querySelector('span').textContent=onNow?'📢 사내방송 도착':'사내방송';document.getElementById('dbBangT').textContent=onNow?'📢 새 사내방송이 왔어요':'빵을그리다 사내방송 · 받는 화면';}
+  btn.onclick=function(){manual=!(manual||onNow);if(!manual&&onNow){onNow=false;}paint();try{f.focus();}catch(e){}};
+  document.getElementById('dbBangX').onclick=function(){manual=false;onNow=false;paint();};
+  dim.onclick=function(){manual=false;onNow=false;paint();};
+  var bc=null;try{bc=new BroadcastChannel('bang_tv');}catch(e){}
+  if(bc){bc.onmessage=function(e){var s=e.data;if(!s||s.hello)return;seen=Date.now();var on=!!s.on;
+      if(on&&s.id!==lastId){lastId=s.id||String(s.t||'');onNow=true;}
+      if(!on&&onNow&&!manual)onNow=false;paint();};
+    setInterval(function(){try{bc.postMessage({hello:1});}catch(e){}},3000);}
+  function fwd1(){try{var w=f.contentWindow,b=w&&w.document&&w.document.getElementById('sndBar');if(b&&b.style.display!=='none'){w.document.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));return true;}}catch(e){}return false;}
+  function fwd(){if(fwd1()){setTimeout(fwd1,900);setTimeout(fwd1,2500);}}
+  setInterval(function(){if(navigator.userActivation&&navigator.userActivation.hasBeenActive)fwd1();},10000);
+  document.addEventListener('pointerup',fwd,true);document.addEventListener('click',fwd,true);document.addEventListener('keyup',fwd,true);
+  setInterval(paint,5000);paint();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(start,1500);});else setTimeout(start,1500);
+})();
+</script>
 </body>
 </html>
