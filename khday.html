@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="kh-build" content="2026-11-20 13:53 K-HACCP전일일지 v004 종합 현황 달력">
+<meta name="kh-build" content="2026-11-20 14:02 K-HACCP전일일지 v005 주기별+CCP 한 달력">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
@@ -387,13 +387,20 @@ a.ev:hover{filter:brightness(.93);text-decoration:none}
 .brand{flex-shrink:0}
 @media screen and (max-width:1440px){.mark>div{display:none}}
 @media screen and (max-width:1100px){.brand h1 .ver{display:block;width:max-content;margin:3px 0 0;vertical-align:0;font-size:.64rem}.brand h1 small{display:none}}
+
+.ct{cursor:default}.ct.on{color:var(--navy);border-bottom-color:var(--navy)}.ct.cc2{margin-left:6px}
+.ctn{align-self:center;margin-left:10px;font-size:.74rem;font-weight:800;color:var(--sub);white-space:nowrap}
+.csep{display:flex;align-items:center;gap:6px;margin:3px 0 1px;font-size:.66rem;font-weight:900;color:#2563a8;white-space:nowrap}
+.csep::before,.csep::after{content:"";flex:1;border-top:1.5px dashed #9db4d3}
+.csep b{font-weight:900}
+.ev{min-height:23px;padding:1px 6px}
 </style>
 </head>
 <body>
 <header>
   <div class="topline"></div>
   <div class="hd">
-    <div class="brand"><img src="brand_logo.png" alt="빵을그리다"><span class="dv"></span><h1>HACCP 통합 현황 <span class="ver" id="ver">v004 · 11/20 13:53 업데이트</span><small>K-HACCP 일지 · 원료 입고 육안검사 · CCP 측정</small></h1></div>
+    <div class="brand"><img src="brand_logo.png" alt="빵을그리다"><span class="dv"></span><h1>HACCP 통합 현황 <span class="ver" id="ver">v005 · 11/20 14:02 업데이트</span><small>K-HACCP 일지 · 원료 입고 육안검사 · CCP 측정</small></h1></div>
     <div class="sp"></div>
     <div class="clock"><b id="clk">--:--</b><span id="clkd"></span></div>
     <span class="chip" id="fresh"><i></i><span>자료 확인 중…</span></span>
@@ -411,7 +418,7 @@ a.ev:hover{filter:brightness(.93);text-decoration:none}
 <script>
 'use strict';
 /* HACCP 통합 현황 (파일 K-HACCP전일일지) · v004 (2026-11-20 13:53) — 종합 현황 = K-HACCP 달력(주기별 점검일지·CCP 실적/수불) + 컴팩트 지표. v003(2026-11-09) 탭 화면 */
-const KH_VER='v004',KH_BUILT='2026-11-20 13:53';
+const KH_VER='v005',KH_BUILT='2026-11-20 14:02';
 const LS_KEY='dash_key_v1',LS_KEY_BAK='dash_key_bak';
 const KH_HOME='https://www.k-haccp.co.kr/home.do',KB='https://www.k-haccp.co.kr';
 const WONRYO='https://lee1812-oss.github.io/wonryo/index.html';
@@ -589,11 +596,12 @@ function calMonthHtml(cal,ct,ym){const m=cal.months.find(x=>x.ym===ym);const tod
   for(let i=0;i<f;i++)cells.push(0);for(let d=1;d<=days;d++)cells.push(d);while(cells.length%7)cells.push(0);
   let h='';for(let w=0;w<cells.length/7;w++){h+='<div class="cal-wk">';
     for(let j=0;j<7;j++){const d=cells[w*7+j];if(!d){h+='<div class="cc out"></div>';continue;}
-      const ymd=ym+'-'+p2(d),list=m?(ct==='ccp'?m.ccp:m.per).filter(x=>x[0]===d):[],hol=!!(m&&(m.hol||[]).includes(d));
+      const ymd=ym+'-'+p2(d),lp=m?m.per.filter(x=>x[0]===d):[],lc=m?m.ccp.filter(x=>x[0]===d):[],hol=!!(m&&(m.hol||[]).includes(d));
       const tag=ymd===today?'오늘':ymd===yd?'전일':'';
       h+='<div class="cc'+(ymd===today?' today':'')+(ymd===yd?' yd':'')+(j===0?' sun':j===6?' sat':'')+'"><button class="dn" data-cd="'+ymd+'" title="'+mdw(ymd)+' 일지 상세 보기">'+(tag?'<i>'+tag+'</i>':'')+d+'</button>';
-      if(hol&&ct!=='ccp')h+='<span class="ev s-hol"><span class="t">주말 · 휴일</span></span>';
-      h+=list.map(it=>{const c=evc(it[2]),L=khLink(it,ymd);return '<a class="ev s-'+c[0]+'" href="'+esc(L.href)+'" target="_blank" rel="noopener" data-deep="'+(L.deep?1:0)+'" data-copy="'+esc(it[1])+'" title="'+esc(it[1]+' : '+it[2])+'"><span class="t">'+esc(shortT(it[1]))+'</span><span class="s">'+esc(c[1])+'</span></a>';}).join('');
+      if(hol)h+='<span class="ev s-hol"><span class="t">주말 · 휴일</span></span>';
+      const evh=it=>{const c=evc(it[2]),L=khLink(it,ymd);return '<a class="ev s-'+c[0]+'" href="'+esc(L.href)+'" target="_blank" rel="noopener" data-deep="'+(L.deep?1:0)+'" data-copy="'+esc(it[1])+'" title="'+esc(it[1]+' : '+it[2])+'"><span class="t">'+esc(shortT(it[1]))+'</span><span class="s">'+esc(c[1])+'</span></a>';};
+      h+=lp.map(evh).join('');if(lc.length)h+='<span class="csep"><b>CCP 실적/수불</b></span>'+lc.map(evh).join('');
       h+='</div>';}
     h+='</div>';}
   return h;}
@@ -603,12 +611,12 @@ function calCardHtml(){const cal=calOf();
   const ym=UI.cm,ct=UI.ct==='ccp'?'ccp':'per',mm=cal.months.find(x=>x.ym===ym)||{per:[],ccp:[]},i=ms.indexOf(ym);
   const badge=arr=>{const b=arr.filter(x=>gOf(x[2])==='bad').length,g=arr.filter(x=>gOf(x[2])==='ing').length;return b?'<em class="b">미작성 '+b+'</em>':g?'<em class="g">결재 중 '+g+'</em>':'<em class="o">✓ 완료</em>';};
   const at=atHM();
-  return '<div class="card calc"><div class="cal-hd"><div class="ctabs"><button class="ct'+(ct==='per'?' on':'')+'" data-ct="per">주기별 점검일지'+badge(mm.per)+'</button><button class="ct'+(ct==='ccp'?' on':'')+'" data-ct="ccp">CCP 실적/수불'+badge(mm.ccp)+'</button></div>'+
+  return '<div class="card calc"><div class="cal-hd"><div class="ctabs"><span class="ct on">주기별 점검일지'+badge(mm.per)+'</span><span class="ct on cc2">CCP 실적/수불'+badge(mm.ccp)+'</span><span class="ctn">한 달력에 함께 표시</span></div>'+
     '<div class="cnav"><button class="cb" data-cm="'+(ms[i-1]||'')+'"'+(i<=0?' disabled':'')+' title="지난달">〈</button><b class="num">'+ym.slice(0,4)+'년 '+(+ym.slice(5,7))+'월</b><button class="cb" data-cm="'+(ms[i+1]||'')+'"'+(i>=ms.length-1?' disabled':'')+' title="다음달">〉</button>'+
     '<button class="cb tdy" data-cm="'+(ms.includes(today.slice(0,7))?today.slice(0,7):ms[ms.length-1])+'">TODAY</button></div>'+
     '<div class="cmeta">자료 기준 <b class="num">'+(at?md(at.ymd)+' '+at.hm:'–')+'</b><span>K-HACCP 매일 09:30 · 18:00 확인</span></div></div>'+
     '<div class="cal-lg">'+CAL_LG.map(z=>'<span><i class="s-'+z[0]+'"></i>'+z[1]+'</span>').join('')+'<span class="hint">날짜 → 그날 일지 상세 · 일지 → K-HACCP 열기</span></div>'+
-    '<div class="cal-grid"><div class="cal-dow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div><div class="cal-body" id="calBody">'+calMonthHtml(cal,ct,ym)+'</div></div></div>';}
+    '<div class="cal-grid"><div class="cal-dow"><span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span></div><div class="cal-body" id="calBody">'+calMonthHtml(cal,'all',ym)+'</div></div></div>';}
 function pHome(M){const today=ymdOf();const title={ok:'정상',warn:'주의',bad:'경고'}[M.lv];
   const msg=M.lv==='bad'?'빨간 칸부터 확인':M.lv==='warn'?'결재 대기 · 확인할 항목':'모든 항목 기준 안';
   const SH={'원료 입고 육안검사 · 7일':'원료 육안검사','CCP 가열공정 측정':'CCP 가열공정','자료 기준 시각':'자료 기준'};
@@ -618,11 +626,11 @@ function pHome(M){const today=ymdOf();const title={ok:'정상',warn:'주의',bad
   return '<div class="hm">'+strip+'<div class="hm-main">'+calCardHtml()+side+'</div></div>';}
 /* 달력 스크롤: 처음엔 전일이 있는 주가 위로, 다시 그릴 때는 보던 위치 유지 */
 const CALSC={};
-function calScroll(){const b=document.getElementById('calBody');if(!b||!b.offsetParent)return;const key=(UI.ct||'per')+':'+UI.cm;
+function calScroll(){const b=document.getElementById('calBody');if(!b||!b.offsetParent)return;const key=UI.cm;
   if(CALSC[key]!=null){b.scrollTop=CALSC[key];return;}
   const t=b.querySelector('.cc.yd')||b.querySelector('.cc.today');if(t){const wk=t.parentElement;b.scrollTop=Math.max(0,wk.offsetTop-b.offsetTop-2);}
   CALSC[key]=b.scrollTop;}
-document.addEventListener('scroll',e=>{const b=e.target;if(b&&b.id==='calBody')CALSC[(UI.ct||'per')+':'+UI.cm]=b.scrollTop;},true);
+document.addEventListener('scroll',e=>{const b=e.target;if(b&&b.id==='calBody')CALSC[UI.cm]=b.scrollTop;},true);
 document.addEventListener('click',e=>{const t=e.target;
   let el=t.closest('[data-ct]');if(el){UI.ct=el.dataset.ct;render();return;}
   el=t.closest('[data-cm]');if(el){if(el.dataset.cm&&!el.disabled){UI.cm=el.dataset.cm;render();}return;}
