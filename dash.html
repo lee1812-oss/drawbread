@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-20 15:56 전달사항 옆 사내방송 칸">
+<meta name="dash-build" content="2026-11-20 16:07 생산 주문표·알림참고 빼기·24/32인치 맞춤">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -790,6 +790,42 @@ body.sk-inline .sk-prev{flex:none;max-height:none;overflow:visible}
 @media(hover:hover){.pk-row button:hover{border-color:#22396F}}
 </style>
 
+<style id="ord-style">/* 2026-11-20 조조: 생산 주문표 */
+.kpi.ordw{display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left}
+.ordt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:1.05rem}
+.ordt th,.ordt td{border:1px solid var(--line);padding:5px 4px;text-align:center;vertical-align:middle}
+.ordt thead th{background:var(--bg);font-weight:800;color:var(--ink2);font-size:.95rem;word-break:keep-all;line-height:1.2}
+.ordt thead th:first-child,.ordt tbody th{width:12%}
+.ordt tbody th{text-align:left;white-space:nowrap;font-weight:800;color:var(--ink);padding-left:8px}
+.ordt td b{font-size:1.4rem;font-weight:900;color:var(--ink)}
+.ordt td small{display:block;font-size:.8rem;color:var(--sub);font-weight:700}
+.ordt .oz{color:var(--faint)}
+.ordt td.oon{background:rgba(37,99,235,.12)}
+.ordt td.obig{background:rgba(220,38,38,.20)}.ordt td.obig b{color:var(--red)}
+.ordt tr.otd th{color:var(--blue)}
+.ordt tr.osum th,.ordt tr.osum td{border-top:2px solid var(--ink2)}
+.ordt tr.oshort th,.ordt tr.oshort td b{color:var(--red)}.ordt tr.oshort td b{font-size:1.1rem}
+</style>
+<style id="mid-style">/* 2026-11-20 조조: 24·32인치 화면 맞춤 — 머리줄 도구 글자 세로 깨짐 고침, 빨간 경고줄·바로가기를 줄여 「오늘의 현황」이 크게 보이게 */
+@media (min-width:1100px){
+ .hd .tools{display:flex;flex-wrap:wrap;gap:6px}
+ .hd .tools .ib,.hd .tools button{white-space:nowrap;padding:6px 10px;min-height:44px;font-size:.85rem}
+ .hd .tools .ib span,.hd .tools button span{white-space:nowrap}
+}
+@media (min-width:1100px) and (max-width:2799px){
+ header .bk-strip{font-size:1.15rem!important;gap:8px!important;padding:6px 12px!important;row-gap:6px!important}
+ header .bk-strip .bk-t i{width:32px!important;height:32px!important;font-size:1.1rem!important}
+ header .bk-strip .bk-chip{font-size:1.05rem!important;padding:4px 12px!important}
+ header .bk-strip .bk-chip::after{font-size:.8rem!important}
+}
+@media (min-width:1100px) and (max-width:2399px){
+ header{position:static!important}
+ nav.dash-shortcuts .dash-shortcuts-grid{gap:6px!important}
+ nav.dash-shortcuts .dash-shortcut{min-height:0!important;height:auto!important;padding:5px 8px!important}
+ nav.dash-shortcuts .dash-shortcut-name{font-size:1.15rem!important}
+ nav.dash-shortcuts .dash-shortcut-desc{font-size:.85rem!important}
+}
+</style>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
@@ -1681,13 +1717,15 @@ function fitTplUndo(k){if(!k)return;const fr=k.querySelector(':scope>.frows');if
   FIT_SNAP=null;document.body.classList.remove('ftpl');}
 const FIT_ROWS=[
   {t:'재고',c:'var(--blue)',items:[['.c4',4],['.kpi[data-open=stock]',1],['.kpi[data-open=fneed]',1]]},
+  {t:'생산 주문',c:'#16a34a',items:[['.kpi.ordw',6]]}, /* 2026-11-20 조조: 박태일 상무님 「생산 주문표」를 재고 바로 아래로 */
   {t:'생산·원료',c:'var(--green)',items:[['.kpi[data-open=plan]',2],['.kpi[data-open=fprod]',1],['.kpi.sm[data-open=fraw]',1],['.kpi.todow[data-open=fraw]',2]]},
   {t:'출고·품질',c:'var(--amber)',items:[['.kpi[data-open=delivery]',1],['.kpi[data-open=khaccp]',1],['.kpi[data-open=audit]',1],['.kpi[data-open=fstock]',1],['.kpi.todow[data-open=ftodo]',2]]},
-  {t:'알림·참고',c:'var(--sub)',items:[['.kpi.mailw',2],['.kpi[data-open=sched]',1],['.pcw',1],['.kpi[data-open=fsales]',1],['.kpi[data-open=fana]',1]]}];
+  ]; /* 2026-11-20 조조: 「알림·참고」 줄은 뺌(사용자 요청) */
 function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=s=>{const x=g.find(e=>e.textContent.trim().startsWith(s));const u=x&&x.querySelector('.gsub');return u?u.textContent.trim():'';};
   const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   if(i===0){const s=gs('핵심 4품목').split(' · ')[0];return (s?'<span class="fs">'+esc2(s)+'</span>':'')+'<span class="lgd"><span><i style="background:var(--green)"></i>7일치 이상</span><span><i style="background:var(--amber)"></i>3~7일치</span><span><i style="background:var(--red)"></i>3일치 미만</span></span>';}
-  if(i===1){const a=gs('생산 계획').split(' · ').filter(x=>x.includes('전표'));const b=gs('공장 운영');return (a.length?'<span class="fs">'+esc2(a[0])+'</span>':'')+(b?'<span class="fs">공장 '+esc2(b)+'</span>':'');}
+  if(i===2){const a=gs('생산 계획').split(' · ').filter(x=>x.includes('전표'));const b=gs('공장 운영');return (a.length?'<span class="fs">'+esc2(a[0])+'</span>':'')+(b?'<span class="fs">공장 '+esc2(b)+'</span>':'');}
+  if(i===1){const o=(D&&D.factory&&D.factory.orders9)||null;return '<span class="fs">생산실 9개 제품 · 출고일 기준</span>'+(o&&o.snap?'<span class="fs">이카운트 '+esc2(o.snap.slice(5).replace('-','/'))+'</span>':'');}
   return '';}
 function fitTpl(m,k){if(innerWidth<1100)return false;
   const top=[...k.children];const used=new Set();const rows=[];let hit=0;
@@ -1705,8 +1743,10 @@ function fitTpl(m,k){if(innerWidth<1100)return false;
   const grps=top.filter(e=>e.classList.contains('grp'));
   if(rest.length)mk('기타','var(--faint)','',rest.map(e=>[e,e.classList.contains('note')?6:2]));
   k.innerHTML='';if(kh)k.appendChild(kh);k.appendChild(wrap);grps.forEach(g=>k.appendChild(g));
-  let lo=0.2,hi=1.3;m.style.zoom=String(hi);if(!fitFits()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(fitFits())lo=z;else hi=z;}m.style.zoom=String(lo);}
+  const ff=()=>{if(document.body.classList.contains('sk-wide'))return fitFits();return m.getBoundingClientRect().bottom<=innerHeight+1;}; /* 2026-11-20 조조: 24인치 등에서 재고 현황이 아래로 내려가면 전체 높이 대신 이 영역만 맞춤(전에는 늘 0.2배로 작아짐) */
+  let lo=0.2,hi=1.3;m.style.zoom=String(hi);if(!ff()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(ff())lo=z;else hi=z;}m.style.zoom=String(Math.max(lo,FIT_MINZ()));}
   return true;}
+function FIT_MINZ(){return innerWidth<2400?0.55:0.3;} /* 글자가 읽히는 최소 배율. 이보다 작아야 맞으면 아래로 조금 내려 보게 함 */
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   FIT_BUSY=true;let ok=false;
   try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1100&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
@@ -2017,13 +2057,44 @@ function cdName(el){if(el.classList.contains('khday'))return 'K-HACCP 일지 (�
 function cdHot(el){return el.matches('.kpi.alert:not(.mailw):not([data-open="mail"]),.kpi.c4k.lv-red')||!!el.querySelector('.khd-big.s-bad');}
 function cdApply(h,build){const t=document.createElement('template');t.innerHTML=h;const r=t.content;
   if(build){const cur=[];let g='맨 위';[...r.children].forEach(c=>{if(c.classList.contains('grp')){const cl=c.cloneNode(true);cl.querySelectorAll('.gsub,small,.src').forEach(x=>x.remove());g=cl.textContent.replace(/\s+/g,' ').trim()||g;return;}
-      const list=(c.matches('.khday,.kpi')?[c]:[]).concat([...c.querySelectorAll('.kpi')]);list.forEach(el=>{const id=cdId(el);if(!id||cur.some(x=>x.id===id))return;const x={id,n:cdName(el),g,hot:cdHot(el)};cur.push(x);CD.cat[id]={n:x.n,g};});});
+      const list=(c.matches('.khday,.kpi')?[c]:[]).concat([...c.querySelectorAll('.kpi')]);list.forEach(el=>{const id=cdId(el);if(!id||cur.some(x=>x.id===id)||dashOff(id))return;const x={id,n:cdName(el),g,hot:cdHot(el)};cur.push(x);CD.cat[id]={n:x.n,g};});});
     CD.cur=cur;try{localStorage.setItem('dash_cards_cat',JSON.stringify(CD.cat));}catch(_){}}
-  if(!CD.hide.size&&!build)return h;
-  r.querySelectorAll('.khday,.kpi').forEach(el=>{if(CD.hide.has(cdId(el)))el.remove();});
+  if(!CD.hide.size&&!build&&!/data-open="(mail|sched|fsales|fana|pcmon)"/.test(h))return h;
+  r.querySelectorAll('.khday,.kpi').forEach(el=>{const id=cdId(el);if(CD.hide.has(id)||dashOff(id))el.remove();});
   r.querySelectorAll('.c4,.pcw,.kg5').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';});
   [...r.children].forEach(c=>{if(!c.classList.contains('grp'))return;const nx=c.nextElementSibling;if(!nx||nx.classList.contains('grp'))c.remove();});
   const d=document.createElement('div');d.append(r);return d.innerHTML;}
+
+// ===== 2026-11-20 조조: ① 「알림·참고」 칸(회사메일·오늘 자동 알림·사무실 PC 프로그램 2칸·이번 주 매출·4~10월 대조 분석)을 화면에서 뺌 (사용자 요청). 만드는 코드는 남겨 둠 — 다시 보이려면 dashOff에서 지우면 됨
+// ② 박태일 상무님 요청(11/18) 「생산 주문표」: 생산실 9개 제품 주문을 출고일 × 제품 박스 수로. 자료 = D.factory.orders9 (~/.aside/u/0/dashboard/orders9_build.js, factory_build 07:50/17:50). 단가·금액 없음 → 직원용 화면에도 보임
+function dashOff(id){return id==='mail'||id==='sched'||id==='fsales'||id==='fana'||/^pcmon:/.test(id);}
+const ORD_W=['일','월','화','수','목','금','토'];
+function ordDay(d){const x=new Date(d+'T00:00:00+09:00');return (x.getMonth()+1)+'/'+x.getDate()+' ('+ORD_W[x.getDay()]+')';}
+function ordCell(c,big){if(!c)return '<td class="oz">·</td>';const b=c.box?'<b>'+c.box+'</b>':'';const e=c.ea?'<small>'+(c.box?'+':'')+c.ea+'개</small>':'';return '<td class="'+(c.box>=50?'obig':'oon')+'">'+b+e+'</td>';}
+function ordWide(){const f=F_();const o=f&&f.orders9;
+  const head='<div class="top">'+logoHtml('ecount')+'<span class="lb">생산 주문표</span><span class="src">'+(o&&o.ok?'출고일 기준 · 이카운트 '+esc((o.snap||'').slice(5).replace('-','/')):'자료 준비 중')+'</span></div>';
+  if(!o||!o.ok)return '<div class="kpi ordw" data-open="ford" role="button" tabindex="0">'+head+'<div class="ft"><span class="badge b-gray">자료 대기</span><span>다음 공장 자료 갱신(07:50·17:50) 때 채워져요</span></div></div>';
+  const cols=o.cols||[];const today=o.today;const ds=(o.days||[]).filter(d=>d.d>=today).slice(0,6);
+  const rows=ds.map(d=>'<tr class="'+(d.d===today?'otd':'')+'"><th>'+(d.d===today?'오늘 ':'')+ordDay(d.d)+'</th>'+cols.map(c=>ordCell(d.cells[c.k])).join('')+'</tr>').join('');
+  const sum='<tr class="osum"><th>7일 합계</th>'+cols.map(c=>{const v=(o.tot7||{})[c.k];return '<td>'+(v?'<b>'+v+'</b>':'<span class="oz">·</span>')+'</td>';}).join('')+'</tr>';
+  const sh=o.short||{};const shRow=Object.keys(sh).length?'<tr class="oshort"><th>더 만들 것</th>'+cols.map(c=>'<td>'+(sh[c.k]?'<b>'+sh[c.k]+'박스</b>':'')+'</td>').join('')+'</tr>':'';
+  const bg=o.big&&o.big.box?'<span class="badge b-'+(o.big.box>=50?'red':'blue')+'">가장 큰 주문 '+ordDay(o.big.d)+' '+esc(o.big.nm)+' '+o.big.box+'박스</span>':'<span class="badge b-green">앞으로 주문 없음</span>';
+  return '<div class="kpi ordw" data-open="ford" role="button" tabindex="0">'+head+
+    '<table class="ordt"><thead><tr><th>출고일</th>'+cols.map(c=>'<th>'+esc(c.nm)+'</th>').join('')+'</tr></thead><tbody>'+rows+sum+shRow+'</tbody></table>'+
+    '<div class="ft">'+bg+'<span>단위 박스 · 7일 '+(o.box7||0)+'박스'+((o.missing||[]).length?' · '+esc(o.missing.join('·'))+'은 이카운트 품목 없음':'')+'</span><span class="go">거래처·주문일 보기'+chev+'</span></div></div>';}
+function pFord(){const f=F_();const o=f&&f.orders9;if(!o||!o.ok)return {s:'',h:empty('생산 주문 자료가 아직 없어요')};
+  const cols=o.cols||[];const nm=k=>(cols.find(c=>c.k===k)||{}).nm||k;
+  let h='<div class="note ok" style="margin-bottom:12px"><b>생산실 9개 제품 주문 · 출고일 기준</b><br>'+esc(o.rule||'')+'<br>※ 이카운트에 늦게 입력된 주문은 늦게 보여요. 주문을 받은 날 바로 출고일로 거래명세표를 넣어 주세요.</div>';
+  for(const d of (o.days||[]).filter(d=>Object.keys(d.cells).length)){const ls=[];for(const c of cols){const x=d.cells[c.k];if(!x)continue;x.lines.forEach(l=>ls.push('<tr><td><b>'+esc(c.nm)+'</b></td><td>'+esc(l.c)+'</td><td class="r"><b>'+l.q+'</b>'+esc(l.u)+'</td><td class="r">'+(l.in?ddMd(l.in):'—')+'</td></tr>'));}
+    h+='<div class="box"><h3>'+(d.d===o.today?'오늘 ':'')+ordDay(d.d)+' 출고 <span class="c">'+ls.length+'건</span></h3>'+tbl(['제품','거래처','수량','주문 들어온 날'],ls)+'</div>';}
+  const byIn={};for(const d of (o.days||[]))for(const c of cols){const x=d.cells[c.k];if(!x)continue;x.lines.forEach(l=>{const k=l.in||'—';(byIn[k]=byIn[k]||[]).push('<tr><td>'+ordDay(d.d)+'</td><td><b>'+esc(c.nm)+'</b></td><td>'+esc(l.c)+'</td><td class="r"><b>'+l.q+'</b>'+esc(l.u)+'</td></tr>');});}
+  h+='<div class="box"><h3>주문 들어온 날 기준 <span class="c">이카운트 입력이 처음 보인 날</span></h3>';
+  for(const k of Object.keys(byIn).sort().reverse())h+='<div class="meta" style="margin:10px 0 4px;font-weight:800">'+(k==='—'?'날짜 모름':ordDay(k)+' 들어온 주문')+'</div>'+tbl(['출고일','제품','거래처','수량'],byIn[k]);
+  h+='</div>';
+  if((o.missing||[]).length)h+='<div class="note amb">'+esc(o.missing.join('·'))+'은 이카운트 판매 품목에서 찾지 못했어요. 품목 이름을 알려 주시면 표에 넣을게요.</div>';
+  return {s:'이카운트 판매 전표 · '+esc(o.snap||''),h};}
+PANELS.ford=['생산 주문표 · 생산실 9개 제품',pFord,'ecount'];
+kpiLayout=(orig=>function(){const h=orig();try{return h+'<div class="grp">생산 주문 · 생산실 9개 제품 (박태일 상무님 요청)</div>'+ordWide();}catch(err){return h;}})(kpiLayout);
 kpiLayout=(orig=>function(){const h=orig();try{return cdApply(h,true);}catch(err){try{console.warn('cards',err);}catch(_){}return h;}})(kpiLayout);
 pcPaint=function(){const el=document.getElementById('pcw');if(el){let h=pcPair();try{h=cdApply(h,false);}catch(_){}el.outerHTML=h;}if(openKind==='pcmon')fillPanel('pcmon');};
 render=(orig=>function(){orig();try{if(STAFF||!CD.hide.size)return;const b=document.querySelector('#main .bar');if(b&&!b.querySelector('.cdHid')){const x=document.createElement('button');x.className='cdHid';x.setAttribute('data-open','cards');x.textContent='빠진 칸 '+CD.hide.size+'개 · 칸 고르기';const sp=b.querySelector('.sp');if(sp)sp.after(x);else b.append(x);}}catch(_){}})(render);
