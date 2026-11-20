@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-10 20:32 재고 인쇄 가로·세로 한 장">
+<meta name="dash-build" content="2026-11-20 14:13 K-HACCP 종합현황 이번 주">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -350,6 +350,42 @@ header{container-type:inline-size}
 @media(max-width:479px){.dash-top .brand-meta{grid-template-columns:1fr}.dash-top .dash-mode{grid-column:1}.dash-top .dash-shortcuts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-top .dash-shortcut{flex-direction:row;text-align:left;justify-content:flex-start;min-height:90px;padding:10px;gap:9px}.dash-top .dash-shortcut-copy{align-items:flex-start}.dash-top .dash-shortcut-icon{width:38px;height:38px}.dash-top .dash-shortcut-name{font-size:19px}.dash-top .dash-shortcut-desc{white-space:normal;word-break:keep-all}.dash-top .dash-shortcuts-title{font-size:18px}}
 @media(max-width:359px){.dash-top .dash-shortcuts-grid{grid-template-columns:1fr}}
 
+
+/* 2026-11-20 K-HACCP 종합현황(이번 주) */
+.khw .khd-top{gap:8px 12px}
+.khw-ks{display:flex;gap:6px}
+.khw-k{font-weight:800;font-size:.85rem;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+.khw-k b{font-size:1rem}
+.khw-k.r{background:#ff0000;border-color:#ff0000;color:#fff}.khw-k.a{background:#fff4d6;border-color:#f5c451;color:#7a4b00}.khw-k.z{opacity:.7}
+.khw-at{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--sub);white-space:nowrap}
+.khw-go{height:36px;display:inline-flex;align-items:center;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-weight:800;font-size:.85rem;color:var(--ink2);text-decoration:none;white-space:nowrap}
+.khw-lg{display:flex;flex-wrap:wrap;gap:3px 12px;margin:0 0 6px;font-size:.78rem;font-weight:800;color:var(--ink2)}
+.khw-lg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.khw-lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.khw-g{display:grid;grid-template-columns:.6fr repeat(5,minmax(0,1fr)) .6fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.khw-c{border-right:1px solid var(--line);padding:4px 5px 6px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.khw-c:last-child{border-right:0}
+.khw-c.today{background:#fff8dc}body.night .khw-c.today{background:rgba(250,204,21,.12)}
+.khw-c.yd{box-shadow:inset 0 0 0 2px #22396F}
+.khw-d{text-align:right;font-size:.85rem;font-weight:800;color:var(--ink2);padding:0 2px 2px;white-space:nowrap}
+.khw-c.sun .khw-d{color:#c62828}.khw-c.sat .khw-d{color:#1d4ed8}
+.khw-d i{font-style:normal;font-size:.7rem;font-weight:900;background:#d9622b;color:#fff;border-radius:5px;padding:1px 6px;margin-right:5px;vertical-align:1px}.khw-d i.y{background:#22396F}
+.khw .khw-e{display:flex;align-items:center;gap:4px;min-height:25px;padding:1px 6px;border-radius:3px;font-size:.84rem;font-weight:700;color:#fff;min-width:0;line-height:1.25}
+.khw-e .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.khw-e .s{flex:0 0 auto;font-size:.72rem;font-weight:900;white-space:nowrap}
+.khw-e.s-bad .s,.khw-e.s-ing .s{background:rgba(255,255,255,.22);padding:0 4px;border-radius:3px}
+.khw .khw-e.s-ok,.khw .khw-lg i.s-ok{background:#87ceeb!important;color:#16324a!important;border:0!important}
+.khw .khw-e.s-ing,.khw .khw-lg i.s-ing{background:#9956af!important;color:#fff!important;border:0!important}
+.khw .khw-e.s-bad,.khw .khw-lg i.s-bad{background:#ff0000!important;color:#fff!important;border:0!important}
+.khw .khw-e.s-rej,.khw .khw-lg i.s-rej{background:#111!important;color:#fff!important;border:0!important}
+.khw .khw-e.s-rv,.khw .khw-lg i.s-rv{background:#ffa500!important;color:#2b1a00!important;border:0!important}
+.khw .khw-e.s-prep,.khw .khw-lg i.s-prep{background:#4a78c2!important;color:#fff!important;border:0!important}
+.khw .khw-e.s-arej,.khw .khw-lg i.s-arej{background:#1e6fd9!important;color:#fff!important;border:0!important}
+.khw .khw-e.s-hol,.khw .khw-lg i.s-hol{background:#c9c9c9!important;color:#374151!important;border:0!important}
+.khw-sep{display:flex;align-items:center;gap:5px;margin:2px 0 0;font-size:.68rem;font-weight:900;color:#2563a8;white-space:nowrap}
+.khw-sep::before,.khw-sep::after{content:"";flex:1;border-top:1.5px dashed #9db4d3}
+.khw-none{font-size:.78rem;color:var(--sub);text-align:center;padding-top:6px}
+body.fitall .khw-lg{display:none}body.fitall .khw-e{min-height:22px}
+@media (max-width:900px){.khw-g{overflow-x:auto;grid-template-columns:repeat(7,minmax(120px,1fr))}.khw-at{margin-left:0}}
 </style>
 <style id="c4css">
 /* 2026-10-22 핵심 4품목 현황판 (Aside) */
@@ -954,7 +990,7 @@ function refKpis(staff){const f=F_();const out=[];if(!f)return out;
     trio:[['이번 주(만원)',fmtN(s.tw/10000),'blue'],['지난주 대비',d==null?'–':(d>=0?'+':'')+d+'%',d==null?'':d>=0?'green':'amber'],['앞으로(만원)',fmtN(s.fut/10000),'']],badge:d==null?['gray','비교 없음']:[d>=0?'green':'amber','지난주 같은 기간 '+(d>=0?'+':'')+d+'%'],ft:'입력된 앞으로 매출 '+fmtN(s.fut/10000)+'만원'});}
   return out;}
 function todoWide(){const f=F_();if(!f||!f.todo)return '';const t=f.todo;const c={red:0,amber:0,blue:0};t.forEach(x=>c[x.lv]++);
-  return '<div class="kpi todow '+(c.red?'alert':'')+'" data-open="ftodo" role="button" tabindex="0"><div class="top"><span class="ic">'+svg('alert')+'</span><span class="lb">오늘 할 일 · 담당별 자동 정리</span><span class="src">이카운트 · K-HACCP · 대조</span></div>'+
+  return '<div class="kpi todow '+(c.red?'alert':'')+'" data-open="ftodo" role="button" tabindex="0"><div class="top"><span class="ic">'+svg('alert')+'</span><span class="lb">오늘 할 일 · 담당별 자동 정리</span><span class="src">이카운트 · 대조</span></div>'+
    '<div class="tw">'+t.slice(0,6).map(x=>'<div class="trow"><span class="mk '+x.lv+'"></span><span class="tag '+(ROLE_C[x.role]||'')+'">'+esc(x.role)+'</span><div class="tt">'+esc(x.title)+'</div></div>').join('')+'</div>'+
    '<div class="ft"><span class="badge b-'+(c.red?'red':c.amber?'amber':'green')+'">급함 '+c.red+' · 확인 '+c.amber+' · 참고 '+c.blue+'</span><span class="go">전체 '+t.length+'건'+chev+'</span></div></div>';}
 function facLayout(staff){let h='';const f=F_();if(!f)return '';
@@ -1556,6 +1592,36 @@ function c4Fit(){document.body.classList.toggle('fit1',fitBigScr());document.bod
 kpiLayout=(orig=>function(){const h=orig();try{const w=c4Row();return w?w+h:h;}catch(_){return h;}})(kpiLayout);
 // 2026-11-02 조조: K-HACCP 하루 일지를 대시보드 맨 위로 (사용자 「가장 상단으로, 제일 중요」)
 kpiLayout=(orig=>function(){const h=orig();try{return khDayWide()+h;}catch(_){return h;}})(kpiLayout);
+
+// ===== 2026-11-20 조조: K-HACCP 종합현황(이번 주) — 사용자 「업무 대시보드에 K-HACCP 종합현황으로, 해당 주차만」 「종합현황 외 K-HACCP 내용은 빼도 괜찮아」
+// 이번 주(일~토) 달력 한 줄에 주기별 점검일지 + CCP 실적/수불을 함께, K-HACCP와 같은 상태 색. 기존 K-HACCP 카드(kpis k:'khaccp')와 오늘 할 일의 K-HACCP 항목은 뺌
+function khwEvc(s){s=String(s||'');if(s==='승인완료')return ['ok','✓'];if(/미작성/.test(s))return ['bad','미작성'];if(/검토\s*반려/.test(s))return ['rej','검토반려'];if(/반려/.test(s))return ['arej','승인반려'];if(/검토/.test(s))return ['rv','검토중'];if(/작성\s*예정/.test(s))return ['prep','예정'];if(/승인/.test(s))return ['ing','승인중'];return ['ing',s||'확인'];}
+const KHW_SHORT={'[D5] 기계·기구류의 세척 및 소독 관리 대장':'[D5] 세척·소독 대장','종사자 건강상태 확인 일지':'건강상태 확인 일지','[W2] 위생설비 점검 체크리스트':'[W2] 위생설비 점검','[W3] 설비(기계)별 작동여부 점검표(청결구역)':'[W3] 설비 작동여부 점검','[W8] 창고 보관(냉동/냉장/실온) 시설 관리 일지':'[W8] 창고 보관 시설 관리','[W1] 생산실 직원 위생 점검일지':'[W1] 직원 위생 점검','[W4] 작업장 위생점검 체크리스트':'[W4] 작업장 위생점검','[M3] 작업장·창고의 방역(소독)실시 관리대장':'[M3] 방역(소독) 관리대장'};
+function khwShort(t){t=String(t||'');return KHW_SHORT[t]||t.replace(/CCP-\w+\s*/,'').replace(/\[([^\]]*공정)\]/,'$1').replace(/빵류\s*/,'').replace(/\s+/g,' ').trim();}
+khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const today=khYmdL(Date.now());
+  const top0='<div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 종합현황</span>';
+  if(!cal||!cal.months||!cal.months.length)return '<div class="khday khw">'+top0+'</div><div class="note gray">일지 자료가 아직 없어요. 다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.</div></div>';
+  const t0=new Date(today+'T12:00:00Z');const sun=khAddDay(today,-t0.getUTCDay());const days=[0,1,2,3,4,5,6].map(i=>khAddDay(sun,i));
+  const yd=khAddDay(today,-1);let wb=0,wi=0,wo=0,wn=0;
+  const cells=days.map((d,j)=>{const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};const ev=it=>{const c=khwEvc(it[2]);if(d<=today){wn++;if(c[0]==='ok')wo++;else if(c[0]==='bad'||c[0]==='rej'||c[0]==='arej')wb++;else if(c[0]!=='prep')wi++;}
+      return '<span class="khw-e s-'+c[0]+'" title="'+esc(it[1]+' : '+it[2])+'"><span class="t">'+esc(khwShort(it[1]))+'</span><span class="s">'+esc(c[1])+'</span></span>';};
+    let h='<div class="khw-c'+(d===today?' today':'')+(d===yd?' yd':'')+(j===0?' sun':j===6?' sat':'')+'"><div class="khw-d">'+(d===today?'<i>오늘</i>':d===yd?'<i class="y">전일</i>':'')+khMdW(d)+'</div>';
+    if(x.hol)h+='<span class="khw-e s-hol"><span class="t">주말 · 휴일</span></span>';
+    h+=x.per.map(ev).join('');if(x.ccp.length)h+='<span class="khw-sep"><b>CCP 실적/수불</b></span>'+x.ccp.map(ev).join('');
+    if(!x.hol&&!x.per.length&&!x.ccp.length)h+='<span class="khw-none">'+(d>today?'':'일지 없음')+'</span>';
+    return h+'</div>';}).join('');
+  const c=k0.counts||{};const pd=(typeof khPendDev==='function'?khPendDev(k0).length:0),dv=(c.deviation||0)+pd;
+  const big=wb?'<span class="khd-big s-bad">⚠ 이번 주 확인할 일지 '+wb+'건</span>':wi?'<span class="khd-big s-ing">결재 진행 중 '+wi+'건</span>':wn?'<span class="khd-big s-ok">✓ 이번 주 '+wo+'/'+wn+' 승인완료</span>':'';
+  const chip=(t,n,cl)=>'<span class="khw-k '+(n?cl:'z')+'">'+t+' <b>'+n+'</b></span>';
+  return '<div class="khday khw">'+top0+'<span class="khd-date">'+khMdW(days[0])+' ~ '+khMdW(days[6])+' <i>이번 주</i></span>'+big+
+    '<span class="khw-ks">'+chip('미작성',c.unwritten||0,'r')+chip('미결재',c.unapproved||0,'a')+chip('이탈',dv,'r')+'</span>'+
+    '<span class="khw-at">자료 '+esc(cal.at||'')+' · '+khNextTxt()+'</span>'+
+    (STAFF?'':'<a class="khw-go" href="khday.html" target="_blank" rel="noopener">HACCP 통합 현황 ↗</a>')+'<a class="khw-go" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP ↗</a></div>'+
+    '<div class="khw-lg"><span><i class="s-bad"></i>미작성</span><span><i class="s-rv"></i>검토중</span><span><i class="s-rej"></i>검토 반려</span><span><i class="s-prep"></i>작성 예정</span><span><i class="s-ing"></i>승인중</span><span><i class="s-ok"></i>승인 완료</span><span><i class="s-arej"></i>승인 반려</span><span><i class="s-hol"></i>휴일</span></div>'+
+    '<div class="khw-g">'+cells+'</div></div>';};
+kpis=(o=>function(){return o.apply(this,arguments).filter(x=>x&&x.k!=='khaccp');})(kpis);
+render=(o=>function(){try{const f=D&&D.factory;if(f&&Array.isArray(f.todo))f.todo=f.todo.filter(t=>t&&t.src!=='K-HACCP');}catch(_){}return o.apply(this,arguments);})(render);
+
 
 // ===== 2026-11-02 조조: 한 화면 맞춤 (사용자 「한 페이지에 모두 보이게, 스크롤 없이 알차게 하나의 화면으로」) =====
 // 넓은 화면(가로 1100px 이상)에서만: K-HACCP 일지를 맨 위 한 줄로, 나머지 묶음은 순서대로 2~3단에 나눠 담고, 화면 높이에 맞게 전체 배율(zoom)을 자동으로 맞춤. 좁은 화면(태블릿 세로·휴대폰)은 예전처럼 스크롤.
