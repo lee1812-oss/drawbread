@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-20 15:29 사내방송 받기 화면">
+<meta name="dash-build" content="2026-11-20 15:56 전달사항 옆 사내방송 칸">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -614,7 +614,9 @@ body.night .dash-shortcut{background:linear-gradient(145deg,#1b263b,#162034);bor
 /* 전달사항은 관리자 현황 왼쪽 위. 기존 K-HACCP와 업무 카드 순서는 유지. */
 #main>#importantNotice{margin:0 0 12px;width:100%;min-width:0}
 @media(min-width:1100px){
-#main>#importantNotice{display:grid;grid-template-columns:minmax(190px,.8fr) minmax(0,2fr) minmax(210px,1fr);align-items:stretch}
+#main>#importantNotice{display:grid;grid-template-columns:minmax(150px,.55fr) minmax(0,1.15fr) minmax(170px,.55fr) minmax(0,2.25fr);align-items:stretch}
+#main>#importantNotice .nt-head h2{font-size:22px}#main>#importantNotice .nt-caption{font-size:15px}#main>#importantNotice .nt-text{font-size:18px}
+@media(max-width:1099px){#main>#importantNotice{grid-template-columns:1fr}#ntBangSlot{border-left:0!important;border-top:2px solid #BF913C}}
 #main>#importantNotice .nt-head{display:flex;flex-direction:column;justify-content:center;padding:12px 16px}
 #main>#importantNotice .nt-body{align-self:center;padding:12px 16px;min-width:0}
 #main>#importantNotice .nt-text{-webkit-line-clamp:3}
@@ -825,7 +827,7 @@ body.sk-inline .sk-prev{flex:none;max-height:none;overflow:visible}
   <div class="pb" id="pB"></div>
 </aside>
 <script src="dash_company_gmail.js?v=20261108-01"></script>
-<script src="dash_notice.js?v=20261120-01"></script>
+<script src="dash_notice.js?v=20261120-02"></script>
 <script>
 (function(){
 'use strict';
@@ -2351,12 +2353,15 @@ try{var mm=document.getElementById('main');if(mm){new MutationObserver(function(
 </script>
 <script src="dash_auto_print.js?v=20261108-01"></script>
 <script>
-/* 2026-11-20 조조: 업무 대시보드에서 사내방송(빵을그리다 방송실) 받기 — 관리자 화면만.
-   방송실 받는 화면(pos/bang.html?pc=1, 사무실 PC 보기 전용)을 대시보드 안에 숨겨 두고, 새 전달이 오면 화면 가운데에 크게 띄움.
-   대시보드 아무 곳이나 한 번 누르면 방송 화면 소리도 같이 켜짐(같은 주소라 허용됨). 방송 상태는 같은 PC의 BroadcastChannel 'bang_tv'로 받음(TV 같이 보기와 같은 방식). 왼쪽 아래 「사내방송」 단추로 언제든 열어 볼 수 있음. */
+/* 2026-11-20 조조: 업무 대시보드 사내방송(빵을그리다 방송실) 받기 v002 — 관리자 화면만.
+   방송실 받는 화면(pos/bang.html?pc=1, 사무실 PC 보기 전용)을 대시보드 안에 숨겨 두고 계속 받음.
+   「중요 전달사항」 칸 오른쪽 절반(#ntBangSlot, dash_notice.js v003이 만듦)에 받기 상태·소리·오늘 온 방송 글을 보여 줌.
+   새 방송이 오면 화면 가운데에 크게 띄움(같은 PC의 BroadcastChannel 'bang_tv' 상태 사용). 대시보드를 한 번 누르면 방송 화면 소리도 켜짐. */
 (function(){'use strict';
 function start(){if(document.body.classList.contains('staff')||document.getElementById('dbBang'))return;
   var URL='https://lee1812-oss.github.io/pos/bang.html?pc=1&embed=dash';
+  var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  var hm=function(t){var d=new Date(Number(t)+9*3600e3);return ('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2);};
   var st=document.createElement('style');st.textContent=
    '#dbBang{position:fixed;left:-12000px;top:0;width:960px;height:640px;z-index:9000;background:#0b1220;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column}'+
    '#dbBang.open{left:50%;top:50%;width:min(1200px,88vw);height:min(820px,84vh);transform:translate(-50%,-50%)}'+
@@ -2364,32 +2369,52 @@ function start(){if(document.body.classList.contains('staff')||document.getEleme
    '#dbBang .bh span{flex:1}#dbBang .bh button{min-height:44px;padding:0 16px;border:0;border-radius:10px;background:#FCF1D0;color:#0D1C42;font:inherit;font-size:16px;font-weight:800;cursor:pointer}'+
    '#dbBang iframe{flex:1;width:100%;border:0;background:#fff}'+
    '#dbBangDim{position:fixed;inset:0;z-index:8999;background:rgba(2,6,23,.55);display:none}#dbBangDim.on{display:block}'+
-   '#dbBangBtn{position:fixed;left:12px;bottom:12px;z-index:8998;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;border:2px solid #BF913C;background:#0D1C42;color:#FCF1D0;font-size:16px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.3);cursor:pointer}'+
-   '#dbBangBtn i{width:11px;height:11px;border-radius:50%;background:#9ca3af;display:inline-block}#dbBangBtn.live i{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}#dbBangBtn.on{background:#dc2626;border-color:#fff;animation:dbbp 1s infinite}'+
-   '@keyframes dbbp{50%{transform:scale(1.06)}}@media print{#dbBang,#dbBangBtn,#dbBangDim{display:none!important}}';
+   '#ntBangSlot{border-left:2px solid #BF913C;display:flex;flex-direction:column;min-width:0;background:#fff;color:#111827}'+
+   '#ntBangSlot .bg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:#0D1C42;color:#FCF1D0}'+
+   '#ntBangSlot .bg-h b{font-size:22px;white-space:nowrap}'+
+   '#ntBangSlot .bg-st{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}'+
+   '#ntBangSlot .bg-st.ok{background:#dcfce7;color:#14532d}#ntBangSlot .bg-st.warn{background:#fef3c7;color:#78350f}#ntBangSlot .bg-st.bad{background:#fee2e2;color:#7f1d1d}#ntBangSlot .bg-st.off{background:#e5e7eb;color:#374151}'+
+   '#ntBangSlot .bg-open{margin-left:auto;min-height:44px;padding:0 14px;border:0;border-radius:10px;background:#FCF1D0;color:#0D1C42;font-size:16px;font-weight:800;cursor:pointer;white-space:nowrap}'+
+   '#ntBangSlot .bg-l{flex:1;min-height:0;overflow:auto;padding:6px 14px 8px}'+
+   '#ntBangSlot .bg-r{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed #d1d5db;font-size:18px;line-height:1.45}#ntBangSlot .bg-r:last-child{border-bottom:0}'+
+   '#ntBangSlot .bg-r time{flex:none;font-weight:800;color:#0D1C42}#ntBangSlot .bg-r .w{flex:none;font-weight:800;color:#374151;max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'+
+   '#ntBangSlot .bg-r .x{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#ntBangSlot .bg-r.u .x{color:#b91c1c;font-weight:800}'+
+   '#ntBangSlot .bg-none{font-size:18px;color:#374151;padding:10px 0}'+
+   '@media print{#dbBang,#dbBangDim{display:none!important}}';
   document.head.appendChild(st);
   var dim=document.createElement('div');dim.id='dbBangDim';
-  var box=document.createElement('section');box.id='dbBang';box.setAttribute('aria-label','빵을그리다 사내방송 받기');
+  var box=document.createElement('section');box.id='dbBang';box.setAttribute('aria-label','빵을그리다 사내방송 받는 화면');
   box.innerHTML='<div class="bh">📢 <span id="dbBangT">빵을그리다 사내방송 · 받는 화면</span><button type="button" id="dbBangX">작게 접기</button></div>';
   var f=document.createElement('iframe');f.title='빵을그리다 방송실 받는 화면';f.setAttribute('allow','autoplay');f.src=URL;box.appendChild(f);
-  var btn=document.createElement('button');btn.type='button';btn.id='dbBangBtn';btn.innerHTML='<i></i><span>사내방송</span>';btn.title='빵을그리다 사내방송 받는 화면 열기';
-  document.body.appendChild(dim);document.body.appendChild(box);document.body.appendChild(btn);
-  var manual=false,live=0,onNow=false,seen=0,lastId='';
-  function paint(){var open=manual||onNow;box.classList.toggle('open',open);dim.classList.toggle('on',open);btn.classList.toggle('on',onNow);btn.classList.toggle('live',Date.now()-seen<15000);
-    btn.querySelector('span').textContent=onNow?'📢 사내방송 도착':'사내방송';document.getElementById('dbBangT').textContent=onNow?'📢 새 사내방송이 왔어요':'빵을그리다 사내방송 · 받는 화면';}
-  btn.onclick=function(){manual=!(manual||onNow);if(!manual&&onNow){onNow=false;}paint();try{f.focus();}catch(e){}};
+  document.body.appendChild(dim);document.body.appendChild(box);
+  var manual=false,onNow=false,lastId='',list=[],net=1,lastHtml='';
+  function inner(){try{return f.contentWindow&&f.contentWindow.document;}catch(e){return null;}}
+  function state(){var d=inner();if(!d||!d.getElementById('stt'))return {c:'off',t:'⏳ 받는 화면 여는 중'};
+    var g=d.getElementById('gate');if(g&&getComputedStyle(g).display!=='none')return {c:'warn',t:'⚠ 받는 번호 등록 필요 · 「받는 화면」에서 등록'};
+    var s=String(d.getElementById('stt').textContent||'');if(!net||/끊|오류|실패/.test(s))return {c:'bad',t:'⚠ 연결 끊김 · 인터넷 확인'};
+    if(!/연결됨/.test(s))return {c:'off',t:'⏳ 연결 중'};
+    var sb=d.getElementById('sndBar'),snd=!(sb&&sb.style.display!=='none');
+    return snd?{c:'ok',t:'● 받는 중 · 🔊 소리 켜짐'}:{c:'warn',t:'● 받는 중 · 🔇 소리 꺼짐 · 대시보드를 한 번 눌러 주세요'};}
+  function slot(){var el=document.getElementById('ntBangSlot');if(!el)return;var s=state();
+    var rows=list.slice(0,4).map(function(m){return '<div class="bg-r'+(m.urgent?' u':'')+'" title="'+esc(m.text)+'"><time>'+hm(m.t)+'</time><span class="w">'+esc(m.from||'')+'</span><span class="x">'+(m.urgent?'[급함] ':'')+esc(m.text||(m.hasVoice?'🎤 녹음 전달':''))+'</span></div>';}).join('');
+    var h='<div class="bg-h"><b>📢 사내방송</b><span class="bg-st '+s.c+'">'+esc(s.t)+'</span><button type="button" class="bg-open" data-bang="open">받는 화면 열기</button></div><div class="bg-l">'+(rows||'<div class="bg-none">오늘 온 사내방송이 없어요. 새 방송이 오면 화면 가운데에 크게 떠요.</div>')+'</div>';
+    if(h!==lastHtml||!el.firstChild){el.innerHTML=h;lastHtml=h;}}
+  function paint(){var open=manual||onNow;box.classList.toggle('open',open);dim.classList.toggle('on',open);
+    document.getElementById('dbBangT').textContent=onNow?'📢 새 사내방송이 왔어요':'빵을그리다 사내방송 · 받는 화면';slot();}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-bang="open"]');if(b){manual=true;paint();}});
   document.getElementById('dbBangX').onclick=function(){manual=false;onNow=false;paint();};
   dim.onclick=function(){manual=false;onNow=false;paint();};
   var bc=null;try{bc=new BroadcastChannel('bang_tv');}catch(e){}
-  if(bc){bc.onmessage=function(e){var s=e.data;if(!s||s.hello)return;seen=Date.now();var on=!!s.on;
-      if(on&&s.id!==lastId){lastId=s.id||String(s.t||'');onNow=true;}
+  if(bc){bc.onmessage=function(e){var s=e.data;if(!s||s.hello)return;if(Array.isArray(s.list))list=s.list;net=s.net===0?0:1;var on=!!s.on;
+      if(on&&(s.id||String(s.t||''))!==lastId){lastId=s.id||String(s.t||'');onNow=true;}
       if(!on&&onNow&&!manual)onNow=false;paint();};
     setInterval(function(){try{bc.postMessage({hello:1});}catch(e){}},3000);}
   function fwd1(){try{var w=f.contentWindow,b=w&&w.document&&w.document.getElementById('sndBar');if(b&&b.style.display!=='none'){w.document.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true}));return true;}}catch(e){}return false;}
-  function fwd(){if(fwd1()){setTimeout(fwd1,900);setTimeout(fwd1,2500);}}
-  setInterval(function(){if(navigator.userActivation&&navigator.userActivation.hasBeenActive)fwd1();},10000);
+  function fwd(){if(fwd1()){setTimeout(fwd1,900);setTimeout(fwd1,2500);}setTimeout(slot,3000);}
   document.addEventListener('pointerup',fwd,true);document.addEventListener('click',fwd,true);document.addEventListener('keyup',fwd,true);
-  setInterval(paint,5000);paint();}
+  setInterval(function(){if(navigator.userActivation&&navigator.userActivation.hasBeenActive)fwd1();},10000);
+  try{new MutationObserver(function(){var el=document.getElementById('ntBangSlot');if(el&&!el.firstChild)slot();}).observe(document.getElementById('main')||document.body,{childList:true,subtree:true});}catch(e){}
+  setInterval(paint,2000);paint();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(start,1500);});else setTimeout(start,1500);
 })();
 </script>
