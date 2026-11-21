@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-20 16:07 생산 주문표·알림참고 빼기·24/32인치 맞춤">
+<meta name="dash-build" content="2026-11-21 21:54 03 32인치 한 화면 맞춤(wall=1)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -826,6 +826,46 @@ body.sk-inline .sk-prev{flex:none;max-height:none;overflow:visible}
  nav.dash-shortcuts .dash-shortcut-desc{font-size:.85rem!important}
 }
 </style>
+<style id="wall-style">/* 2026-11-21 조조: 03 1번 모니터(32인치 1920x1080) 전용 한 화면 배치. 주소에 ?wall=1 을 한 번 붙여 열면 그 기기에서만 켜짐(?wall=0 끔). 다른 PC·태블릿·세로 키오스크는 그대로 */
+body.wall header{display:flex;flex-direction:column}
+body.wall header .bk-strip{order:-1;display:flex!important;flex-wrap:wrap!important;justify-content:flex-start!important;align-items:center!important;grid-template-columns:none!important;gap:6px 10px!important;padding:5px 12px!important;font-size:20px!important;line-height:1.2!important}
+body.wall header .bk-strip .bk-t{grid-column:auto!important;justify-content:flex-start!important;margin-right:4px}
+body.wall header .bk-strip .bk-t i{width:28px!important;height:28px!important;font-size:18px!important}
+body.wall header .bk-strip .bk-chip{font-size:17px!important;padding:3px 12px!important;min-height:36px!important;line-height:1.2!important}
+body.wall header .bk-strip .bk-chip::after{font-size:15px!important}
+body.wall header .dash-top{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:5px!important;padding:5px 12px 6px!important}
+body.wall #main>.bar{margin-bottom:4px!important}
+html:has(body.wall)::-webkit-scrollbar{width:0;height:0}
+body.wall header .dash-top .hd{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:14px!important;padding:0!important}
+body.wall header .dash-top .brand{display:flex!important;align-items:center!important;gap:10px!important;flex:none}
+body.wall header .dash-top .brand img{width:40px!important;height:40px!important}
+body.wall header .dash-top .brand .nm{font-size:23px!important;white-space:nowrap}
+body.wall header .dash-top .brand-meta{display:flex!important;flex-direction:column!important;align-items:flex-start;gap:0!important;flex-wrap:nowrap}body.wall header .dash-top .brand-meta>*{line-height:1.2!important}
+body.wall header .dash-top .brand .tt{display:none!important}
+body.wall header .dash-top .dash-version,body.wall header .dash-top .dash-mode{font-size:17px!important;white-space:nowrap}
+body.wall header .dash-top .now{display:flex!important;flex-direction:column;align-items:flex-start;gap:0;flex:none;text-align:left!important;line-height:1.15!important}
+body.wall header .dash-top .now .t{font-size:26px!important}
+body.wall header .dash-top .now .d{font-size:17px!important;white-space:nowrap!important}
+body.wall header .dash-top .tools{display:flex!important;flex-wrap:nowrap!important;gap:6px!important;margin-left:auto;flex:none}
+body.wall header .dash-top .tools .ib,body.wall header .dash-top .tools button{flex:0 0 auto!important;width:auto!important;min-width:0!important;height:42px!important;min-height:42px!important;padding:0 10px!important;font-size:16px!important;white-space:nowrap}
+body.wall header .dash-top .tools .ib{flex-direction:row!important;gap:4px!important}body.wall header .dash-top .tools .ib svg{display:none!important}body.wall header .dash-top .tools #apLaunch{font-size:16px!important;padding:0 10px!important}
+body.wall header .dash-top .dash-shortcuts{align-self:stretch!important;width:auto!important;border:0!important;padding:0!important;margin:0!important}
+body.wall header .dash-top .dash-shortcuts-head{display:none!important}
+body.wall header .dash-top .dash-shortcuts-grid{grid-template-columns:repeat(9,minmax(0,1fr))!important;gap:6px!important}
+body.wall header .dash-top .dash-shortcut{flex-direction:row!important;justify-content:flex-start!important;text-align:left!important;gap:7px!important;min-height:0!important;height:44px!important;padding:3px 8px!important;border-radius:11px!important}
+body.wall header .dash-top .dash-shortcut-icon{width:30px!important;height:30px!important;border-radius:9px!important}
+body.wall header .dash-top .dash-shortcut-icon svg{width:26px!important;height:26px!important}
+body.wall header .dash-top .dash-shortcut-copy{align-items:flex-start!important;min-width:0}
+body.wall header .dash-top .dash-shortcut-name{font-size:17px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.wall header .dash-top .dash-shortcut-desc,body.wall header .dash-top .dash-shortcut-arrow{display:none!important}
+body.wall.sk-wide #stockCol{zoom:.82;top:calc(8px / .82);bottom:calc(8px / .82);right:calc((var(--scrW,250px) + var(--dsW,280px) + 30px) / .82);width:calc(var(--skW,340px) / .82)}
+</style>
+<script>/* 2026-11-21 조조: wall 모드 스위치. ?wall=1 → 이 기기 기억, ?wall=0 → 끔. 가로 1500~2600px·가로로 긴 화면에서만 적용 */
+(function(){try{var q=new URLSearchParams(location.search).get('wall');if(q==='1')localStorage.setItem('dash_wall_v1','1');else if(q==='0')localStorage.removeItem('dash_wall_v1');}catch(_){}})();
+function WALL(){try{return localStorage.getItem('dash_wall_v1')==='1'&&innerWidth>=1500&&innerWidth<=2600&&innerWidth>=innerHeight*1.4;}catch(_){return false;}}
+function wallSync(){var on=WALL();if(document.body)document.body.classList.toggle('wall',on);return on;}
+addEventListener('resize',wallSync);document.addEventListener('DOMContentLoaded',wallSync);
+</script>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
@@ -1746,7 +1786,7 @@ function fitTpl(m,k){if(innerWidth<1100)return false;
   const ff=()=>{if(document.body.classList.contains('sk-wide'))return fitFits();return m.getBoundingClientRect().bottom<=innerHeight+1;}; /* 2026-11-20 조조: 24인치 등에서 재고 현황이 아래로 내려가면 전체 높이 대신 이 영역만 맞춤(전에는 늘 0.2배로 작아짐) */
   let lo=0.2,hi=1.3;m.style.zoom=String(hi);if(!ff()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(ff())lo=z;else hi=z;}m.style.zoom=String(Math.max(lo,FIT_MINZ()));}
   return true;}
-function FIT_MINZ(){return innerWidth<2400?0.55:0.3;} /* 글자가 읽히는 최소 배율. 이보다 작아야 맞으면 아래로 조금 내려 보게 함 */
+function FIT_MINZ(){if(WALL())return 0.35;return innerWidth<2400?0.55:0.3;} /* 글자가 읽히는 최소 배율. 이보다 작아야 맞으면 아래로 조금 내려 보게 함 */
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   FIT_BUSY=true;let ok=false;
   try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1100&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
@@ -2146,7 +2186,7 @@ function scrBuild(){if(document.getElementById('scrCol'))return;const a=document
   addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
 function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100;const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
   let W=SCS.W;if(on){const ids=Object.keys(SCR).concat('health');const hh=54,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/(d==='health'?HL_VIEW:SCR[d]).ar,0);
-    W=wide?Math.max(200,Math.min(innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
+    W=wide?Math.max(200,Math.min(wallSync()?230:innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
     document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/(d==='health'?HL_VIEW:SCR[d]).ar)+'px';});}
   hlViewFit();if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
 function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
@@ -2186,7 +2226,7 @@ function dsEntry(){const d=dsDate();return dsReports().find(e=>e.weekStart<=d&&d
 function dsDoc(e){if(!e)return null;const s=D&&D.deliverySchedule;if(s&&s.scheduleDate===e.scheduleDate&&s.updated===e.revision&&pjValidImg(s.image))return s;const c=DSS.cache[e.file];return c&&c.rev===e.revision?c.doc:null;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
-function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn();document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',Math.max(260,Math.min(360,Math.round(innerWidth*.19)))+'px');}
+function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn();document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?300:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
 function dsMissing(e){return e?(DSS.err[e.file]||'배송표 원본을 불러오는 중입니다.'):'선택한 날짜가 포함된 배송표가 없습니다. 다른 날짜의 표를 대신 표시하지 않습니다.';}
 let WORK_PRINT_BUSY=false;
 function workPrintButtons(){for(const [id,ok,attr] of [['deliveryBig',!!dsDoc(dsEntry()),'data-dsch'],['productionBig',(()=>{const d=pjDate(),e=pjEntries().find(x=>x.date===d),c=PJS.cache[d];return !!(e&&c?.rev===e.revision&&(c.doc?.images||[]).some(pjValidImg));})(),'data-pj']]){const b=document.getElementById(id)?.querySelector('['+attr+'="print"]');if(b){b.disabled=WORK_PRINT_BUSY||!ok;b.title=ok?'선택한 날짜 원본만 인쇄합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'이 날짜에 불러온 원본이 없어 인쇄할 수 없습니다.';}}}
@@ -2223,7 +2263,7 @@ render=(orig=>function(){orig();try{dsSchedulePaint();}catch(_){}})(render);scrS
 // ===== 2026-11-08 이정현 과장 생산·소모 일지 =====
 const PJS={mode:'auto',date:'',cache:{},busy:{},err:{},errAt:{},focus:null};try{const v=JSON.parse(localStorage.getItem('dash_pj_ui_v1')||'null');if(v&&v.mode==='manual'&&/^20\d\d-\d\d-\d\d$/.test(v.date||'')){PJS.mode='manual';PJS.date=v.date;}}catch(_){}
 function pjToday(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}function pjAdd(d,n){return new Date(new Date(d+'T12:00:00Z').getTime()+n*864e5).toISOString().slice(0,10);}function pjEntries(){return (D&&D.productionJournal&&D.productionJournal.entries)||[];}function pjDate(){const t=pjToday();return PJS.mode==='manual'?PJS.date:(pjEntries().some(e=>e.date===t)?t:pjAdd(t,-1));}function pjLabel(d){const k=new Date(d+'T12:00:00Z');return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일 ('+'일월화수목금토'[k.getUTCDay()]+')';}function pjSave(){try{localStorage.setItem('dash_pj_ui_v1',JSON.stringify({mode:PJS.mode,date:PJS.date}));}catch(_){}}
-function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn();document.documentElement.style.setProperty('--workZoom',String(Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
+function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn();document.documentElement.style.setProperty('--workZoom',String(WALL()?.82:Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
 function pjValidImg(s){return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s||'');}
 async function pjLoad(d,e){if(PJS.busy[d])return;PJS.busy[d]=true;delete PJS.err[d];try{let doc=null;if(window.__PRODUCTION_TEST)doc=window.__PRODUCTION_TEST[d];else{if(!/^production_20\d{6}\.enc\.json$/.test(e.file||''))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('원본을 못 읽었어요');doc=await decrypt(await r.json(),k);}if(!doc||doc.date!==d||!(doc.images||[]).some(pjValidImg))throw new Error('원본 날짜·사진 확인 필요');PJS.cache[d]={rev:e.revision,doc};}catch(err){PJS.err[d]=String(err.message||err);PJS.errAt[d]=Date.now();}finally{delete PJS.busy[d];if(pjDate()===d)pjPaint();}}
 function pjPaint(){if(!D||STAFF){const old=document.getElementById('productionCol');if(old)old.remove();document.body.classList.remove('pj-wide','pj-inline');return;}let a=document.getElementById('productionCol');if(!a){a=document.createElement('aside');a.id='productionCol';a.setAttribute('aria-label','이정현 과장 생산일지');document.getElementById('main').after(a);}const d=pjDate(),today=pjToday(),idx=D.productionJournal||{},rows=pjEntries(),e=rows.find(x=>x.date===d),latest=rows.slice().sort((a,b)=>b.date.localeCompare(a.date))[0];const cached=PJS.cache[d],doc=e&&cached&&cached.rev===e.revision?cached.doc:null;const imgs=doc?(doc.images||[]).filter(pjValidImg):[];const auto=PJS.mode==='auto',notToday=!rows.some(x=>x.date===today);const sub=auto&&notToday?'오늘 일지가 아직 없어 전일자로 표시':auto?'오늘 생산일지': '날짜를 직접 선택했어요';
@@ -2342,7 +2382,7 @@ function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday(
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
 function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
-  const rs=getComputedStyle(document.documentElement),skW=Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  const rs=getComputedStyle(document.documentElement),skW=WALL()?280:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
   // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
   const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=860;
   document.documentElement.style.setProperty('--skW',skW+'px');
