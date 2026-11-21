@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-21 22:19 03 wall 오른쪽 칸 글자 작게·원본 그림 크게">
+<meta name="dash-build" content="2026-11-21 22:23 03 wall 오른쪽 칸 글자 작게·원본 그림 크게">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -841,7 +841,7 @@ body.wall header .dash-top .brand{display:flex!important;align-items:center!impo
 body.wall header .dash-top .brand img{width:40px!important;height:40px!important}
 body.wall header .dash-top .brand .nm{font-size:23px!important;white-space:nowrap}
 body.wall header .dash-top .brand-meta{display:flex!important;flex-direction:column!important;align-items:flex-start;gap:0!important;flex-wrap:nowrap}body.wall header .dash-top .brand-meta>*{line-height:1.2!important}
-body.wall header .dash-top .brand .tt{display:none!important}
+body.wall header .dash-top .brand .tt,body.wall header .dash-top .brand .nm,body.wall #bInst{display:none!important}
 body.wall header .dash-top .dash-version,body.wall header .dash-top .dash-mode{font-size:17px!important;white-space:nowrap}
 body.wall header .dash-top .now{display:flex!important;flex-direction:column;align-items:flex-start;gap:0;flex:none;text-align:left!important;line-height:1.15!important}
 body.wall header .dash-top .now .t{font-size:26px!important}
@@ -852,11 +852,11 @@ body.wall header .dash-top .tools .ib{flex-direction:row!important;gap:4px!impor
 body.wall header .dash-top .dash-shortcuts{align-self:stretch!important;width:auto!important;border:0!important;padding:0!important;margin:0!important}
 body.wall header .dash-top .dash-shortcuts-head{display:none!important}
 body.wall header .dash-top .dash-shortcuts-grid{grid-template-columns:repeat(9,minmax(0,1fr))!important;gap:6px!important}
-body.wall header .dash-top .dash-shortcut{flex-direction:row!important;justify-content:flex-start!important;text-align:left!important;gap:7px!important;min-height:0!important;height:44px!important;padding:3px 8px!important;border-radius:11px!important}
-body.wall header .dash-top .dash-shortcut-icon{width:30px!important;height:30px!important;border-radius:9px!important}
+body.wall header .dash-top .dash-shortcut{flex-direction:row!important;justify-content:flex-start!important;text-align:left!important;gap:5px!important;min-height:0!important;height:44px!important;padding:3px 6px!important;border-radius:11px!important}
+body.wall header .dash-top .dash-shortcut-icon{width:28px!important;height:28px!important;border-radius:9px!important}
 body.wall header .dash-top .dash-shortcut-icon svg{width:26px!important;height:26px!important}
 body.wall header .dash-top .dash-shortcut-copy{align-items:flex-start!important;min-width:0}
-body.wall header .dash-top .dash-shortcut-name{font-size:17px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.wall header .dash-top .dash-shortcut-name{font-size:16px!important;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.wall header .dash-top .dash-shortcut-desc,body.wall header .dash-top .dash-shortcut-arrow{display:none!important}
 body.wall.sk-wide #stockCol{zoom:.7;top:calc(8px / .7);bottom:calc(8px / .7);right:calc((var(--scrW,250px) + var(--dsW,280px) + 30px) / .7);width:calc(var(--skW,340px) / .7);gap:10px}
 /* 2026-11-21 조조 v2: 03 wall — 오른쪽 칸 글자는 작게(0.7배), 일지·표 원본 그림은 남는 높이를 다 쓰도록 크게 */
@@ -2240,7 +2240,7 @@ function dsEntry(){const d=dsDate();return dsReports().find(e=>e.weekStart<=d&&d
 function dsDoc(e){if(!e)return null;const s=D&&D.deliverySchedule;if(s&&s.scheduleDate===e.scheduleDate&&s.updated===e.revision&&pjValidImg(s.image))return s;const c=DSS.cache[e.file];return c&&c.rev===e.revision?c.doc:null;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
-function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn();document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?340:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
+function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn();document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?320:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
 function dsMissing(e){return e?(DSS.err[e.file]||'배송표 원본을 불러오는 중입니다.'):'선택한 날짜가 포함된 배송표가 없습니다. 다른 날짜의 표를 대신 표시하지 않습니다.';}
 let WORK_PRINT_BUSY=false;
 function workPrintButtons(){for(const [id,ok,attr] of [['deliveryBig',!!dsDoc(dsEntry()),'data-dsch'],['productionBig',(()=>{const d=pjDate(),e=pjEntries().find(x=>x.date===d),c=PJS.cache[d];return !!(e&&c?.rev===e.revision&&(c.doc?.images||[]).some(pjValidImg));})(),'data-pj']]){const b=document.getElementById(id)?.querySelector('['+attr+'="print"]');if(b){b.disabled=WORK_PRINT_BUSY||!ok;b.title=ok?'선택한 날짜 원본만 인쇄합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'이 날짜에 불러온 원본이 없어 인쇄할 수 없습니다.';}}}
@@ -2396,7 +2396,7 @@ function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday(
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
 function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
-  const rs=getComputedStyle(document.documentElement),skW=WALL()?340:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  const rs=getComputedStyle(document.documentElement),skW=WALL()?320:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
   // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
   const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=860;
   document.documentElement.style.setProperty('--skW',skW+'px');
