@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-21 22:23 03 wall 오른쪽 칸 글자 작게·원본 그림 크게">
+<meta name="dash-build" content="2026-11-21 22:41 생산·원료 줄 생산 계획·이번 주 생산 칸 뺌">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1772,7 +1772,7 @@ function fitTplUndo(k){if(!k)return;const fr=k.querySelector(':scope>.frows');if
 const FIT_ROWS=[
   {t:'재고',c:'var(--blue)',items:[['.c4',4],['.kpi[data-open=stock]',1],['.kpi[data-open=fneed]',1]]},
   {t:'생산 주문',c:'#16a34a',items:[['.kpi.ordw',6]]}, /* 2026-11-20 조조: 박태일 상무님 「생산 주문표」를 재고 바로 아래로 */
-  {t:'생산·원료',c:'var(--green)',items:[['.kpi[data-open=plan]',2],['.kpi[data-open=fprod]',1],['.kpi.sm[data-open=fraw]',1],['.kpi.todow[data-open=fraw]',2]]},
+  {t:'생산·원료',c:'var(--green)',items:[['.kpi.sm[data-open=fraw]',2],['.kpi.todow[data-open=fraw]',4]]}, /* 2026-11-21 조조: 생산 계획·이번 주 생산 뺌 → 원료 남은 기간 2칸 + 원료 발주 일정 4칸으로 줄을 채움 */
   {t:'출고·품질',c:'var(--amber)',items:[['.kpi[data-open=delivery]',1],['.kpi[data-open=khaccp]',1],['.kpi[data-open=audit]',1],['.kpi[data-open=fstock]',1],['.kpi.todow[data-open=ftodo]',2]]},
   ]; /* 2026-11-20 조조: 「알림·참고」 줄은 뺌(사용자 요청) */
 function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=s=>{const x=g.find(e=>e.textContent.trim().startsWith(s));const u=x&&x.querySelector('.gsub');return u?u.textContent.trim():'';};
@@ -2121,7 +2121,7 @@ function cdApply(h,build){const t=document.createElement('template');t.innerHTML
 
 // ===== 2026-11-20 조조: ① 「알림·참고」 칸(회사메일·오늘 자동 알림·사무실 PC 프로그램 2칸·이번 주 매출·4~10월 대조 분석)을 화면에서 뺌 (사용자 요청). 만드는 코드는 남겨 둠 — 다시 보이려면 dashOff에서 지우면 됨
 // ② 박태일 상무님 요청(11/18) 「생산 주문표」: 생산실 9개 제품 주문을 출고일 × 제품 박스 수로. 자료 = D.factory.orders9 (~/.aside/u/0/dashboard/orders9_build.js, factory_build 07:50/17:50). 단가·금액 없음 → 직원용 화면에도 보임
-function dashOff(id){return id==='mail'||id==='sched'||id==='fsales'||id==='fana'||/^pcmon:/.test(id);}
+function dashOff(id){return id==='mail'||id==='sched'||id==='fsales'||id==='fana'||/^pcmon:/.test(id)||id==='plan'||id==='fprod';} /* 2026-11-21 조조: 「생산·원료」 줄의 「생산 계획」·「이번 주 생산」 칸 뺌(사용자 요청). 만드는 코드·상세 창은 남겨 둠 — 다시 보이려면 여기서 지우면 됨 */
 const ORD_W=['일','월','화','수','목','금','토'];
 function ordDay(d){const x=new Date(d+'T00:00:00+09:00');return (x.getMonth()+1)+'/'+x.getDate()+' ('+ORD_W[x.getDay()]+')';}
 function ordCell(c,big){if(!c)return '<td class="oz">·</td>';const b=c.box?'<b>'+c.box+'</b>':'';const e=c.ea?'<small>'+(c.box?'+':'')+c.ea+'개</small>':'';return '<td class="'+(c.box>=50?'obig':'oon')+'">'+b+e+'</td>';}
