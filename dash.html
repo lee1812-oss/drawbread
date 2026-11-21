@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-21 22:41 생산·원료 줄 생산 계획·이번 주 생산 칸 뺌">
+<meta name="dash-build" content="2026-11-21 23:06 화면 맞춤(자동·24인치·32인치·노트북)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -836,6 +836,13 @@ body.wall header .bk-strip .bk-chip::after{font-size:15px!important}
 body.wall header .dash-top{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:5px!important;padding:5px 12px 6px!important}
 body.wall #main>.bar{margin-bottom:4px!important}
 html:has(body.wall)::-webkit-scrollbar{width:0;height:0}
+html:has(body.fp-lap)::-webkit-scrollbar{width:10px;height:10px}
+.fit-pick select{font:inherit;font-size:15px;font-weight:700;height:34px;max-width:100%;padding:0 6px;border:1px solid var(--line,#d1d5db);border-radius:8px;background:var(--card,#fff);color:var(--ink,#111827);cursor:pointer}
+body:not(.wall) .fit-pick{display:none}
+body.wall header .dash-top .brand .brand-meta{display:grid!important;grid-template-columns:auto auto;grid-template-areas:'v v' 'm p';align-items:center;column-gap:8px!important;row-gap:1px!important}
+body.wall header .dash-top .brand .brand-meta .dash-version{grid-area:v}body.wall header .dash-top .brand .brand-meta .dash-mode{grid-area:m}body.wall header .dash-top .brand .brand-meta .fit-pick{grid-area:p}
+body.wall header .dash-top .fit-pick select{height:28px;font-size:14px;padding:0 4px}
+body.wall.fp-24.sk-wide #stockCol{zoom:.76;top:calc(8px / .76);bottom:calc(8px / .76);right:calc((var(--scrW,250px) + var(--dsW,280px) + 30px) / .76);width:calc(var(--skW,340px) / .76)}
 body.wall header .dash-top .hd{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:14px!important;padding:0!important}
 body.wall header .dash-top .brand{display:flex!important;align-items:center!important;gap:10px!important;flex:none}
 body.wall header .dash-top .brand img{width:40px!important;height:40px!important}
@@ -876,14 +883,20 @@ body.wall.ws-wide #workJournalCol .ds-foot,body.wall.ws-wide #workJournalCol .pj
 </style>
 <script>/* 2026-11-21 조조: wall 모드 스위치. ?wall=1 → 이 기기 기억, ?wall=0 → 끔. 가로 1500~2600px·가로로 긴 화면에서만 적용 */
 (function(){try{var q=new URLSearchParams(location.search).get('wall');if(q==='1')localStorage.setItem('dash_wall_v1','1');else if(q==='0')localStorage.removeItem('dash_wall_v1');}catch(_){}})();
-function WALL(){try{return localStorage.getItem('dash_wall_v1')==='1'&&innerWidth>=1500&&innerWidth<=2600&&innerWidth>=innerHeight*1.4;}catch(_){return false;}}
-function wallSync(){var on=WALL();if(document.body)document.body.classList.toggle('wall',on);return on;}
+/* 2026-11-21 조조: 「화면 맞춤」 — PC마다 창 크기(CSS 폭)로 자동 단계: 2400px 이상=32인치(큰 화면), 1600~2399=24인치, 1100~1599=노트북. 머리줄 선택으로 이 PC에 고정 가능(브라우저에 기억). ?wall=1 → 32인치 고정, ?fit=auto|24|32|lap 도 됨. 세로 화면·폭 1100 미만(태블릿 세로·키오스크·휴대폰)은 예전 배치 그대로 */
+(function(){try{var q=new URLSearchParams(location.search),f=q.get('fit');if(f&&/^(auto|24|32|lap)$/.test(f))localStorage.setItem('dash_fit_v1',f);else if(q.get('wall')==='1')localStorage.setItem('dash_fit_v1','32');else if(q.get('wall')==='0')localStorage.setItem('dash_fit_v1','auto');if(!localStorage.getItem('dash_fit_v1')&&localStorage.getItem('dash_wall_v1')==='1')localStorage.setItem('dash_fit_v1','32');}catch(_){}})();
+function FITC(){try{var v=localStorage.getItem('dash_fit_v1');return /^(24|32|lap)$/.test(v||'')?v:'auto';}catch(_){return 'auto';}}
+function FITA(){var w=innerWidth;return w>=2400?'32':w>=1600?'24':'lap';}
+function FITP(){var w=innerWidth,h=innerHeight;if(w<1100||w<h*1.15)return 'none';var c=FITC();return c==='auto'?FITA():c;}
+function WALL(){return FITP()!=='none';}
+function wallSync(){var p=FITP(),b=document.body;if(b){b.classList.toggle('wall',p!=='none');b.classList.toggle('fp-32',p==='32');b.classList.toggle('fp-24',p==='24');b.classList.toggle('fp-lap',p==='lap');var s=document.getElementById('fitSel');if(s){var c=FITC();if(s.value!==c)s.value=c;var o=s.querySelector('option[value=auto]');if(o)o.textContent='화면 맞춤: 자동 ('+({'32':'32인치','24':'24인치','lap':'노트북'}[FITA()])+')';}}return p!=='none';}
+document.addEventListener('change',function(e){if(!e.target||e.target.id!=='fitSel')return;try{localStorage.setItem('dash_fit_v1',e.target.value);}catch(_){}wallSync();try{dispatchEvent(new Event('resize'));}catch(_){}setTimeout(function(){try{dispatchEvent(new Event('resize'));}catch(_){}},400);});
 addEventListener('resize',wallSync);document.addEventListener('DOMContentLoaded',wallSync);
 </script>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
-  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><span class="nm">빵을그리다</span><span class="dv"></span><div class="brand-meta"><span class="tt">업무 대시보드</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span></div></div>
+  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><span class="nm">빵을그리다</span><span class="dv"></span><div class="brand-meta"><span class="tt">업무 대시보드</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span><span class="fit-pick"><select id="fitSel" aria-label="화면 맞춤" title="화면 맞춤 · 이 PC에 맞는 배치를 고르면 이 브라우저에 기억돼요"><option value="auto">화면 맞춤: 자동</option><option value="24">화면 맞춤: 24인치</option><option value="32">화면 맞춤: 32인치</option><option value="lap">화면 맞춤: 노트북</option></select></span></div></div>
   <div class="sp"></div>
   <div class="now"><div class="t num" id="ct"></div><div class="d" id="cd"></div></div>
   <div class="tools">
@@ -1741,7 +1754,7 @@ function fitPart(hs,n){// 순서를 지키면서 n단으로 나눠 가장 긴 �
   function go(i,c){if(c===1)return {m:pre[N]-pre[i],cut:[]};const key=i+','+c;if(memo[key])return memo[key];let best=null;
     for(let j=i+1;j<=N-c+1;j++){const r=go(j,c-1);const m=Math.max(pre[j]-pre[i],r.m);if(!best||m<best.m)best={m,cut:[j].concat(r.cut)};}return memo[key]=best;}
   return go(0,n).cut;}
-function fitFits(){return document.documentElement.scrollHeight<=innerHeight+1;}
+function fitFits(){if(document.body.classList.contains('fp-lap')){const m=document.getElementById('main');return !!m&&m.getBoundingClientRect().bottom<=innerHeight+1;}return document.documentElement.scrollHeight<=innerHeight+1;}
 function fitAllAuto(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   if(!fitBigScr()||!D){fitUndo();return;}
   FIT_BUSY=true;try{
@@ -1803,12 +1816,12 @@ function fitTpl(m,k){if(innerWidth<1100)return false;
 function FIT_MINZ(){if(WALL())return 0.35;return innerWidth<2400?0.55:0.3;} /* 글자가 읽히는 최소 배율. 이보다 작아야 맞으면 아래로 조금 내려 보게 함 */
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
   FIT_BUSY=true;let ok=false;
-  try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1100&&D){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
+  try{fitTplUndo(k);/* 2026-11-03: 세로·좁은 맞춤(fcols)에서 넓은 화면으로 바뀔 때 카드가 사라지지 않게 먼저 단을 풂 */if(k.querySelector(':scope>.fcols')){const flat=[];k.querySelectorAll(':scope>.fcols>.fcol>.fsec').forEach(s=>flat.push(...s.children));const kh=k.querySelector(':scope>.khday');k.innerHTML='';if(kh)k.appendChild(kh);flat.forEach(e=>k.appendChild(e));}if(innerWidth>=1100&&D&&FITP()!=='lap'){ok=fitTpl(m,k);}}catch(err){try{fitTplUndo(k);}catch(_){}ok=false;try{console.warn('fitTpl',err);}catch(_){}}
   finally{FIT_BUSY=false;}
   if(!ok){document.body.classList.remove('ftpl');fitAllAuto();}}
 function fitSoon(ms){clearTimeout(FIT_T);FIT_T=setTimeout(fitAll,ms||60);}
 try{window.fitSoon=fitSoon;}catch(_){}/* 2026-11-03: 경고등 스크립트가 강조 뒤 다시 맞출 수 있게 */
-setInterval(()=>{try{if(!FIT_BUSY&&document.body.classList.contains('ftpl')&&!fitFits())fitSoon(10);}catch(_){}},2000);// 사진·자료가 늦게 들어와 넘치면 다시 맞춤
+setInterval(()=>{try{if(!FIT_BUSY&&(document.body.classList.contains('ftpl')||document.body.classList.contains('fp-lap'))&&!fitFits())fitSoon(10);}catch(_){}},2000);// 사진·자료가 늦게 들어와 넘치면 다시 맞춤
 (function(){const m=$('#main');if(!m)return;new MutationObserver(()=>{if(!FIT_BUSY)fitAll();}).observe(m,{childList:true});addEventListener('resize',()=>fitSoon(200));addEventListener('load',()=>fitSoon(300));document.addEventListener('fullscreenchange',()=>fitSoon(300));setTimeout(()=>fitSoon(10),50);setTimeout(()=>fitSoon(10),1500);})();
 
 // ===== 2026-10-22 덧붙임 끝 =====
@@ -2198,9 +2211,9 @@ function scrBuild(){if(document.getElementById('scrCol'))return;const a=document
   const b=document.createElement('div');b.id='scrBig';b.innerHTML='<div class="sb-h"><b></b><span class="scr-st"></span><span style="flex:1"></span><button data-s="open">원격 조작 열기</button><button data-s="close">닫기 ✕</button></div><div class="sb-b" data-s="close"><img alt=""></div><div class="sb-n">보기 전용 화면이에요. 누르거나 입력하려면 「원격 조작 열기」를 눌러 주세요. (Esc 또는 화면을 누르면 닫혀요)</div>';
   document.body.append(b);b.addEventListener('click',scrClick);
   addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
-function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100;const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
+function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100&&FITP()!=='lap';const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
   let W=SCS.W;if(on){const ids=Object.keys(SCR).concat('health');const hh=54,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/(d==='health'?HL_VIEW:SCR[d]).ar,0);
-    W=wide?Math.max(200,Math.min(wallSync()?230:innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
+    W=wide?Math.max(200,Math.min(wallSync()?(FITP()==='24'?210:230):innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
     document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/(d==='health'?HL_VIEW:SCR[d]).ar)+'px';});}
   hlViewFit();if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
 function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
@@ -2240,7 +2253,7 @@ function dsEntry(){const d=dsDate();return dsReports().find(e=>e.weekStart<=d&&d
 function dsDoc(e){if(!e)return null;const s=D&&D.deliverySchedule;if(s&&s.scheduleDate===e.scheduleDate&&s.updated===e.revision&&pjValidImg(s.image))return s;const c=DSS.cache[e.file];return c&&c.rev===e.revision?c.doc:null;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
-function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn();document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?320:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
+function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?(FITP()==='24'?300:320):Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
 function dsMissing(e){return e?(DSS.err[e.file]||'배송표 원본을 불러오는 중입니다.'):'선택한 날짜가 포함된 배송표가 없습니다. 다른 날짜의 표를 대신 표시하지 않습니다.';}
 let WORK_PRINT_BUSY=false;
 function workPrintButtons(){for(const [id,ok,attr] of [['deliveryBig',!!dsDoc(dsEntry()),'data-dsch'],['productionBig',(()=>{const d=pjDate(),e=pjEntries().find(x=>x.date===d),c=PJS.cache[d];return !!(e&&c?.rev===e.revision&&(c.doc?.images||[]).some(pjValidImg));})(),'data-pj']]){const b=document.getElementById(id)?.querySelector('['+attr+'="print"]');if(b){b.disabled=WORK_PRINT_BUSY||!ok;b.title=ok?'선택한 날짜 원본만 인쇄합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'이 날짜에 불러온 원본이 없어 인쇄할 수 없습니다.';}}}
@@ -2277,7 +2290,7 @@ render=(orig=>function(){orig();try{dsSchedulePaint();}catch(_){}})(render);scrS
 // ===== 2026-11-08 이정현 과장 생산·소모 일지 =====
 const PJS={mode:'auto',date:'',cache:{},busy:{},err:{},errAt:{},focus:null};try{const v=JSON.parse(localStorage.getItem('dash_pj_ui_v1')||'null');if(v&&v.mode==='manual'&&/^20\d\d-\d\d-\d\d$/.test(v.date||'')){PJS.mode='manual';PJS.date=v.date;}}catch(_){}
 function pjToday(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}function pjAdd(d,n){return new Date(new Date(d+'T12:00:00Z').getTime()+n*864e5).toISOString().slice(0,10);}function pjEntries(){return (D&&D.productionJournal&&D.productionJournal.entries)||[];}function pjDate(){const t=pjToday();return PJS.mode==='manual'?PJS.date:(pjEntries().some(e=>e.date===t)?t:pjAdd(t,-1));}function pjLabel(d){const k=new Date(d+'T12:00:00Z');return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일 ('+'일월화수목금토'[k.getUTCDay()]+')';}function pjSave(){try{localStorage.setItem('dash_pj_ui_v1',JSON.stringify({mode:PJS.mode,date:PJS.date}));}catch(_){}}
-function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn();document.documentElement.style.setProperty('--workZoom',String(WALL()?.7:Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
+function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail)rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn()&&FITP()!=='lap';document.documentElement.style.setProperty('--workZoom',String(WALL()?(FITP()==='24'?.76:.7):Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
 function pjValidImg(s){return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s||'');}
 async function pjLoad(d,e){if(PJS.busy[d])return;PJS.busy[d]=true;delete PJS.err[d];try{let doc=null;if(window.__PRODUCTION_TEST)doc=window.__PRODUCTION_TEST[d];else{if(!/^production_20\d{6}\.enc\.json$/.test(e.file||''))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('원본을 못 읽었어요');doc=await decrypt(await r.json(),k);}if(!doc||doc.date!==d||!(doc.images||[]).some(pjValidImg))throw new Error('원본 날짜·사진 확인 필요');PJS.cache[d]={rev:e.revision,doc};}catch(err){PJS.err[d]=String(err.message||err);PJS.errAt[d]=Date.now();}finally{delete PJS.busy[d];if(pjDate()===d)pjPaint();}}
 function pjPaint(){if(!D||STAFF){const old=document.getElementById('productionCol');if(old)old.remove();document.body.classList.remove('pj-wide','pj-inline');return;}let a=document.getElementById('productionCol');if(!a){a=document.createElement('aside');a.id='productionCol';a.setAttribute('aria-label','이정현 과장 생산일지');document.getElementById('main').after(a);}const d=pjDate(),today=pjToday(),idx=D.productionJournal||{},rows=pjEntries(),e=rows.find(x=>x.date===d),latest=rows.slice().sort((a,b)=>b.date.localeCompare(a.date))[0];const cached=PJS.cache[d],doc=e&&cached&&cached.rev===e.revision?cached.doc:null;const imgs=doc?(doc.images||[]).filter(pjValidImg):[];const auto=PJS.mode==='auto',notToday=!rows.some(x=>x.date===today);const sub=auto&&notToday?'오늘 일지가 아직 없어 전일자로 표시':auto?'오늘 생산일지': '날짜를 직접 선택했어요';
@@ -2396,7 +2409,7 @@ function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday(
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
 function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
-  const rs=getComputedStyle(document.documentElement),skW=WALL()?320:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  const rs=getComputedStyle(document.documentElement),skW=WALL()?(FITP()==='24'?300:320):Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
   // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
   const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=860;
   document.documentElement.style.setProperty('--skW',skW+'px');
