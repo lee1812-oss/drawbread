@@ -2,7 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-22 12:36 생산일지 뺌·포스기/건강일지→배송 아래·K-HACCP 달력→키오스크 아래">
+<meta name="dash-ver" content="v106"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-22 15:04 좌측 상단 머리 통일(건강일지·CCP 원본 기준)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -863,16 +864,13 @@ html:has(body.wall)::-webkit-scrollbar{width:0;height:0}
 html:has(body.fp-lap)::-webkit-scrollbar{width:10px;height:10px}
 .fit-pick select{font:inherit;font-size:15px;font-weight:700;height:34px;max-width:100%;padding:0 6px;border:1px solid var(--line,#d1d5db);border-radius:8px;background:var(--card,#fff);color:var(--ink,#111827);cursor:pointer}
 body:not(.wall) .fit-pick{display:none}
-body.wall header .dash-top .brand .brand-meta{display:grid!important;grid-template-columns:auto auto;grid-template-areas:'v v' 'm p';align-items:center;column-gap:8px!important;row-gap:1px!important}
-body.wall header .dash-top .brand .brand-meta .dash-version{grid-area:v}body.wall header .dash-top .brand .brand-meta .dash-mode{grid-area:m}body.wall header .dash-top .brand .brand-meta .fit-pick{grid-area:p}
 body.wall header .dash-top .fit-pick select{height:28px;font-size:14px;padding:0 4px}
 body.wall.fp-24.sk-wide #stockCol{zoom:.76;top:calc(8px / .76);bottom:calc(8px / .76);right:calc((var(--scrW,250px) + var(--dsW,280px) + 30px) / .76);width:calc(var(--skW,340px) / .76)}
 body.wall header .dash-top .hd{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:14px!important;padding:0!important}
 body.wall header .dash-top .brand{display:flex!important;align-items:center!important;gap:10px!important;flex:none}
-body.wall header .dash-top .brand img{width:40px!important;height:40px!important}
-body.wall header .dash-top .brand .nm{font-size:23px!important;white-space:nowrap}
+body.wall header .dash-top .brand img{width:auto!important;height:44px!important}
 body.wall header .dash-top .brand-meta{display:flex!important;flex-direction:column!important;align-items:flex-start;gap:0!important;flex-wrap:nowrap}body.wall header .dash-top .brand-meta>*{line-height:1.2!important}
-body.wall header .dash-top .brand .tt,body.wall header .dash-top .brand .nm,body.wall #bInst{display:none!important}
+body.wall #bInst{display:none!important}
 body.wall header .dash-top .dash-version,body.wall header .dash-top .dash-mode{font-size:17px!important;white-space:nowrap}
 body.wall header .dash-top .now{display:flex!important;flex-direction:column;align-items:flex-start;gap:0;flex:none;text-align:left!important;line-height:1.15!important}
 body.wall header .dash-top .now .t{font-size:26px!important}
@@ -946,16 +944,34 @@ body.wall.ws-wide #workJournalCol>#deliveryCol{flex:1 1 0!important;height:auto!
 #khRail .khm-c .khw-d{font-size:.8rem}#khRail .khm-h{font-size:.72rem}
 #khRail .khc .nl,#khRail .khc .nm{display:none!important}#khRail .khc .nc{display:inline!important}#khRail .khc:not(.p){padding:0 2px;font-size:11px;line-height:1.35}#khRail .khc:not(.p) .ok{display:none}#khRail .khc.p{font-size:11px}#khRail .khc-row{gap:1px}
 @container (max-width:900px){body.wall header .dash-top .dash-shortcut{gap:3px!important;padding:2px 4px!important}body.wall header .dash-top .dash-shortcut-icon{width:22px!important;height:22px!important}body.wall header .dash-top .dash-shortcut-icon svg{width:18px!important;height:18px!important}body.wall header .dash-top .dash-shortcut-name{font-size:13px!important;letter-spacing:-.5px}}
-@container (max-width:900px){body.wall header .dash-top .brand .brand-meta{grid-template-areas:'v' 'p'!important;grid-template-columns:auto!important}body.wall header .dash-top .brand .brand-meta .dash-mode{display:none!important}}
 @container (max-width:900px){body.wall header .dash-top .tools .ib,body.wall header .dash-top .tools button{font-size:14px!important;padding:0 7px!important}body.wall header .dash-top .hd{gap:8px!important}body.wall header .dash-top .now .t{font-size:22px!important}body.wall header .dash-top .now .d{font-size:14px!important}}
 body.fitall.ftpl .frows.fnarrow .fgrid>*{grid-column:span var(--sp2,var(--sp,1))!important}
 @container (max-width:600px){.khm-c .khw-d{white-space:nowrap;overflow:hidden;font-size:.74rem!important}.khm-c .khw-d i{font-size:.56rem!important;padding:0 2px!important;margin-right:1px!important}.khc-row{gap:1px}.khc:not(.p){padding:0 2px;font-size:11px;line-height:1.35}.khc:not(.p) .ok{display:none}.khc.p{font-size:11px;line-height:1.4}.khc-cc{font-size:9px}.khm-c{padding:1px 2px 2px!important;gap:1px!important;min-height:0!important}}
 #khRail .khw-lg{font-size:.66rem!important}#khRail .khd-big{font-size:.85rem}#khRail .khw-k{font-size:.75rem;padding:2px 7px}
 </style>
+<style id="head7-style">/* 2026-11-22 조조 head7: 좌측 상단 머리 통일(건강일지 앱·02 CCP 원본 화면과 같은 값) — 로고 44px · 「빵을그리다 주식회사」 15px/800 갈색 #6E3F1C · 버전·업데이트 13px/600 회색 #7a828e · 「업무 대시보드」 28px/800 남색 #14284B (밤 화면은 같은 계열의 밝은 색) */
+html body header .dash-top .brand{display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;min-width:0!important;grid-template-columns:none!important;column-gap:10px!important}
+html body header .dash-top .brand>img{width:auto!important;height:44px!important;flex:none!important;grid-row:auto!important;object-fit:contain}
+html body header .dash-top .brand .dv{display:none!important}
+html body header .dash-top .brand .brand-meta{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important;min-width:0!important;grid-template-columns:none!important;grid-template-areas:none!important;grid-column:auto!important}
+html body header .dash-top .brand .brand-meta .bm-top{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px;row-gap:0;line-height:1.3;min-width:0}
+html body header .dash-top .brand .brand-meta .bm-top .nm{display:inline!important;font-size:15px!important;font-weight:800!important;line-height:1.2!important;color:#6E3F1C!important;white-space:nowrap!important;letter-spacing:0!important}
+html body header .dash-top .brand .brand-meta .bm-top .dash-version,html body header .dash-top .brand .brand-meta .bm-top .dash-mode{display:inline!important;font-size:13px!important;font-weight:600!important;line-height:1.2!important;color:#7a828e!important;white-space:nowrap!important;grid-area:auto!important;grid-column:auto!important}
+html body header .dash-top .brand .brand-meta .bm-top .dash-version::before,html body header .dash-top .brand .brand-meta .bm-top .dash-mode::before{content:"· ";color:inherit}
+html body header .dash-top .brand .brand-meta .bm-top .dash-mode:empty{display:none!important}
+html body header .dash-top .brand .brand-meta .bm-ttl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
+html body header .dash-top .brand .brand-meta .bm-ttl .tt{display:block!important;font-size:28px!important;font-weight:800!important;line-height:1.1!important;color:#14284B!important;letter-spacing:.5px!important;white-space:nowrap!important;grid-column:auto!important;margin:0!important}
+html body header .dash-top .brand .brand-meta .bm-ttl .fit-pick{grid-area:auto!important}
+html body.night header .dash-top .brand .brand-meta .bm-top .nm{color:#E3A878!important}html body.night header .dash-top .brand .brand-meta .bm-top .dash-version,html body.night header .dash-top .brand .brand-meta .bm-top .dash-mode{color:#A3ADBB!important}html body.night header .dash-top .brand .brand-meta .bm-ttl .tt{color:#F3F6FB!important}
+html body header .dash-top .brand>img{image-rendering:auto;-webkit-font-smoothing:antialiased}
+@container (max-width:900px){body.wall header .dash-top .hd{flex-wrap:wrap!important;row-gap:4px!important}body.wall header .dash-top .tools{margin-left:auto!important}}
+body:not(.wall) header .dash-top .brand .brand-meta .bm-top{flex-direction:column!important;align-items:flex-start!important}body:not(.wall) header .dash-top .brand .brand-meta .bm-top .dash-version::before,body:not(.wall) header .dash-top .brand .brand-meta .bm-top .dash-mode::before{content:none!important}
+@media (max-width:479px){html body header .dash-top .brand .brand-meta .bm-ttl .tt{font-size:26px!important}html body header .dash-top .brand .brand-meta .bm-top .nm{font-size:14px!important}}
+</style>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
-  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><span class="nm">빵을그리다</span><span class="dv"></span><div class="brand-meta"><span class="tt">업무 대시보드</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span><span class="fit-pick"><select id="fitSel" aria-label="화면 맞춤" title="화면 맞춤 · 이 PC에 맞는 배치를 고르면 이 브라우저에 기억돼요"><option value="auto">화면 맞춤: 자동</option><option value="24">화면 맞춤: 24인치</option><option value="32">화면 맞춤: 32인치</option><option value="lap">화면 맞춤: 노트북</option></select></span></div></div>
+  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><div class="brand-meta"><div class="bm-top"><span class="nm">빵을그리다 주식회사</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span></div><div class="bm-ttl"><span class="tt">업무 대시보드</span><span class="fit-pick"><select id="fitSel" aria-label="화면 맞춤" title="화면 맞춤 · 이 PC에 맞는 배치를 고르면 이 브라우저에 기억돼요"><option value="auto">화면 맞춤: 자동</option><option value="24">화면 맞춤: 24인치</option><option value="32">화면 맞춤: 32인치</option><option value="lap">화면 맞춤: 노트북</option></select></span></div></div></div>
   <div class="sp"></div>
   <div class="now"><div class="t num" id="ct"></div><div class="d" id="cd"></div></div>
   <div class="tools">
@@ -1050,7 +1066,7 @@ async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(
 // dash.html 맨 위 dash-build 값이 바뀌면(새 화면을 올리면) 열려 있는 대시보드가 5분 안에 스스로 새로고침해요.
 // 화면 안 「새로고침」 버튼은 누를 때 바로 확인. 자세한 창을 보고 있을 때는 닫힌 뒤에 바꿔요.
 const BUILD=((document.querySelector('meta[name="dash-build"]')||{}).content)||'';
-$('#dashVersion').textContent='업데이트 '+BUILD.slice(5,16).replace('-','/');
+{const V=((document.querySelector('meta[name="dash-ver"]')||{}).content)||'';$('#dashVersion').textContent=(V?V+' · ':'')+BUILD.slice(5,16).replace('-','/')+' 업데이트';}
 $('#dashVersion').title='버전 '+BUILD;
 $('#dashMode').textContent=STAFF?'직원용 화면':(ADMIN_ENTRY&&!k0&&!localStorage.getItem(LS_KEY)&&!localStorage.getItem(LS_KEY_BAK)?'관리자 연결 대기':'관리자 화면');
 $('#accessNote').hidden=!STAFF;
