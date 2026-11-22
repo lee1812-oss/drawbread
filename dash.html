@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v111"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-22 16:44 배송정보 칸 표 자동 자르기·제목 한 줄·여백 최소">
+<meta name="dash-ver" content="v112"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-22 16:58 배송 주간표 머리칸 색(요일 남색·입고 연초록·출고 연주황·구분 크림)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -2466,9 +2466,20 @@ function dsCropCalc(im){const W=im.naturalWidth,H=im.naturalHeight;if(!W||!H)ret
   if(b<0)return null;l=Math.max(0,l-2);r=Math.min(W-1,r+2);t=Math.max(0,t-1);b=Math.min(H-1,b+1);
   const lines=[];for(let y=t;y<=b;y++){let n=0,m=0;for(let X=l;X<=r;X+=3){m++;const i=(y*W+X)*4;if((p[i]+p[i+1]+p[i+2])/3<150)n++;}if(n/m>0.6){if(lines.length&&y-lines[lines.length-1].e<=2)lines[lines.length-1].e=y;else lines.push({s:y,e:y});}}
   let top=t;if(lines.length>=5&&lines[2].s-t<(b-t)*0.38&&lines[2].s-t>(b-t)*0.08)top=lines[2].s;
-  return {x:l,y:top,w:r-l+1,h:b-top+1,cut:top>t};}
+  const hdr=(top>t&&lines.length>=5)?{a0:lines[2].e+1-top,a1s:lines[3].s-top,a1e:lines[3].e+1-top,b1:lines[4].s-top,l:l}:null;return {x:l,y:top,w:r-l+1,h:b-top+1,cut:top>t,hdr};}
+/* 2026-11-22 v112: 주간표 머리칸만 색 — 요일 줄 남색 #010736·흰 글씨, 입고 연초록 #DCEFE3, 출고 연주황 #FCE4CF, 구분 크림 #FCF1D0. 칸 위치(가로·세로 선)를 못 찾으면 색 없이 그대로 */
+function dsTint(c,h){const x=c.getContext('2d',{willReadFrequently:true}),W=c.width;const y0=h.a0,y1=h.a1s,y2=h.a1e,y3=h.b1;if(!(y0>=0&&y1-y0>12&&y3-y2>12&&y3<c.height))return false;
+  const d=x.getImageData(0,0,W,y3+1),p=d.data;const vl=[];
+  for(let X=0;X<W;X++){let n=0,m=0;for(let y=y2+2;y<y3-1;y++){m++;const i=(y*W+X)*4;if((p[i]+p[i+1]+p[i+2])/3<150)n++;}if(m&&n/m>0.8){if(vl.length&&X-vl[vl.length-1].e<=2)vl[vl.length-1].e=X;else vl.push({s:X,e:X});}}
+  if(vl.length===11&&vl[0].s>20)vl.unshift({s:-1,e:-1});if(vl.length===11&&vl[vl.length-1].e<W-20)vl.push({s:W,e:W});if(vl.length!==12)return false;const cells=[];for(let i=0;i<11;i++){const a=vl[i].e+1,b=vl[i+1].s-1;if(b-a<20)return false;cells.push([a,b]);}
+  const mul=(x0,x1,ya,yb,q)=>{for(let y=ya;y<=yb;y++)for(let X=x0;X<=x1;X++){const i=(y*W+X)*4;if(p[i]>=222&&p[i+1]>=222&&p[i+2]>=222){p[i]=q[0];p[i+1]=q[1];p[i+2]=q[2];}else{const f=Math.min(1,(Math.min(p[i],p[i+1],p[i+2]))/222);p[i]=p[i]*(1-f)+q[0]*f*p[i]/255;p[i+1]=p[i+1]*(1-f)+q[1]*f*p[i+1]/255;p[i+2]=p[i+2]*(1-f)+q[2]*f*p[i+2]/255;}}};
+  const inv=(x0,x1,ya,yb,q)=>{for(let y=ya;y<=yb;y++)for(let X=x0;X<=x1;X++){const i=(y*W+X)*4;const L=p[i]*.299+p[i+1]*.587+p[i+2]*.114;const t=Math.min(1,Math.max(0,(L-70)/155));p[i]=255+(q[0]-255)*t;p[i+1]=255+(q[1]-255)*t;p[i+2]=255+(q[2]-255)*t;}};
+  mul(cells[0][0],cells[0][1],y0,y3-1,[252,241,208]);
+  for(let i=0;i<5;i++)inv(cells[1+2*i][0],cells[2+2*i][1],y0,y1-1,[1,7,54]);
+  for(let i=1;i<=10;i++)mul(cells[i][0],cells[i][1],y2,y3-1,i%2?[220,239,227]:[252,228,207]);
+  x.putImageData(d,0,0);return true;}
 function dsCropSet(img,src){if(!img)return;const hit=DS_CROP.get(src);if(hit){img.src=hit;return;}img.src=src;
-  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,src);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);const u=c.toDataURL('image/png');if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,u);if(img.isConnected)img.src=u;}catch(_){DS_CROP.set(src,src);}};im.src=src;}
+  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,src);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);if(k.hdr){try{dsTint(c,k.hdr);}catch(_){}}const u=c.toDataURL('image/png');if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,u);if(img.isConnected)img.src=u;}catch(_){DS_CROP.set(src,src);}};im.src=src;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
 function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?215:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
