@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v110"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-22 16:26 K-HACCP 달력 CCP 글자·표 뺌(노란 바탕만)">
+<meta name="dash-ver" content="v111"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-22 16:44 배송정보 칸 표 자동 자르기·제목 한 줄·여백 최소">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -931,7 +931,7 @@ body.wall.ws-wide #workJournalCol>#deliveryCol{flex:1 1 0!important;height:auto!
 /* 2026-11-22 lay8: 오른쪽 넓은 단 = K-HACCP 달력(위) + 배송정보(아래), 가운데 단 = 키오스크·포스기·건강일지 */
 body.wall.rsc #scrCol{display:flex!important;flex-direction:column!important;gap:8px!important;overflow:hidden!important}
 body.wall.rsc #scrCol>#khRail{flex:1 1 auto;min-height:0;overflow:auto}
-body.wall.rsc #scrCol>#deliveryCol{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;flex:0 0 19%!important;min-height:0!important;display:flex!important;flex-direction:column!important;padding:0!important;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card,#fff)}
+body.wall.rsc #scrCol>#deliveryCol{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;flex:1 1 0!important;min-height:110px!important;display:flex!important;flex-direction:column!important;padding:0!important;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card,#fff)}
 body.wall.rsc #scrCol>#deliveryCol .ds-preview{flex:1 1 0;min-height:0;margin:0 8px;padding:0;overflow:hidden}
 body.wall.rsc #scrCol>#deliveryCol .ds-preview img{width:100%;height:100%;object-fit:contain;object-position:top}
 body.wall.rsc #scrCol>#deliveryCol .ds-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:6px 8px!important;height:auto!important}
@@ -989,6 +989,27 @@ body.night .khm{--kIn:#f3f6fb;--kOk:#4ade80;--kRv:#fbbf24;--kIng:#d8b4fe;--kBad:
 .khw.khm .khc.s-hol .mk{display:none}
 .khw.khm .khc-row{gap:1px 7px}
 .khw.khm .khc-cc{margin-right:2px}
+/* 2026-11-22 v111: 배송정보 칸 — 얇은 제목 줄, 여백 최소, 표가 칸 너비에 꽉 차게 */
+#deliveryCol .ds-bar{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:6px 10px;min-width:0}
+#deliveryCol .ds-bar h2{margin:0!important;font-size:18px!important;line-height:1.2;white-space:nowrap;width:auto!important}
+#deliveryCol .ds-bar .work-owner{font-size:13px!important;font-weight:600;display:inline!important}
+#deliveryCol .ds-bar .ds-status{font-size:12.5px!important;padding:2px 8px!important;margin:0!important;white-space:nowrap;width:auto!important}
+#deliveryCol .ds-nav{margin-left:auto;display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
+#deliveryCol .ds-nav button,#deliveryCol .ds-nav input{height:44px;min-height:0;width:auto;padding:0 10px;font:inherit;font-size:15px;font-weight:700;border:1px solid var(--line);border-radius:8px;background:var(--card,#fff);color:var(--ink);cursor:pointer}
+body.wall #deliveryCol .ds-nav button,body.wall #deliveryCol .ds-nav input{height:30px;font-size:13px;padding:0 8px}
+body.night #deliveryCol .ds-nav button,body.night #deliveryCol .ds-nav input{background:#1f2937;color:#f3f6fb;border-color:#374151;color-scheme:dark}
+#deliveryCol .ds-foot1{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;padding:4px 10px!important;font-size:13px!important;line-height:1.3}
+#deliveryCol .ds-foot1 p{margin:0!important}
+#deliveryCol .ds-foot1 button{width:auto!important;margin:0 0 0 auto!important;height:auto!important;min-height:36px!important;padding:0 12px!important;font-size:14px!important}
+body.wall #deliveryCol .ds-foot1 button{min-height:30px!important;font-size:13px!important}
+#deliveryCol .ds-preview{padding:0!important;margin:0!important;background:#fff!important;border-radius:0}
+#deliveryCol .ds-preview img{object-fit:contain!important;object-position:top center!important;box-shadow:none!important}
+body.wall.rsc #scrCol>#deliveryCol .ds-foot{display:none!important}
+body.ws-inline #deliveryCol .ds-preview,body.ds-inline #deliveryCol .ds-preview{height:auto!important;min-height:0!important;flex:none!important}body.ws-inline #deliveryCol .ds-preview img,body.ds-inline #deliveryCol .ds-preview img{height:auto!important}
+body.wall.rsc #scrCol>#khRail{flex:0 1 auto!important;min-height:0;overflow:auto}
+#khRail .khd-top .lg img{height:32px!important;width:auto!important}#khRail .khd-top .lg{width:auto!important;height:auto!important}
+#khRail .khm-g{grid-template-columns:.34fr repeat(5,minmax(0,1fr)) .34fr!important}#khRail .khw.khm .khc{font-size:12.4px!important;line-height:1.14!important}
+
 .khm-lg span,.khm-lg span[class*="s-"]{gap:3px!important;color:var(--kIn)!important;background:none!important;padding:0!important}.khm-lg span.s-bad{color:var(--kBad)!important}.khm-lg i{width:auto!important;height:auto!important;border-radius:0!important;background:none!important;font-style:normal;font-weight:900;font-size:1.1em;font-family:"Segoe UI Symbol","Segoe UI",sans-serif}
 /* 2026-11-22 v109: K-HACCP 달력 — 얇고 선명한 글자(400~500), 미작성 600, CCP 일지는 노란 바탕 */
 .khw.khm .khc,.khw.khm .khc[class*="s-"],.khm-lg,.khm .khw-d{font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
@@ -2435,6 +2456,19 @@ function dsReports(){const s=D&&D.deliverySchedule;if(!s)return [];const reports
 function dsDate(){if(DSS.date)return DSS.date;const today=pjToday(),rows=dsReports();return rows.some(e=>e.weekStart<=today&&today<=e.weekEnd)?today:(rows[0]?.weekEnd||today);}
 function dsEntry(){const d=dsDate();return dsReports().find(e=>e.weekStart<=d&&d<=e.weekEnd);}
 function dsDoc(e){if(!e)return null;const s=D&&D.deliverySchedule;if(s&&s.scheduleDate===e.scheduleDate&&s.updated===e.revision&&pjValidImg(s.image))return s;const c=DSS.cache[e.file];return c&&c.rev===e.revision?c.doc:null;}
+/* 2026-11-22 v111: 배송정보 칸 — 제목 줄 오른쪽에 작은 날짜 이동 버튼(기능은 그대로) */
+function dsNavMini(){const d=dsDate();return '<span class="ds-nav"><button data-dsch="prev" aria-label="배송정보 전날" title="전날">◀</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="next" aria-label="배송정보 다음날" title="다음날">▶</button><button data-dsch="today" title="오늘">오늘</button><button data-dsch="latest" title="최근 배송표">최근</button></span>';}
+/* 2026-11-22 v111: 배송 주간표 그림 — 불러올 때 흰 여백과 맨 위 제목·출력일 줄을 자동으로 찾아 잘라 표만 크게. 실패하면 원본 그대로 */
+const DS_CROP=new Map();
+function dsCropCalc(im){const W=im.naturalWidth,H=im.naturalHeight;if(!W||!H)return null;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0);const p=x.getImageData(0,0,W,H).data;
+  const ink=(i)=>p[i+3]>40&&(p[i]<235||p[i+1]<235||p[i+2]<235);let t=H,b=-1,l=W,r=-1;
+  for(let y=0;y<H;y+=1)for(let X=0;X<W;X+=2){if(ink((y*W+X)*4)){if(y<t)t=y;if(y>b)b=y;if(X<l)l=X;if(X>r)r=X;}}
+  if(b<0)return null;l=Math.max(0,l-2);r=Math.min(W-1,r+2);t=Math.max(0,t-1);b=Math.min(H-1,b+1);
+  const lines=[];for(let y=t;y<=b;y++){let n=0,m=0;for(let X=l;X<=r;X+=3){m++;const i=(y*W+X)*4;if((p[i]+p[i+1]+p[i+2])/3<150)n++;}if(n/m>0.6){if(lines.length&&y-lines[lines.length-1].e<=2)lines[lines.length-1].e=y;else lines.push({s:y,e:y});}}
+  let top=t;if(lines.length>=5&&lines[2].s-t<(b-t)*0.38&&lines[2].s-t>(b-t)*0.08)top=lines[2].s;
+  return {x:l,y:top,w:r-l+1,h:b-top+1,cut:top>t};}
+function dsCropSet(img,src){if(!img)return;const hit=DS_CROP.get(src);if(hit){img.src=hit;return;}img.src=src;
+  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,src);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);const u=c.toDataURL('image/png');if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,u);if(img.isConnected)img.src=u;}catch(_){DS_CROP.set(src,src);}};im.src=src;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
 function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?215:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
@@ -2462,7 +2496,7 @@ document.addEventListener('keydown',ev=>{const root=document.getElementById('wor
 
 function dsBigPaint(){const b=document.getElementById('deliveryBig');if(!b||!b.classList.contains('show'))return;const e=dsEntry(),doc=dsDoc(e),d=dsDate();b.querySelector('.work-date-slot').innerHTML=dsControls(true);const holder=b.querySelector('.dsb-body'),stamp=[d,e?.revision||'',doc?'loaded':'empty'].join('|');if(holder.dataset.stamp!==stamp){holder.dataset.stamp=stamp;holder.innerHTML='';if(doc){const im=document.createElement('img');im.alt=pjLabel(d)+'이 포함된 입고·출고 주간표 원본';im.src=doc.image;holder.append(im);}else{const empty=document.createElement('div');empty.className='work-empty';empty.textContent=dsMissing(e);holder.append(empty);}holder.scrollTop=0;holder.scrollLeft=0;}b.querySelector('.dsb-help').textContent=doc?'선택일 '+pjLabel(d)+' · 주간표 '+e.weekStart+' ~ '+e.weekEnd+' · '+doc.scheduleDate+' 출력 원본. 같은 주의 날짜는 같은 주간표를 표시합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'선택일 '+pjLabel(d)+' · '+dsMissing(e);workPrintButtons();if(e&&!doc)dsLoad(e);}
 function dsSchedulePaint(){if(STAFF){document.getElementById('deliveryCol')?.remove();document.getElementById('deliveryBig')?.remove();document.body.classList.remove('ds-wide','ds-inline');return;}if(!D)return;let a=document.getElementById('deliveryCol');if(!a){a=document.createElement('aside');a.id='deliveryCol';a.setAttribute('aria-label','서재우 차장 배송정보');document.getElementById('main').after(a);}const s=D.deliverySchedule,e=dsEntry(),doc=dsDoc(e),has=!!doc,md=d=>d?String(d).slice(5).replace('-','/'):'미확인',old=!!e&&e.weekEnd<pjToday(),checked=s?.checkedAt?md(new Date(new Date(s.checkedAt).getTime()+9*3600e3).toISOString().slice(0,10))+' '+hm(s.checkedAt):'';
- a.innerHTML='<div class="ds-head"><h2>배송정보 <span class="work-owner">(서재우 차장)</span></h2><div class="ds-from">카톡 전직원방 · 입고·출고 주간표</div>'+dsControls(false)+'<span class="ds-status'+(old?' old':'')+'">'+(e?(old?'지난 표 · ':'주간표 · ')+md(e.weekStart)+' ~ '+md(e.weekEnd):'해당 날짜 배송표 없음')+'</span></div>'+(has?'<button class="ds-preview" data-dsch="open" aria-label="배송표 원본 크게 보기"><img alt="빵을그리다·서로도움 입고 및 출고 스케줄"></button>':'<div class="ds-empty">'+esc(dsMissing(e))+'</div>')+'<div class="ds-foot"><p>'+(has?md(doc.scheduleDate)+' 출력 원본':'확인된 날짜의 원본만 표시')+'</p>'+(checked?'<p>마지막 확인 '+esc(checked)+'</p>':'')+(s?.autoStatus==='blocked'?'<p>자동 확인 안 됨 · 지난 표 보관</p>':['pending','armed'].includes(s?.autoStatus)?'<p>자동 확인 09:05 · 09:30 · 첫 확인 전</p>':'')+'<button data-dsch="open">배송정보 작업영역 열기</button></div>';if(has)a.querySelector('img').src=doc.image;
+ a.innerHTML='<div class="ds-bar" title="카톡 전직원방 · 입고·출고 주간표"><h2>배송정보 <span class="work-owner">(서재우 차장)</span></h2><span class="ds-status'+(old?' old':'')+'">'+(e?(old?'지난 표 · ':'주간표 · ')+md(e.weekStart)+'~'+md(e.weekEnd):'해당 날짜 배송표 없음')+'</span>'+dsNavMini()+'</div>'+(has?'<button class="ds-preview" data-dsch="open" aria-label="배송표 원본 크게 보기"><img alt="빵을그리다·서로도움 입고 및 출고 스케줄"></button>':'<div class="ds-empty">'+esc(dsMissing(e))+'</div>')+'<div class="ds-foot ds-foot1"><p>'+(has?md(doc.scheduleDate)+' 출력 원본':'확인된 날짜의 원본만 표시')+'</p>'+(checked?'<p>마지막 확인 '+esc(checked)+'</p>':'')+(s?.autoStatus==='blocked'?'<p>자동 확인 안 됨 · 지난 표 보관</p>':['pending','armed'].includes(s?.autoStatus)?'<p>자동 확인 09:05 · 09:30 · 첫 확인 전</p>':'')+'<button data-dsch="open">배송정보 작업영역 열기</button></div>';if(has)dsCropSet(a.querySelector('img'),doc.image);
  let b=document.getElementById('deliveryBig');if(!b){b=document.createElement('section');b.id='deliveryBig';b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');b.setAttribute('aria-label','배송정보 작업영역');b.innerHTML='<div class="dsb-head"><b>배송정보 (서재우 차장)</b><span></span><button data-dsch="print" disabled>인쇄</button><button data-dsch="zoom" aria-pressed="false">원본 크기</button><button data-dsch="close">닫기</button></div><div class="work-date-slot"></div><div class="dsb-body"></div><div class="dsb-help" role="status"></div>';document.body.append(b);}dsBigPaint();dsScheduleSize();if(e&&!doc)dsLoad(e);}
 function dsMove(op){if(op==='today')DSS.date=pjToday();else if(op==='latest')DSS.date=dsReports()[0]?.weekEnd||pjToday();else DSS.date=pjAdd(dsDate(),op==='prev'?-1:1);dsSchedulePaint();}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-dsch]');if(!t||STAFF)return;const op=t.dataset.dsch,b=document.getElementById('deliveryBig');if(!b)return;if(op==='print'){workPrint('delivery');return;}if(op==='open'){DSS.focus=t;b.classList.add('show');dsBigPaint();b.querySelector('[data-dsch="close"]').focus();}else if(op==='close'){b.classList.remove('show');if(DSS.focus?.isConnected)DSS.focus.focus();}else if(op==='zoom'){const z=b.querySelector('.dsb-body').classList.toggle('zoom');t.textContent=z?'화면에 맞추기':'원본 크기';t.setAttribute('aria-pressed',String(z));}else dsMove(op);});
