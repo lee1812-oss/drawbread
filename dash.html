@@ -2,8 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-ver" content="v108"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-22 15:59 K-HACCP 달력 글자만+상태 표시·경고줄 한 줄·가운데 단 채움">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
+<meta name="dash-ver" content="v109"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-22 16:12 머리·달력 Pretendard 글꼴·달력 얇은 글자·CCP 노란 바탕·생산일지·가운데 단 비율">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -989,6 +990,20 @@ body.night .khm{--kIn:#f3f6fb;--kOk:#4ade80;--kRv:#fbbf24;--kIng:#d8b4fe;--kBad:
 .khw.khm .khc-row{gap:1px 7px}
 .khw.khm .khc-cc{margin-right:2px}
 .khm-lg span,.khm-lg span[class*="s-"]{gap:3px!important;color:var(--kIn)!important;background:none!important;padding:0!important}.khm-lg span.s-bad{color:var(--kBad)!important}.khm-lg i{width:auto!important;height:auto!important;border-radius:0!important;background:none!important;font-style:normal;font-weight:900;font-size:1.1em;font-family:"Segoe UI Symbol","Segoe UI",sans-serif}
+/* 2026-11-22 v109: K-HACCP 달력 — 얇고 선명한 글자(400~500), 미작성 600, CCP 일지는 노란 바탕 */
+.khw.khm .khc,.khw.khm .khc[class*="s-"],.khm-lg,.khm .khw-d{font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+.khw.khm .khc,.khw.khm .khc[class*="s-"]{font-weight:500!important}
+.khw.khm .khc .sw{font-weight:600!important}
+.khw.khm .khc.s-bad,.khw.khm .khc.s-bad .sw{font-weight:600!important}
+.khw.khm .khc .mk{font-weight:700}
+.khw.khm .khc.s-hol{font-weight:500!important}
+.khm{--kCy:#fff1a8;--kCyIn:#111827;--kCyTag:#facc15;--kCyTagIn:#3b2f00}
+body.night .khm{--kCy:rgba(250,204,21,.20);--kCyIn:#fde68a;--kCyTag:#facc15;--kCyTagIn:#2a2100}
+.khw.khm .khc.c,.khw.khm .khc.c[class*="s-"]{background:var(--kCy)!important;color:var(--kCyIn)!important;padding:0 3px!important;border-radius:3px!important}
+.khw.khm .khc.c.s-bad{color:var(--kBad)!important}
+.khw.khm .khc-cc,.khm-lg .khc-cc{background:var(--kCyTag)!important;color:var(--kCyTagIn)!important;border:0!important;border-radius:3px;padding:0 3px;font-weight:800}
+.khm-lg .khm-cy{background:var(--kCy);color:var(--kCyIn)!important;padding:0 4px!important;border-radius:3px}
+
 #khRail .khw.khm .khc{font-size:12px;line-height:1.12;letter-spacing:-.55px}#khRail .khday.bk-hot{padding-top:8px!important}#khRail .khday.bk-hot::after{display:none!important}#khRail .khd-top{margin-bottom:2px!important;row-gap:4px!important}#khRail .khm-g{margin-top:0!important}#khRail .khm-c .khw-d{font-size:12px!important}#khRail .khw.khm .khc-row{gap:0 6px}#khRail .khm-c{gap:0!important}
 #khRail .khm-lg{font-size:.74rem!important;color:var(--kIn)}
 
@@ -1011,6 +1026,13 @@ html body header .dash-top .brand>img{image-rendering:auto;-webkit-font-smoothin
 @container (max-width:900px){body.wall header .dash-top .hd{flex-wrap:wrap!important;row-gap:4px!important}body.wall header .dash-top .tools{margin-left:auto!important}}
 body:not(.wall) header .dash-top .brand .brand-meta .bm-top{flex-direction:column!important;align-items:flex-start!important}body:not(.wall) header .dash-top .brand .brand-meta .bm-top .dash-version::before,body:not(.wall) header .dash-top .brand .brand-meta .bm-top .dash-mode::before{content:none!important}
 @media (max-width:479px){html body header .dash-top .brand .brand-meta .bm-ttl .tt{font-size:26px!important}html body header .dash-top .brand .brand-meta .bm-top .nm{font-size:14px!important}}
+
+/* 2026-11-22 v109: 머리 글꼴 — Pretendard Variable(대체 Malgun Gothic), 5개 화면 공통 기준 */
+html body header .dash-top .brand .brand-meta,html body header .dash-top .brand .brand-meta *{font-family:"Pretendard Variable","Pretendard","Malgun Gothic",sans-serif!important;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+html body header .dash-top .brand .brand-meta .bm-ttl .tt{font-size:29px!important;font-weight:800!important;letter-spacing:-.8px!important}
+html body header .dash-top .brand .brand-meta .bm-top .nm{font-size:15px!important;font-weight:700!important;letter-spacing:-.2px!important}
+html body header .dash-top .brand .brand-meta .bm-top .dash-version,html body header .dash-top .brand .brand-meta .bm-top .dash-mode{font-size:13.5px!important;font-weight:500!important;letter-spacing:0!important}
+@media (max-width:479px){html body header .dash-top .brand .brand-meta .bm-ttl .tt{font-size:27px!important}html body header .dash-top .brand .brand-meta .bm-top .nm{font-size:14px!important}}
 </style>
 </head>
 <body>
@@ -1719,6 +1741,8 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;$(
 window.addEventListener('appinstalled',()=>{instEv=null;$('#bInst').style.display='none';});
 $('#bInst').onclick=async()=>{if(!instEv)return;instEv.prompt();try{await instEv.userChoice;}catch(_){}instEv=null;$('#bInst').style.display='none';};
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(_){}}
+/* 2026-11-22 v109: 웹 글꼴(Pretendard)이 늦게 뜨면 화면 맞춤·배율 계산을 한 번 더 */
+(function(){if(!document.fonts)return;let t=0;const re=()=>{clearTimeout(t);t=setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},120);};try{document.fonts.ready.then(re);}catch(_){}try{document.fonts.addEventListener('loadingdone',re);}catch(_){}})();
 try{const up=JSON.parse(sessionStorage.getItem('dash_upd')||'null');if(up){sessionStorage.removeItem('dash_upd');window.__UPD=up;if(up.board){try{navigator.wakeLock.request('screen').then(w=>{wake=w;}).catch(()=>{});}catch(_){}$('#bBoard').classList.add('again');$('#tBoard').textContent='전광판 다시 켜기';}}}catch(_){}
 // ===== 2026-10-21 원료 발주 일정 · 육쪽마늘빵 100박스 기준 (Aside 사무실 PC) =====
 // 기존 코드는 고치지 않고 아래만 덧붙임. 자료(D.factory.rawbuy)는 공장 운영 자료 갱신 때 rawbuy_build.js가 만든다. 자료가 없으면 아무것도 안 보임.
@@ -1872,7 +1896,7 @@ khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     const dn='<div class="khw-d">'+(d===today?'<i>오늘</i>':d===yd&&inM?'<i class="y">전일</i>':'')+(inM?Number(d.slice(8)):khMdW(d).replace(/\(.\)/,''))+'</div>';
     if(!inM)return '<div class="'+cls+'">'+dn+'</div>';
     const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};
-    const all=x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,1]));let okP=0,okC=0,pre=0;const probs=[];
+    const all=x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,/생산\s*작업/.test(it[1])?0:1]));let okP=0,okC=0,pre=0;const probs=[];
     all.forEach(([it,isC])=>{const c=khwEvc(it[2])[0];if(d<=today){wn++;if(c==='ok')wo++;else if(c==='bad'||c==='rej'||c==='arej')wb++;else if(c!=='prep')wi++;}
       if(c==='ok'){if(isC)okC++;else okP++;}else if(c==='prep')pre++;else probs.push([it,isC,c]);});
     probs.sort((a,b)=>(ORD[a[2]]??9)-(ORD[b[2]]??9));
@@ -2608,8 +2632,12 @@ function devPlace(){const a=document.getElementById('scrCol'),r=document.getElem
     if(dc&&r&&dc.parentElement!==r)r.prepend(dc);}
   try{devFill();}catch(_){}try{hlViewFit();}catch(_){}}
 /* 2026-11-22 v108: 가운데 단 아래 빈 여백을 건강일지 화면 높이로 채워 좌우 단 끝을 맞춤 */
-function devFill(){const r=document.getElementById('workJournalCol'),box=document.getElementById('devMove');if(!r||!box||box.parentElement!==r)return;const hb=box.querySelector('.scr[data-dev="health"] .scr-b');if(!hb)return;
-  const wr=r.getBoundingClientRect(),zz=wr.height/(r.clientHeight||1)||1,br=box.getBoundingClientRect();const extra=Math.floor((wr.bottom-br.bottom)/zz)-2;if(extra>4)hb.style.height=(hb.clientHeight+extra)+'px';try{hlViewFit();}catch(_){}}
+function devFill(){const r=document.getElementById('workJournalCol'),box=document.getElementById('devMove');if(!r||!box||box.parentElement!==r)return;
+  /* 2026-11-22 v109: 포스기·건강일지 = 같은 높이(포스기 원래 비율 높이의 1.5배), 남는 높이는 모두 생산실 키오스크(세로 화면) */
+  const g=d=>box.querySelector('.scr[data-dev="'+d+'"] .scr-b');const kb=g('kiosk'),pb=g('pos'),hb=g('health');if(!kb||!pb||!hb||!pb.clientWidth)return;
+  const ph=Math.round(pb.clientWidth/SCR.pos.ar*1.5);pb.style.height=ph+'px';hb.style.height=ph+'px';
+  const wr=r.getBoundingClientRect(),zz=wr.height/(r.clientHeight||1)||1,br=box.getBoundingClientRect();const extra=Math.floor((wr.bottom-br.bottom)/zz)-2;
+  kb.style.height=Math.max(160,kb.clientHeight+extra)+'px';try{hlViewFit();}catch(_){}}
 function khPlace(){const a=document.getElementById('scrCol'),m=document.getElementById('main');if(!m)return;const kp=m.querySelector('.kpis');
   const wide=!!a&&document.body.classList.contains('rsc')&&WALL()&&!STAFF;let r=document.getElementById('khRail');
   if(wide){if(!r){r=document.createElement('div');r.id='khRail';}if(a.firstElementChild!==r)a.prepend(r);
@@ -2618,7 +2646,7 @@ function khPlace(){const a=document.getElementById('scrCol'),m=document.getEleme
 render=(o=>function(){const x=o.apply(this,arguments);try{khPlace();devPlace();}catch(err){try{console.warn('lay6',err);}catch(_){}}return x;})(render);
 addEventListener('resize',()=>{try{devPlace();khPlace();}catch(_){}});
 function khAbbr(name){const l=khwShort(name).replace(/^\[[A-Za-z]+\d*\]\s*/,'').trim();/* 2026-11-22 lay8: 코드(D5 등) 대신 실제 일지 이름. l=전체, m=짧게(대장·일지·공정 등 꼬리 뺌) */
-  let m=l.replace(/\s*확인\s*일지$/,' 확인').replace(/\s*(관리\s*대장|대장|체크리스트|점검표)$/,'').replace(/공정$/,'').replace(/\s+관리$/,'').replace(/^(.{2,}?)\s*일지$/,'$1').trim()||l;return {l:l,m:m,c:m};}
+  let m=l.replace(/\s*확인\s*일지$/,' 확인').replace(/\s*(관리\s*대장|대장|체크리스트|점검표)$/,'').replace(/공정$/,'').replace(/\s+관리$/,'').replace(/^(.{2,}?)\s*일지$/,'$1').trim()||l;if(/^생산\s*작업/.test(m))m='생산일지';const l2=/^생산\s*작업/.test(l)?'생산일지':l;return {l:l2,m:m,c:m};}
 khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const today=khYmdL(Date.now());
   const top0='<div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 종합현황</span>';
   if(!cal||!cal.months||!cal.months.length)return '<div class="khday khw khm">'+top0+'</div><div class="note gray">일지 자료가 아직 없어요. 다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.</div></div>';
@@ -2636,7 +2664,7 @@ khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     const dn='<div class="khw-d">'+(d===today?'<i>오늘</i>':d===yd&&inM?'<i class="y">전일</i>':'')+(inM?Number(d.slice(8)):khMdW(d).replace(/\(.\)/,''))+'</div>';
     if(!inM)return '<div class="'+cls+'">'+dn+'</div>';
     const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};const probs=[],okP=[],okC=[];
-    x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,1])).forEach(([it,isC])=>{const c=khwEvc(it[2])[0];if(d<=today){wn++;if(c==='ok')wo++;else if(c==='bad'||c==='rej'||c==='arej')wb++;else if(c!=='prep')wi++;}
+    x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,/생산\s*작업/.test(it[1])?0:1])).forEach(([it,isC])=>{const c=khwEvc(it[2])[0];if(d<=today){wn++;if(c==='ok')wo++;else if(c==='bad'||c==='rej'||c==='arej')wb++;else if(c!=='prep')wi++;}
       if(c==='ok'||c==='prep')(isC?okC:okP).push(it);else probs.push([it,isC,c]);});
     probs.sort((a,b)=>(ORD[a[2]]??9)-(ORD[b[2]]??9));
     let h='<div class="'+cls+'">'+dn;if(x.hol)h+='<span class="khc s-hol p"><span class="nl">휴일</span><span class="nm">휴일</span><span class="nc">휴일</span></span>';
@@ -2652,7 +2680,7 @@ khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     '<span class="khw-ks">'+kc('미작성',c.unwritten||0,'r')+kc('미결재',c.unapproved||0,'a')+kc('이탈',dv,'r')+'</span>'+
     '<span class="khw-at">자료 '+esc(cal.at||'')+' · '+khNextTxt()+'</span>'+
     (STAFF?'':'<a class="khw-go" href="khday.html" target="_blank" rel="noopener">HACCP 통합 현황 ↗</a>')+'<a class="khw-go" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP ↗</a></div>'+
-    '<div class="khw-lg khm-lg"><span class="s-bad"><i>✕</i>미작성</span><span class="s-rv"><i>◐</i>검토중</span><span class="s-ing"><i>◑</i>승인중</span><span class="s-ok"><i>✓</i>승인 완료</span><span class="s-rej"><i>↩</i>반려(검토·승인)</span><span class="s-prep"><i>○</i>작성 예정</span><span class="s-hol"><i>–</i>휴일</span><span><b class="khc-cc">CCP</b> 실적/수불</span></div>'+
+    '<div class="khw-lg khm-lg"><span class="s-bad"><i>✕</i>미작성</span><span class="s-rv"><i>◐</i>검토중</span><span class="s-ing"><i>◑</i>승인중</span><span class="s-ok"><i>✓</i>승인 완료</span><span class="s-rej"><i>↩</i>반려(검토·승인)</span><span class="s-prep"><i>○</i>작성 예정</span><span class="s-hol"><i>–</i>휴일</span><span><b class="khc-cc">CCP</b><span class="khm-cy">노란 바탕 = CCP 일지</span></span></div>'+
     '<div class="khm-g">'+head+cells+'</div></div>';};
 if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyGmail({getData:()=>D,isStaff:()=>STAFF,getScreen:()=>companyScreenData,setScreen:f=>companyScreenData=f,getMail:()=>pMail,setMail:f=>pMail=f,getKpis:()=>kpis,setKpis:f=>kpis=f,setWide:f=>mailWide=f,setMailAll:f=>pMailAll=f,latest,nAct,esc,logoHtml,chev,acctLine,whenShort,render,pNaver,stat,empty,ui,panels:PANELS});
 
