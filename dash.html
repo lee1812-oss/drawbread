@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-22 11:33 K-HACCP 월 달력·출고품질 3칸 뺌">
+<meta name="dash-build" content="2026-11-22 12:36 생산일지 뺌·포스기/건강일지→배송 아래·K-HACCP 달력→키오스크 아래">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -917,6 +917,41 @@ function wallSync(){var p=FITP(),b=document.body;if(b){b.classList.toggle('wall'
 document.addEventListener('change',function(e){if(!e.target||e.target.id!=='fitSel')return;try{localStorage.setItem('dash_fit_v1',e.target.value);}catch(_){}wallSync();try{dispatchEvent(new Event('resize'));}catch(_){}setTimeout(function(){try{dispatchEvent(new Event('resize'));}catch(_){}},400);});
 addEventListener('resize',wallSync);document.addEventListener('DOMContentLoaded',wallSync);
 </script>
+<style id="lay6-style">/* 2026-11-22 조조 lay6: 생산일지 숨김, 포스기·건강일지 → 배송정보 아래, K-HACCP 달력 → 키오스크 아래(32·24인치), 달력 일지 이름 */
+#productionCol{display:none!important}
+body.ws-inline #workJournalCol{grid-template-columns:1fr!important}
+body.ws-wide:not(.wall) #workJournalCol{grid-template-rows:minmax(0,1fr)!important}
+body.wall.ws-wide #workJournalCol{display:flex!important;flex-direction:column!important;gap:10px!important;overflow:hidden!important}
+body.wall.ws-wide #workJournalCol>#deliveryCol{flex:1 1 0!important;height:auto!important;min-height:0!important}
+#devMove{display:flex;flex-direction:column;gap:10px;flex:none}
+#khRail{flex:1 1 auto;min-height:0;overflow:auto}
+#khRail .khday{margin:0;padding:8px 8px 10px;border-radius:12px;position:relative}
+#khRail .khday.bk-hot{padding-top:46px!important}
+#khRail .khd-top{flex-wrap:wrap;gap:4px 8px}
+#khRail .khw-lg{display:flex!important;font-size:.72rem;gap:2px 8px;margin:2px 0 4px}
+#khRail .khw-go{height:30px;font-size:.78rem;padding:0 8px}#khRail .khw-at{font-size:.72rem;margin-left:0}
+.khm-g{container-type:inline-size}
+.khc{display:inline-flex;align-items:center;gap:2px;border-radius:3px;padding:0 4px;font-size:.76rem;font-weight:800;line-height:1.5;white-space:nowrap;min-width:0;max-width:100%;overflow:hidden}
+.khc.p{display:flex;width:100%}
+.khc>span{overflow:hidden;text-overflow:ellipsis}
+.khc .sw{flex:0 0 auto;margin-left:auto;font-size:.68rem;font-weight:900;background:rgba(255,255,255,.28);border-radius:3px;padding:0 3px}
+.khc .ok{flex:0 0 auto;font-weight:900}
+.khc.c{box-shadow:inset 0 0 0 1.5px #1d4ed8}
+.khc-row{display:flex;flex-wrap:wrap;gap:2px;align-items:center;min-width:0}
+.khc-cc{font-size:.62rem;font-weight:900;color:#2563a8;border:1px dashed #6f93c4;border-radius:3px;padding:0 2px;line-height:1.4;background:transparent}body.night .khc-cc{color:#9db8f2}
+.khw .khc.s-ok{background:#87ceeb;color:#16324a}.khw .khc.s-ing{background:#9956af;color:#fff}.khw .khc.s-bad{background:#ff0000;color:#fff}.khw .khc.s-rej{background:#111;color:#fff}.khw .khc.s-rv{background:#ffa500;color:#2b1a00}.khw .khc.s-prep{background:#4a78c2;color:#fff}.khw .khc.s-arej{background:#1e6fd9;color:#fff}.khw .khc.s-hol{background:#c9c9c9;color:#374151}
+.khc .nm,.khc .nc{display:none}
+@container (max-width:1000px){.khc .nl{display:none}.khc .nm{display:inline}}
+@container (max-width:600px){.khc .nm{display:none}.khc .nc{display:inline}.khc{font-size:.72rem;padding:0 3px}.khc .sw{font-size:.62rem}}
+#khRail .khm-c .khw-d{font-size:.8rem}#khRail .khm-h{font-size:.72rem}
+#khRail .khc .nl,#khRail .khc .nm{display:none!important}#khRail .khc .nc{display:inline!important}#khRail .khc:not(.p){padding:0 2px;font-size:11px;line-height:1.35}#khRail .khc:not(.p) .ok{display:none}#khRail .khc.p{font-size:11px}#khRail .khc-row{gap:1px}
+@container (max-width:900px){body.wall header .dash-top .dash-shortcut{gap:3px!important;padding:2px 4px!important}body.wall header .dash-top .dash-shortcut-icon{width:22px!important;height:22px!important}body.wall header .dash-top .dash-shortcut-icon svg{width:18px!important;height:18px!important}body.wall header .dash-top .dash-shortcut-name{font-size:13px!important;letter-spacing:-.5px}}
+@container (max-width:900px){body.wall header .dash-top .brand .brand-meta{grid-template-areas:'v' 'p'!important;grid-template-columns:auto!important}body.wall header .dash-top .brand .brand-meta .dash-mode{display:none!important}}
+@container (max-width:900px){body.wall header .dash-top .tools .ib,body.wall header .dash-top .tools button{font-size:14px!important;padding:0 7px!important}body.wall header .dash-top .hd{gap:8px!important}body.wall header .dash-top .now .t{font-size:22px!important}body.wall header .dash-top .now .d{font-size:14px!important}}
+body.fitall.ftpl .frows.fnarrow .fgrid>*{grid-column:span var(--sp2,var(--sp,1))!important}
+@container (max-width:600px){.khm-c .khw-d{white-space:nowrap;overflow:hidden;font-size:.74rem!important}.khm-c .khw-d i{font-size:.56rem!important;padding:0 2px!important;margin-right:1px!important}.khc-row{gap:1px}.khc:not(.p){padding:0 2px;font-size:11px;line-height:1.35}.khc:not(.p) .ok{display:none}.khc.p{font-size:11px;line-height:1.4}.khc-cc{font-size:9px}.khm-c{padding:1px 2px 2px!important;gap:1px!important;min-height:0!important}}
+#khRail .khw-lg{font-size:.66rem!important}#khRail .khd-big{font-size:.85rem}#khRail .khw-k{font-size:.75rem;padding:2px 7px}
+</style>
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
@@ -1848,9 +1883,9 @@ function fitTplUndo(k){if(!k)return;const fr=k.querySelector(':scope>.frows');if
   if(FIT_SNAP&&FIT_SNAP.k===k){const ck=k.querySelector(':scope>.khday');FIT_SNAP.inner.forEach(([c,ch])=>ch.forEach(x=>c.appendChild(x)));k.innerHTML='';FIT_SNAP.top.forEach(x=>k.appendChild(ck&&x.classList&&x.classList.contains('khday')?ck:x));}
   FIT_SNAP=null;document.body.classList.remove('ftpl');}
 const FIT_ROWS=[
-  {t:'재고',c:'var(--blue)',items:[['.c4',4],['.kpi[data-open=stock]',1],['.kpi[data-open=fneed]',1]]},
+  {t:'재고',c:'var(--blue)',items:[['.c4',4,6],['.kpi[data-open=stock]',1,3],['.kpi[data-open=fneed]',1,3]]},
   {t:'생산 주문',c:'#16a34a',items:[['.kpi.ordw',6]]}, /* 2026-11-20 조조: 박태일 상무님 「생산 주문표」를 재고 바로 아래로 */
-  {t:'원료·할 일',c:'var(--green)',items:[['.kpi.sm[data-open=fraw]',1],['.kpi.todow[data-open=fraw]',2],['.kpi.todow[data-open=ftodo]',3]]}, /* 2026-11-21 조조: 생산 계획·이번 주 생산 뺌 → 원료 남은 기간 2칸 + 원료 발주 일정 4칸으로 줄을 채움 */
+  {t:'원료·할 일',c:'var(--green)',items:[['.kpi.sm[data-open=fraw]',1,2],['.kpi.todow[data-open=fraw]',2,4],['.kpi.todow[data-open=ftodo]',3,6]]}, /* 2026-11-21 조조: 생산 계획·이번 주 생산 뺌 → 원료 남은 기간 2칸 + 원료 발주 일정 4칸으로 줄을 채움 */
   /* 2026-11-22 조조: 출고·품질 3칸(오늘 출고·이카운트 경고·재고 이상) 뺌 → 남은 「오늘 할 일」은 위 원료 줄로 옮겨 한 줄을 줄이고 그 자리를 K-HACCP 월 달력에 씀 */
   ]; /* 2026-11-20 조조: 「알림·참고」 줄은 뺌(사용자 요청) */
 function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=s=>{const x=g.find(e=>e.textContent.trim().startsWith(s));const u=x&&x.querySelector('.gsub');return u?u.textContent.trim():'';};
@@ -1861,7 +1896,7 @@ function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=
   return '';}
 function fitTpl(m,k){if(innerWidth<1100)return false;
   const top=[...k.children];const used=new Set();const rows=[];let hit=0;
-  FIT_ROWS.forEach((R,i)=>{const its=[];R.items.forEach(([s,sp])=>{const el=[...k.querySelectorAll(s)].find(e=>!used.has(e));if(el){used.add(el);its.push([el,sp]);hit++;}});rows.push({R,i,its});});
+  FIT_ROWS.forEach((R,i)=>{const its=[];R.items.forEach(([s,sp,sp2])=>{const el=[...k.querySelectorAll(s)].find(e=>!used.has(e));if(el){used.add(el);its.push([el,sp,sp2]);hit++;}});rows.push({R,i,its});});
   if(hit<5)return false; /* 2026-11-22: 칸을 몇 개 뺀 뒤에도 줄 배치 유지 */
   const inner=[];k.querySelectorAll('.kg5').forEach(c=>inner.push([c,[...c.children]]));
   // 남는 카드(새로 생긴 칸 등)는 맨 아래 줄로
@@ -1870,13 +1905,13 @@ function fitTpl(m,k){if(innerWidth<1100)return false;
   document.body.classList.add('fitall','ftpl');
   const kh=k.querySelector(':scope>.khday');const wrap=document.createElement('div');wrap.className='frows';
   const mk=(t,c,sub,its)=>{const r=document.createElement('section');r.className='frow';const h=document.createElement('div');h.className='frh';h.style.setProperty('--rc',c);h.innerHTML='<b>'+t+'</b>'+sub;const g=document.createElement('div');g.className='fgrid';
-    const tot=its.reduce((a,x)=>a+x[1],0);g.style.gridTemplateColumns='repeat('+Math.max(6,tot)+',minmax(0,1fr))';its.forEach(([el,sp],j)=>{let s=sp;if(j===its.length-1&&tot<6)s+=6-tot;el.style.setProperty('--sp',s);g.appendChild(el);});r.appendChild(h);r.appendChild(g);wrap.appendChild(r);};
+    const tot=its.reduce((a,x)=>a+x[1],0);g.style.gridTemplateColumns='repeat('+Math.max(6,tot)+',minmax(0,1fr))';its.forEach(([el,sp,sp2],j)=>{let s=sp;if(j===its.length-1&&tot<6)s+=6-tot;el.style.setProperty('--sp',s);el.style.setProperty('--sp2',sp2||s);g.appendChild(el);});r.appendChild(h);r.appendChild(g);wrap.appendChild(r);};
   rows.forEach(({R,i,its})=>{if(its.length)mk(R.t,R.c,fitTplSub(k,i),its);});
   const grps=top.filter(e=>e.classList.contains('grp'));
   if(rest.length)mk('기타','var(--faint)','',rest.map(e=>[e,e.classList.contains('note')?6:2]));
   k.innerHTML='';if(kh)k.appendChild(kh);k.appendChild(wrap);grps.forEach(g=>k.appendChild(g));
   const ff=()=>{if(document.body.classList.contains('sk-wide'))return fitFits();return m.getBoundingClientRect().bottom<=innerHeight+1;}; /* 2026-11-20 조조: 24인치 등에서 재고 현황이 아래로 내려가면 전체 높이 대신 이 영역만 맞춤(전에는 늘 0.2배로 작아짐) */
-  let lo=0.2,hi=1.3;m.style.zoom=String(hi);if(!ff()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(ff())lo=z;else hi=z;}m.style.zoom=String(Math.max(lo,FIT_MINZ()));}
+  let lo=0.2,hi=1.3;if(WALL()){const W=m.getBoundingClientRect().width,nar=W<1500;wrap.classList.toggle('fnarrow',nar);hi=Math.min(hi,W/(nar?1150:1500));} /* 2026-11-22: 본문이 좁으면(오른쪽 단이 넓어진 32·24인치) 줄마다 두 줄로 나눠 글자가 겹치지 않게, 배율은 폭에도 맞춤 */m.style.zoom=String(hi);if(!ff()){for(let i=0;i<10;i++){const z=(lo+hi)/2;m.style.zoom=String(z);if(ff())lo=z;else hi=z;}m.style.zoom=String(Math.max(lo,FIT_MINZ()));}
   return true;}
 function FIT_MINZ(){if(WALL())return 0.35;return innerWidth<2400?0.55:0.3;} /* 글자가 읽히는 최소 배율. 이보다 작아야 맞으면 아래로 조금 내려 보게 함 */
 function fitAll(){if(FIT_BUSY)return;const m=$('#main');const k=m&&m.querySelector('.kpis');if(!k)return;
@@ -2266,7 +2301,7 @@ const SCR={kiosk:{name:'생산실 키오스크',ar:9/16,open(){if(!KIO_URL){aler
 const HL_VIEW={name:'건강일지 메인화면',ar:4/3,key:'',frame:null,enc:{"v":1,"kdf":"PBKDF2-SHA256-100000","salt":"r2TXPD1Vzj8dh0urxMWbww==","iv":"8sHe+OKficdbA97D","ct":"qkLEXHMZPqTvB5NF3xlFWUsEMTtoC053CX/bcL/msEy1GnOmqEBjMbY="}};
 function hlViewUrl(app){return 'https://lee1812-oss.github.io/health/'+(app?'':'app.html')+'?m=tablet&k='+encodeURIComponent(HL_VIEW.key);}
 function hlViewFit(){const f=HL_VIEW.frame;if(!f)return;const b=f.parentElement;const w=b.clientWidth,h=b.clientHeight;const z=Math.min(w/1024,h/768);f.style.transform='scale('+z+')';f.style.left=Math.max(0,(w-1024*z)/2)+'px';f.style.top=Math.max(0,(h-768*z)/2)+'px';}
-async function hlViewInit(k){try{const j=await decrypt(HL_VIEW.enc,k);if(!j||!j.key)return;HL_VIEW.key=j.key;const sec=document.querySelector('#scrCol .scr[data-dev="health"]');if(!sec)return;const f=document.createElement('iframe');f.className='hl-frame';f.title='건강일지 메인화면 보기 전용';f.setAttribute('sandbox','allow-scripts');f.setAttribute('referrerpolicy','no-referrer');f.setAttribute('allow',"camera 'none'; microphone 'none'; autoplay 'none'");f.setAttribute('tabindex','-1');f.setAttribute('inert','');f.src=hlViewUrl(false);HL_VIEW.frame=f;sec.querySelector('.scr-b').prepend(f);sec.querySelector('.scr-st').textContent='메인화면 · 보기 전용';sec.querySelector('.scr-m').textContent='';hlViewFit();setInterval(()=>{if(!document.hidden&&SCS.big!=='health')f.src=hlViewUrl(false);},5*60e3);}catch(_){const s=document.querySelector('#scrCol .scr[data-dev="health"] .scr-m');if(s)s.textContent='건강일지 연결을 확인해 주세요';}}
+async function hlViewInit(k){try{const j=await decrypt(HL_VIEW.enc,k);if(!j||!j.key)return;HL_VIEW.key=j.key;const sec=document.querySelector('.scr[data-dev="health"]');if(!sec)return;const f=document.createElement('iframe');f.className='hl-frame';f.title='건강일지 메인화면 보기 전용';f.setAttribute('sandbox','allow-scripts');f.setAttribute('referrerpolicy','no-referrer');f.setAttribute('allow',"camera 'none'; microphone 'none'; autoplay 'none'");f.setAttribute('tabindex','-1');f.setAttribute('inert','');f.src=hlViewUrl(false);HL_VIEW.frame=f;sec.querySelector('.scr-b').prepend(f);sec.querySelector('.scr-st').textContent='메인화면 · 보기 전용';sec.querySelector('.scr-m').textContent='';hlViewFit();setInterval(()=>{if(!document.hidden&&SCS.big!=='health')f.src=hlViewUrl(false);},5*60e3);}catch(_){const s=document.querySelector('.scr[data-dev="health"] .scr-m');if(s)s.textContent='건강일지 연결을 확인해 주세요';}}
 const SCS={rt:'',have:{},busy:false,big:'',err:'',skew:0,W:0};
 function scrOn(){return !STAFF&&!!SCS.rt;}
 function scrBuild(){if(document.getElementById('scrCol'))return;const a=document.createElement('aside');a.id='scrCol';a.setAttribute('aria-label','기기 화면');
@@ -2278,8 +2313,8 @@ function scrBuild(){if(document.getElementById('scrCol'))return;const a=document
   addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
 function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100&&FITP()!=='lap';const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
   let W=SCS.W;if(on){const ids=Object.keys(SCR).concat('health');const hh=54,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/(d==='health'?HL_VIEW:SCR[d]).ar,0);
-    W=wide?Math.max(200,Math.min(wallSync()?(FITP()==='24'?210:230):innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
-    document.documentElement.style.setProperty('--scrW',W+'px');ids.forEach(d=>{const b=a.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(b)b.style.height=Math.floor(W/(d==='health'?HL_VIEW:SCR[d]).ar)+'px';});}
+    W=wide&&wallSync()?Math.max(420,Math.min(680,Math.round(innerWidth*0.25))):wide?Math.max(200,Math.min(innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
+    document.documentElement.style.setProperty('--scrW',W+'px');try{devPlace();khPlace();}catch(_){}ids.forEach(d=>{const b=document.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(!b)return;const ar=(d==='health'?HL_VIEW:SCR[d]).ar;let h=W/ar;if(wide&&WALL()){if(d==='kiosk')h=Math.min(W/ar,innerHeight*0.25);else if(b.closest('#devMove'))h=b.clientWidth/ar;}b.style.height=Math.floor(h)+'px';});}
   hlViewFit();if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
 function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
 function scrState(d){const x=SCR[d].meta;if(SCS.err)return {c:'stop',t:SCS.err,m:SCR[d].src?'':SCS.err};
@@ -2287,11 +2322,11 @@ function scrState(d){const x=SCR[d].meta;if(SCS.err)return {c:'stop',t:SCS.err,m
   const age=(Date.now()+SCS.skew)-(x.seen||x.t);
   if(age<=90e3)return {c:'live',t:'● 실시간 · '+scrT(x.t)+' 화면',m:SCR[d].src?'':'화면을 받아 오는 중이에요'};
   return {c:'stop',t:'⏸ 멈춤 · 마지막 '+scrT(x.seen||x.t),m:'화면 소식이 '+Math.round(age/60e3)+'분째 없어요. 기기가 꺼졌거나 인터넷이 끊겼을 수 있어요.'};}
-function scrPaint(d){const a=document.getElementById('scrCol');if(!a)return;const sec=a.querySelector('.scr[data-dev="'+d+'"]');if(!sec)return;const st=scrState(d);
+function scrPaint(d){const a=document.getElementById('scrCol');if(!a)return;const sec=document.querySelector('.scr[data-dev="'+d+'"]');if(!sec)return;const st=scrState(d);
   sec.classList.toggle('stop',st.c==='stop');const s=sec.querySelector('.scr-st');s.className='scr-st '+st.c;s.textContent=st.t;
   const im=sec.querySelector('img');if(SCR[d].src&&im.getAttribute('src')!==SCR[d].src)im.src=SCR[d].src;sec.querySelector('.scr-m').textContent=st.m;
   if(SCS.big===d){const b=document.getElementById('scrBig');const bi=b.querySelector('img');if(SCR[d].src&&bi.getAttribute('src')!==SCR[d].src)bi.src=SCR[d].src;const bs=b.querySelector('.scr-st');bs.className='scr-st '+st.c;bs.textContent=st.t;}}
-function scrBigOpen(d){const b=document.getElementById('scrBig');if(!b)return;const was=SCS.big;if(was==='health'&&HL_VIEW.frame){document.querySelector('#scrCol .scr[data-dev="health"] .scr-b').prepend(HL_VIEW.frame);}SCS.big=d;b.classList.toggle('show',!!d);b.querySelector('.sb-b').classList.toggle('hl-big',d==='health');hlViewFit();if(!d)return;
+function scrBigOpen(d){const b=document.getElementById('scrBig');if(!b)return;const was=SCS.big;if(was==='health'&&HL_VIEW.frame){document.querySelector('.scr[data-dev="health"] .scr-b').prepend(HL_VIEW.frame);}SCS.big=d;b.classList.toggle('show',!!d);b.querySelector('.sb-b').classList.toggle('hl-big',d==='health');hlViewFit();if(!d)return;
   const isHl=d==='health';b.querySelector('.sb-h b').textContent=isHl?HL_VIEW.name:SCR[d].name;b.querySelector('.sb-h [data-s="open"]').textContent=isHl?'건강일지 앱 열기':'원격 조작 열기';b.querySelector('.sb-n').textContent=isHl?'오늘의 건강일지 메인화면 미리보기입니다. 기록을 입력하려면 「건강일지 앱 열기」를 누르세요. Esc 또는 화면을 누르면 닫혀요.':'보기 전용 화면이에요. 누르거나 입력하려면 「원격 조작 열기」를 눌러 주세요. Esc 또는 화면을 누르면 닫혀요.';
   if(isHl){if(HL_VIEW.frame)b.querySelector('.sb-b').prepend(HL_VIEW.frame);const st=b.querySelector('.scr-st');st.className='scr-st live';st.textContent='메인화면 · 보기 전용';hlViewFit();return;}b.querySelector('.sb-b img').removeAttribute('src');scrPaint(d);}
 function scrClick(e){const t=e.target.closest&&e.target.closest('[data-s]');if(!t)return;const k=t.dataset.s;const sec=t.closest('.scr');const d=sec?sec.dataset.dev:SCS.big;
@@ -2318,7 +2353,7 @@ function dsEntry(){const d=dsDate();return dsReports().find(e=>e.weekStart<=d&&d
 function dsDoc(e){if(!e)return null;const s=D&&D.deliverySchedule;if(s&&s.scheduleDate===e.scheduleDate&&s.updated===e.revision&&pjValidImg(s.image))return s;const c=DSS.cache[e.file];return c&&c.rev===e.revision?c.doc:null;}
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
-function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?(FITP()==='24'?300:320):Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
+function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?290:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
 function dsMissing(e){return e?(DSS.err[e.file]||'배송표 원본을 불러오는 중입니다.'):'선택한 날짜가 포함된 배송표가 없습니다. 다른 날짜의 표를 대신 표시하지 않습니다.';}
 let WORK_PRINT_BUSY=false;
 function workPrintButtons(){for(const [id,ok,attr] of [['deliveryBig',!!dsDoc(dsEntry()),'data-dsch'],['productionBig',(()=>{const d=pjDate(),e=pjEntries().find(x=>x.date===d),c=PJS.cache[d];return !!(e&&c?.rev===e.revision&&(c.doc?.images||[]).some(pjValidImg));})(),'data-pj']]){const b=document.getElementById(id)?.querySelector('['+attr+'="print"]');if(b){b.disabled=WORK_PRINT_BUSY||!ok;b.title=ok?'선택한 날짜 원본만 인쇄합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'이 날짜에 불러온 원본이 없어 인쇄할 수 없습니다.';}}}
@@ -2474,9 +2509,9 @@ function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday(
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
 function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
-  const rs=getComputedStyle(document.documentElement),skW=WALL()?(FITP()==='24'?300:320):Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  const rs=getComputedStyle(document.documentElement),skW=WALL()?290:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
   // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
-  const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=860;
+  const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=(WALL()?600:860);
   document.documentElement.style.setProperty('--skW',skW+'px');
   document.body.classList.toggle('sk-wide',wide);document.body.classList.toggle('sk-inline',!wide);
   if(!wide){const m=document.getElementById('main'),rail=document.getElementById('workJournalCol');const ref=rail&&rail.parentElement===m?.parentElement?rail:null;if(ref&&a.nextElementSibling!==ref)ref.before(a);else if(!ref&&m&&a.previousElementSibling!==m)m.after(a);}
@@ -2499,6 +2534,58 @@ render=(orig=>function(){orig();try{skPaint();}catch(_){}})(render);scrSize=(ori
 
 
 // ===== 2026-11-04 칸 고르기·키오스크 덧붙임 끝 =====
+// ===== 2026-11-22 조조 lay6 (사용자 요청): ① 이정현 과장 생산일지 칸 뺌(화면에서 숨김, 만드는 코드·인쇄는 남김) ② 넓은 화면 맞춤(32·24인치)에서 사무실 포스기·건강일지 미리보기를 배송정보 아래로
+// ③ K-HACCP 종합현황(월 달력)을 오른쪽 단 생산실 키오스크 바로 아래로, 그 단을 넓힘 ④ 달력에 일지 이름(줄임)·상태 색. 노트북·세로·태블릿·휴대폰·직원용은 예전처럼 본문에 달력.
+function devPlace(){const a=document.getElementById('scrCol'),r=document.getElementById('workJournalCol');if(!a)return;
+  const wide=document.body.classList.contains('rsc')&&document.body.classList.contains('ws-wide')&&!!r&&WALL();let box=document.getElementById('devMove');
+  if(wide){if(!box){box=document.createElement('div');box.id='devMove';box.addEventListener('click',scrClick);}if(box.parentElement!==r)r.append(box);
+    ['pos','health'].forEach(d=>{const s=document.querySelector('.scr[data-dev="'+d+'"]');if(s&&s.parentElement!==box)box.append(s);});
+    ['pos','health'].forEach(d=>{const b=document.querySelector('#devMove .scr[data-dev="'+d+'"] .scr-b');if(b&&b.clientWidth)b.style.height=Math.floor(b.clientWidth/(d==='health'?HL_VIEW:SCR[d]).ar)+'px';});}
+  else if(box){['pos','health'].forEach(d=>{const s=box.querySelector('.scr[data-dev="'+d+'"]');if(s)a.append(s);});box.remove();}
+  try{hlViewFit();}catch(_){}}
+function khPlace(){const a=document.getElementById('scrCol'),m=document.getElementById('main');if(!m)return;const kp=m.querySelector('.kpis');
+  const wide=!!a&&document.body.classList.contains('rsc')&&WALL()&&!STAFF;let r=document.getElementById('khRail');
+  if(wide){if(!r){r=document.createElement('div');r.id='khRail';}const kio=a.querySelector('.scr[data-dev="kiosk"]');if(kio&&r.previousElementSibling!==kio)kio.after(r);else if(!kio&&r.parentElement!==a)a.prepend(r);
+    const k=kp&&kp.querySelector(':scope>.khday');if(k){r.innerHTML='';r.append(k);}}
+  else if(r){const k=r.querySelector('.khday');if(k&&kp&&!kp.querySelector(':scope>.khday'))kp.prepend(k);r.remove();}}
+render=(o=>function(){const x=o.apply(this,arguments);try{khPlace();devPlace();}catch(err){try{console.warn('lay6',err);}catch(_){}}return x;})(render);
+addEventListener('resize',()=>{try{devPlace();khPlace();}catch(_){}});
+function khAbbr(name){const s=khwShort(name);const m=s.match(/^\[([A-Za-z]+\d*)\]\s*(.*)$/);if(m){const w=(m[2]||'').replace(/\s.*/,'').slice(0,4);return {l:s,m:m[1]+(w?' '+w:''),c:m[1]};}
+  const MAP={'건강상태 확인 일지':'건강','일일일지':'일일','주간일지':'주간','월간일지':'월간','생산작업일지':'작업'};const c=MAP[s]||s.replace(/\s/g,'').slice(0,2);return {l:s,m:c,c:c};}
+khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const today=khYmdL(Date.now());
+  const top0='<div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 종합현황</span>';
+  if(!cal||!cal.months||!cal.months.length)return '<div class="khday khw khm">'+top0+'</div><div class="note gray">일지 자료가 아직 없어요. 다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.</div></div>';
+  const ym=today.slice(0,7),first=ym+'-01',t1=new Date(first+'T12:00:00Z'),mon=t1.getUTCMonth()+1;
+  const dim=new Date(Date.UTC(t1.getUTCFullYear(),t1.getUTCMonth()+1,0)).getUTCDate(),last=ym+'-'+String(dim).padStart(2,'0');
+  const start=khAddDay(first,-t1.getUTCDay()),end=khAddDay(last,6-new Date(last+'T12:00:00Z').getUTCDay());
+  const days=[];for(let d=start;d<=end;d=khAddDay(d,1))days.push(d);
+  const t0=new Date(today+'T12:00:00Z'),wkS=khAddDay(today,-t0.getUTCDay()),wkE=khAddDay(wkS,6);
+  const yd=khAddDay(today,-1);let wb=0,wi=0,wo=0,wn=0;const ORD={bad:0,rej:1,arej:2,rv:3,ing:4};
+  const chip=(it,isC,prob)=>{const c=khwEvc(it[2]),a=khAbbr(it[1]);return '<span class="khc s-'+c[0]+(isC?' c':'')+(prob?' p':'')+'" title="'+esc((isC?'CCP · ':'')+it[1]+' : '+it[2])+'"><span class="nl">'+esc(prob?a.l:a.m)+'</span><span class="nm">'+esc(a.m)+'</span><span class="nc">'+esc(a.c)+'</span>'+(prob?'<span class="sw">'+esc(c[1])+'</span>':(c[0]==='ok'?'<span class="ok">✓</span>':''))+'</span>';};
+  const head='일월화수목금토'.split('').map((w,i)=>'<div class="khm-h'+(i===0?' sun':i===6?' sat':'')+'">'+w+'</div>').join('');
+  const cells=days.map((d,j)=>{const dow=j%7,inM=d.slice(0,7)===ym;
+    const cls='khm-c'+(inM?'':' out')+(d===today?' today':'')+(d===yd?' yd':'')+(d>=wkS&&d<=wkE?' wk':'')+(dow===0?' sun':dow===6?' sat':'');
+    const dn='<div class="khw-d">'+(d===today?'<i>오늘</i>':d===yd&&inM?'<i class="y">전일</i>':'')+(inM?Number(d.slice(8)):khMdW(d).replace(/\(.\)/,''))+'</div>';
+    if(!inM)return '<div class="'+cls+'">'+dn+'</div>';
+    const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};const probs=[],okP=[],okC=[];
+    x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,1])).forEach(([it,isC])=>{const c=khwEvc(it[2])[0];if(d<=today){wn++;if(c==='ok')wo++;else if(c==='bad'||c==='rej'||c==='arej')wb++;else if(c!=='prep')wi++;}
+      if(c==='ok'||c==='prep')(isC?okC:okP).push(it);else probs.push([it,isC,c]);});
+    probs.sort((a,b)=>(ORD[a[2]]??9)-(ORD[b[2]]??9));
+    let h='<div class="'+cls+'">'+dn;if(x.hol)h+='<span class="khc s-hol p"><span class="nl">휴일</span><span class="nm">휴일</span><span class="nc">휴일</span></span>';
+    h+=probs.map(p=>chip(p[0],p[1],true)).join('');
+    if(okP.length)h+='<span class="khc-row">'+okP.map(it=>chip(it,0,false)).join('')+'</span>';
+    if(okC.length)h+='<span class="khc-row"><span class="khc-cc">CCP</span>'+okC.map(it=>chip(it,1,false)).join('')+'</span>';
+    if(!x.hol&&!x.per.length&&!x.ccp.length&&d<=today)h+='<span class="khm-none">일지 없음</span>';
+    return h+'</div>';}).join('');
+  const c=k0.counts||{};const pd=(typeof khPendDev==='function'?khPendDev(k0).length:0),dv=(c.deviation||0)+pd;
+  const big=wb?'<span class="khd-big s-bad">⚠ 이번 달 확인할 일지 '+wb+'건</span>':wi?'<span class="khd-big s-ing">결재 진행 중 '+wi+'건</span>':wn?'<span class="khd-big s-ok">✓ 이번 달 '+wo+'/'+wn+' 승인완료</span>':'';
+  const kc=(t,n,cl)=>'<span class="khw-k '+(n?cl:'z')+'">'+t+' <b>'+n+'</b></span>';
+  return '<div class="khday khw khm">'+top0+'<span class="khd-date">'+t1.getUTCFullYear()+'년 '+mon+'월 <i>이번 달</i></span>'+big+
+    '<span class="khw-ks">'+kc('미작성',c.unwritten||0,'r')+kc('미결재',c.unapproved||0,'a')+kc('이탈',dv,'r')+'</span>'+
+    '<span class="khw-at">자료 '+esc(cal.at||'')+' · '+khNextTxt()+'</span>'+
+    (STAFF?'':'<a class="khw-go" href="khday.html" target="_blank" rel="noopener">HACCP 통합 현황 ↗</a>')+'<a class="khw-go" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP ↗</a></div>'+
+    '<div class="khw-lg"><span><i class="s-bad"></i>미작성</span><span><i class="s-rv"></i>검토중</span><span><i class="s-rej"></i>검토 반려</span><span><i class="s-prep"></i>작성 예정</span><span><i class="s-ing"></i>승인중</span><span><i class="s-ok"></i>승인 완료 ✓</span><span><i class="s-arej"></i>승인 반려</span><span><i class="s-hol"></i>휴일</span><span><b class="khc-cc">CCP</b> 실적/수불</span></div>'+
+    '<div class="khm-g">'+head+cells+'</div></div>';};
 if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyGmail({getData:()=>D,isStaff:()=>STAFF,getScreen:()=>companyScreenData,setScreen:f=>companyScreenData=f,getMail:()=>pMail,setMail:f=>pMail=f,getKpis:()=>kpis,setKpis:f=>kpis=f,setWide:f=>mailWide=f,setMailAll:f=>pMailAll=f,latest,nAct,esc,logoHtml,chev,acctLine,whenShort,render,pNaver,stat,empty,ui,panels:PANELS});
 
 if(typeof globalThis.installImportantNotice==='function')globalThis.installImportantNotice({getData:()=>D,isStaff:()=>STAFF,getKey:()=>{let k='';try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK)||'';}catch(_){}return k||window.__MEMKEY||'';},getRender:()=>render,setRender:f=>render=f});
@@ -2538,11 +2625,11 @@ var SEL=".kpi.alert:not(.mailw):not([data-open=\"mail\"]):not([data-open=\"naver
 function tx(el,s){var e=el.querySelector(s);return e?e.textContent.replace(/\s+/g,' ').trim():'';}
 function esc2(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function run(){var m=document.getElementById('main'),hd=document.querySelector('header');if(!m||!hd)return;
-  var it=[];var hotKh=[],khChg=false;m.querySelectorAll(SEL).forEach(function(el){if(el.closest('.bk-strip'))return;var no=String(it.length+1);if(el.getAttribute('data-bkno')!==no)el.setAttribute('data-bkno',no);
+  var it=[];var hotKh=[],khChg=false;(function(){var r=document.getElementById('khRail');return (r?Array.from(r.querySelectorAll(SEL)):[]).concat(Array.from(m.querySelectorAll(SEL)));})().forEach(function(el){if(el.closest('.bk-strip'))return;var no=String(it.length+1);if(el.getAttribute('data-bkno')!==no)el.setAttribute('data-bkno',no);
     if(el.classList.contains('khd-big')){var kc=el.closest('.khday');if(kc){hotKh.push(kc);if(!kc.classList.contains('bk-hot')){kc.classList.add('bk-hot');khChg=true;}if(kc.getAttribute('data-bkno')!==no)kc.setAttribute('data-bkno',no);}it.push({lb:'K-HACCP 일지',st:el.textContent.replace(/[⚠\s]+/,' ').replace('확인할 일지','확인 필요').trim(),open:'khaccp'});return;}
     var pc=el.classList.contains('pcs');var lb=(pc?tx(el,'.pt'):(tx(el,'.lb')||tx(el,'.c4h .lb'))).split(' · ')[0];var st=(pc?tx(el,'.pv'):tx(el,'.badge')).split(' · ')[0];
     it.push({lb:lb,st:st,open:el.getAttribute('data-open')||'',pc:el.getAttribute('data-pc')||'',sub:el.getAttribute('data-sub')||''});});
-  m.querySelectorAll('.khday.bk-hot').forEach(function(c){if(hotKh.indexOf(c)<0){c.classList.remove('bk-hot');c.removeAttribute('data-bkno');khChg=true;}});if(khChg)refit();
+  document.querySelectorAll('.khday.bk-hot').forEach(function(c){if(hotKh.indexOf(c)<0){c.classList.remove('bk-hot');c.removeAttribute('data-bkno');khChg=true;}});if(khChg)refit();
   var sig=it.map(function(x){return x.lb+'|'+x.st;}).join('/');var cur=hd.querySelector('.bk-strip');
   if(!it.length){if(cur){cur.remove();refit();}return;}
   if(cur&&cur.getAttribute('data-h')===sig)return;
