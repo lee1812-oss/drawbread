@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="dash-build" content="2026-11-21 23:06 화면 맞춤(자동·24인치·32인치·노트북)">
+<meta name="dash-build" content="2026-11-22 11:33 K-HACCP 월 달력·출고품질 3칸 뺌">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -825,6 +825,30 @@ body.sk-inline .sk-prev{flex:none;max-height:none;overflow:visible}
  nav.dash-shortcuts .dash-shortcut-name{font-size:1.15rem!important}
  nav.dash-shortcuts .dash-shortcut-desc{font-size:.85rem!important}
 }
+
+/* 2026-11-22 조조: K-HACCP 월 달력 */
+.khm-g{display:grid;grid-template-columns:.75fr repeat(5,minmax(0,1fr)) .75fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.khm-h{font-size:.8rem;font-weight:900;text-align:center;padding:2px 0;background:var(--bg);border-bottom:1px solid var(--line);border-right:1px solid var(--line);color:var(--ink2)}
+.khm-h:nth-child(7){border-right:0}.khm-h.sun{color:#c62828}.khm-h.sat{color:#1d4ed8}
+.khm-c{border-right:1px solid var(--line);border-top:1px solid var(--line);padding:2px 4px 3px;display:flex;flex-direction:column;gap:2px;min-width:0;min-height:44px}
+.khm-c:nth-child(7n){border-right:0}
+.khm-c.wk{background:rgba(34,57,111,.06)}body.night .khm-c.wk{background:rgba(157,184,242,.07)}
+.khm-c.out{background:transparent}.khm-c.out .khw-d{opacity:.35}
+.khm-c.today{background:#fff8dc}body.night .khm-c.today{background:rgba(250,204,21,.14)}
+.khm-c.yd{box-shadow:inset 0 0 0 2px #22396F}
+.khm-c .khw-d{text-align:left;font-size:1rem;padding:0 1px}
+.khm-c.sun .khw-d{color:#c62828}.khm-c.sat .khw-d{color:#1d4ed8}
+.khw .khm-c .khw-e{min-height:22px;font-size:.9rem;padding:0 5px}
+body.fitall .khw .khm-c .khw-e{min-height:21px}
+.khw-e .cc{flex:0 0 auto;font-size:.62rem;font-weight:900;background:rgba(255,255,255,.32);border-radius:3px;padding:0 3px}
+.khm-sum{display:flex;flex-wrap:wrap;gap:2px}
+.khm-s{font-size:.86rem;font-weight:900;border-radius:3px;padding:0 5px;line-height:1.5;white-space:nowrap}
+.khw .khm-s.s-ok{background:#87ceeb;color:#16324a}.khw .khm-s.s-prep{background:#4a78c2;color:#fff}
+.khm-s.c{box-shadow:inset 0 0 0 1.5px #2563a8}
+.khm-more{font-size:.84rem;font-weight:900;color:#d61f1f}body.night .khm-more{color:#ff8a8a}
+.khm-none{font-size:.72rem;color:var(--sub)}
+@media (max-width:900px){.khm-g{overflow-x:auto;grid-template-columns:repeat(7,minmax(104px,1fr))}}
+@media (max-width:759px){header{position:static!important}} /* 휴대폰: 머리줄이 화면보다 길어 고정하면 아래 내용이 가려짐 */
 </style>
 <style id="wall-style">/* 2026-11-21 조조: 03 1번 모니터(32인치 1920x1080) 전용 한 화면 배치. 주소에 ?wall=1 을 한 번 붙여 열면 그 기기에서만 켜짐(?wall=0 끔). 다른 PC·태블릿·세로 키오스크는 그대로 */
 body.wall header{display:flex;flex-direction:column}
@@ -1734,6 +1758,47 @@ khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     '<div class="khw-g">'+cells+'</div></div>';};
 kpis=(o=>function(){return o.apply(this,arguments).filter(x=>x&&x.k!=='khaccp');})(kpis);
 render=(o=>function(){try{const f=D&&D.factory;if(f&&Array.isArray(f.todo))f.todo=f.todo.filter(t=>t&&t.src!=='K-HACCP');}catch(_){}return o.apply(this,arguments);})(render);
+// ===== 2026-11-22 조조: K-HACCP 종합현황 → 그 달 전체 달력 (사용자 요청). 상태 색·CCP 구분·미작성/미결재 요약·오늘/전일 표시는 그대로.
+// 일이 많은 날은 문제 있는 일지(미작성·반려·검토중·승인중)만 이름으로 최대 2줄, 나머지는 「+N건 더」, 승인완료는 「일지 ✓N」「CCP ✓N」, 작성 예정은 「예정 N」으로 요약. 칸에 마우스를 올리면 그날 전체 목록.
+khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const today=khYmdL(Date.now());
+  const top0='<div class="khd-top">'+logoHtml('haccp')+'<span class="lb">K-HACCP 종합현황</span>';
+  if(!cal||!cal.months||!cal.months.length)return '<div class="khday khw khm">'+top0+'</div><div class="note gray">일지 자료가 아직 없어요. 다음 K-HACCP 점검('+khNextTxt().replace('다음 ','')+') 때부터 보여요.</div></div>';
+  const ym=today.slice(0,7),first=ym+'-01',t1=new Date(first+'T12:00:00Z'),mon=t1.getUTCMonth()+1;
+  const dim=new Date(Date.UTC(t1.getUTCFullYear(),t1.getUTCMonth()+1,0)).getUTCDate(),last=ym+'-'+String(dim).padStart(2,'0');
+  const start=khAddDay(first,-t1.getUTCDay()),end=khAddDay(last,6-new Date(last+'T12:00:00Z').getUTCDay());
+  const days=[];for(let d=start;d<=end;d=khAddDay(d,1))days.push(d);
+  const t0=new Date(today+'T12:00:00Z'),wkS=khAddDay(today,-t0.getUTCDay()),wkE=khAddDay(wkS,6);
+  const yd=khAddDay(today,-1);let wb=0,wi=0,wo=0,wn=0;
+  const ORD={bad:0,rej:1,arej:2,rv:3,ing:4};
+  const line=(it,isC)=>{const c=khwEvc(it[2]);return '<span class="khw-e s-'+c[0]+'">'+(isC?'<span class="cc">CCP</span>':'')+'<span class="t">'+esc(khwShort(it[1]))+'</span><span class="s">'+esc(c[1])+'</span></span>';};
+  const head='일월화수목금토'.split('').map((w,i)=>'<div class="khm-h'+(i===0?' sun':i===6?' sat':'')+'">'+w+'</div>').join('');
+  const cells=days.map((d,j)=>{const dow=j%7,inM=d.slice(0,7)===ym;
+    let cls='khm-c'+(inM?'':' out')+(d===today?' today':'')+(d===yd?' yd':'')+(d>=wkS&&d<=wkE?' wk':'')+(dow===0?' sun':dow===6?' sat':'');
+    const dn='<div class="khw-d">'+(d===today?'<i>오늘</i>':d===yd&&inM?'<i class="y">전일</i>':'')+(inM?Number(d.slice(8)):khMdW(d).replace(/\(.\)/,''))+'</div>';
+    if(!inM)return '<div class="'+cls+'">'+dn+'</div>';
+    const x=khDayOf(cal,d)||{per:[],ccp:[],hol:false};
+    const all=x.per.map(it=>[it,0]).concat(x.ccp.map(it=>[it,1]));let okP=0,okC=0,pre=0;const probs=[];
+    all.forEach(([it,isC])=>{const c=khwEvc(it[2])[0];if(d<=today){wn++;if(c==='ok')wo++;else if(c==='bad'||c==='rej'||c==='arej')wb++;else if(c!=='prep')wi++;}
+      if(c==='ok'){if(isC)okC++;else okP++;}else if(c==='prep')pre++;else probs.push([it,isC,c]);});
+    probs.sort((a,b)=>(ORD[a[2]]??9)-(ORD[b[2]]??9));
+    const tip=khMdW(d)+(x.hol?' · 휴일':'')+'\n'+(x.per.length?x.per.map(it=>'· '+khwShort(it[1])+' : '+it[2]).join('\n'):'')+(x.ccp.length?'\n[CCP 실적/수불]\n'+x.ccp.map(it=>'· '+khwShort(it[1])+' : '+it[2]).join('\n'):'');
+    let h='<div class="'+cls+'" title="'+esc(tip)+'">'+dn;
+    if(x.hol)h+='<span class="khw-e s-hol"><span class="t">휴일</span></span>';
+    h+=probs.slice(0,2).map(p=>line(p[0],p[1])).join('');
+    if(probs.length>2)h+='<span class="khm-more">+'+(probs.length-2)+'건 더</span>';
+    let sm='';if(okP)sm+='<span class="khm-s s-ok">일지 ✓'+okP+'</span>';if(okC)sm+='<span class="khm-s s-ok c">CCP ✓'+okC+'</span>';if(pre)sm+='<span class="khm-s s-prep">예정 '+pre+'</span>';
+    if(sm)h+='<span class="khm-sum">'+sm+'</span>';
+    if(!x.hol&&!all.length&&d<=today)h+='<span class="khm-none">일지 없음</span>';
+    return h+'</div>';}).join('');
+  const c=k0.counts||{};const pd=(typeof khPendDev==='function'?khPendDev(k0).length:0),dv=(c.deviation||0)+pd;
+  const big=wb?'<span class="khd-big s-bad">⚠ 이번 달 확인할 일지 '+wb+'건</span>':wi?'<span class="khd-big s-ing">결재 진행 중 '+wi+'건</span>':wn?'<span class="khd-big s-ok">✓ 이번 달 '+wo+'/'+wn+' 승인완료</span>':'';
+  const chip=(t,n,cl)=>'<span class="khw-k '+(n?cl:'z')+'">'+t+' <b>'+n+'</b></span>';
+  return '<div class="khday khw khm">'+top0+'<span class="khd-date">'+t1.getUTCFullYear()+'년 '+mon+'월 <i>이번 달</i></span>'+big+
+    '<span class="khw-ks">'+chip('미작성',c.unwritten||0,'r')+chip('미결재',c.unapproved||0,'a')+chip('이탈',dv,'r')+'</span>'+
+    '<span class="khw-at">자료 '+esc(cal.at||'')+' · '+khNextTxt()+'</span>'+
+    (STAFF?'':'<a class="khw-go" href="khday.html" target="_blank" rel="noopener">HACCP 통합 현황 ↗</a>')+'<a class="khw-go" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP ↗</a></div>'+
+    '<div class="khw-lg"><span><i class="s-bad"></i>미작성</span><span><i class="s-rv"></i>검토중</span><span><i class="s-rej"></i>검토 반려</span><span><i class="s-prep"></i>작성 예정</span><span><i class="s-ing"></i>승인중</span><span><i class="s-ok"></i>승인 완료</span><span><i class="s-arej"></i>승인 반려</span><span><i class="s-hol"></i>휴일</span><span>· <b>CCP</b> = CCP 실적/수불 일지</span></div>'+
+    '<div class="khm-g">'+head+cells+'</div></div>';};
 
 
 // ===== 2026-11-02 조조: 한 화면 맞춤 (사용자 「한 페이지에 모두 보이게, 스크롤 없이 알차게 하나의 화면으로」) =====
@@ -1785,8 +1850,8 @@ function fitTplUndo(k){if(!k)return;const fr=k.querySelector(':scope>.frows');if
 const FIT_ROWS=[
   {t:'재고',c:'var(--blue)',items:[['.c4',4],['.kpi[data-open=stock]',1],['.kpi[data-open=fneed]',1]]},
   {t:'생산 주문',c:'#16a34a',items:[['.kpi.ordw',6]]}, /* 2026-11-20 조조: 박태일 상무님 「생산 주문표」를 재고 바로 아래로 */
-  {t:'생산·원료',c:'var(--green)',items:[['.kpi.sm[data-open=fraw]',2],['.kpi.todow[data-open=fraw]',4]]}, /* 2026-11-21 조조: 생산 계획·이번 주 생산 뺌 → 원료 남은 기간 2칸 + 원료 발주 일정 4칸으로 줄을 채움 */
-  {t:'출고·품질',c:'var(--amber)',items:[['.kpi[data-open=delivery]',1],['.kpi[data-open=khaccp]',1],['.kpi[data-open=audit]',1],['.kpi[data-open=fstock]',1],['.kpi.todow[data-open=ftodo]',2]]},
+  {t:'원료·할 일',c:'var(--green)',items:[['.kpi.sm[data-open=fraw]',1],['.kpi.todow[data-open=fraw]',2],['.kpi.todow[data-open=ftodo]',3]]}, /* 2026-11-21 조조: 생산 계획·이번 주 생산 뺌 → 원료 남은 기간 2칸 + 원료 발주 일정 4칸으로 줄을 채움 */
+  /* 2026-11-22 조조: 출고·품질 3칸(오늘 출고·이카운트 경고·재고 이상) 뺌 → 남은 「오늘 할 일」은 위 원료 줄로 옮겨 한 줄을 줄이고 그 자리를 K-HACCP 월 달력에 씀 */
   ]; /* 2026-11-20 조조: 「알림·참고」 줄은 뺌(사용자 요청) */
 function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=s=>{const x=g.find(e=>e.textContent.trim().startsWith(s));const u=x&&x.querySelector('.gsub');return u?u.textContent.trim():'';};
   const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1797,7 +1862,7 @@ function fitTplSub(k,i){const g=[...k.querySelectorAll(':scope>.grp')];const gs=
 function fitTpl(m,k){if(innerWidth<1100)return false;
   const top=[...k.children];const used=new Set();const rows=[];let hit=0;
   FIT_ROWS.forEach((R,i)=>{const its=[];R.items.forEach(([s,sp])=>{const el=[...k.querySelectorAll(s)].find(e=>!used.has(e));if(el){used.add(el);its.push([el,sp]);hit++;}});rows.push({R,i,its});});
-  if(hit<8)return false;
+  if(hit<5)return false; /* 2026-11-22: 칸을 몇 개 뺀 뒤에도 줄 배치 유지 */
   const inner=[];k.querySelectorAll('.kg5').forEach(c=>inner.push([c,[...c.children]]));
   // 남는 카드(새로 생긴 칸 등)는 맨 아래 줄로
   const rest=[];top.forEach(e=>{if(e.classList.contains('khday')||e.classList.contains('grp')||used.has(e))return;if(e.classList.contains('kg5')){[...e.children].forEach(c=>{if(!used.has(c))rest.push(c);});return;}rest.push(e);});
@@ -2128,13 +2193,13 @@ function cdApply(h,build){const t=document.createElement('template');t.innerHTML
     CD.cur=cur;try{localStorage.setItem('dash_cards_cat',JSON.stringify(CD.cat));}catch(_){}}
   if(!CD.hide.size&&!build&&!/data-open="(mail|sched|fsales|fana|pcmon)"/.test(h))return h;
   r.querySelectorAll('.khday,.kpi').forEach(el=>{const id=cdId(el);if(CD.hide.has(id)||dashOff(id))el.remove();});
-  r.querySelectorAll('.c4,.pcw,.kg5').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';});
+  r.querySelectorAll('.c4,.pcw,.kg5').forEach(c=>{const n=c.querySelectorAll(':scope>.kpi').length;if(!n){c.remove();return;}if(c.classList.contains('pcw')&&n===1)c.classList.add('one');if(c.classList.contains('c4')&&n<4)c.style.gridTemplateColumns='repeat('+n+',minmax(0,1fr))';if(c.classList.contains('kg5')&&n===1)c.style.gridTemplateColumns='minmax(0,1fr)';});
   [...r.children].forEach(c=>{if(!c.classList.contains('grp'))return;const nx=c.nextElementSibling;if(!nx||nx.classList.contains('grp'))c.remove();});
   const d=document.createElement('div');d.append(r);return d.innerHTML;}
 
 // ===== 2026-11-20 조조: ① 「알림·참고」 칸(회사메일·오늘 자동 알림·사무실 PC 프로그램 2칸·이번 주 매출·4~10월 대조 분석)을 화면에서 뺌 (사용자 요청). 만드는 코드는 남겨 둠 — 다시 보이려면 dashOff에서 지우면 됨
 // ② 박태일 상무님 요청(11/18) 「생산 주문표」: 생산실 9개 제품 주문을 출고일 × 제품 박스 수로. 자료 = D.factory.orders9 (~/.aside/u/0/dashboard/orders9_build.js, factory_build 07:50/17:50). 단가·금액 없음 → 직원용 화면에도 보임
-function dashOff(id){return id==='mail'||id==='sched'||id==='fsales'||id==='fana'||/^pcmon:/.test(id)||id==='plan'||id==='fprod';} /* 2026-11-21 조조: 「생산·원료」 줄의 「생산 계획」·「이번 주 생산」 칸 뺌(사용자 요청). 만드는 코드·상세 창은 남겨 둠 — 다시 보이려면 여기서 지우면 됨 */
+function dashOff(id){return id==='mail'||id==='sched'||id==='fsales'||id==='fana'||/^pcmon:/.test(id)||id==='plan'||id==='fprod'||id==='delivery'||id==='audit'||id==='fstock';} /* 2026-11-22 조조: 「출고·품질」 줄 오늘 출고·이카운트 경고·재고 이상 뺌(K-HACCP 월 달력 자리) */ /* 2026-11-21 조조: 「생산·원료」 줄의 「생산 계획」·「이번 주 생산」 칸 뺌(사용자 요청). 만드는 코드·상세 창은 남겨 둠 — 다시 보이려면 여기서 지우면 됨 */
 const ORD_W=['일','월','화','수','목','금','토'];
 function ordDay(d){const x=new Date(d+'T00:00:00+09:00');return (x.getMonth()+1)+'/'+x.getDate()+' ('+ORD_W[x.getDay()]+')';}
 function ordCell(c,big){if(!c)return '<td class="oz">·</td>';const b=c.box?'<b>'+c.box+'</b>':'';const e=c.ea?'<small>'+(c.box?'+':'')+c.ea+'개</small>':'';return '<td class="'+(c.box>=50?'obig':'oon')+'">'+b+e+'</td>';}
