@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v121"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 21:33 시트 3개(업무 대시보드·해썹 일지 현황·UTCA 출력일보), ① 시트 K-HACCP 뺌·재배치">
+<meta name="dash-ver" content="v122"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 21:47 화면 맞춤 27인치 추가(?fit=27)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -912,12 +912,12 @@ body.wall.ws-wide #workJournalCol .ds-foot,body.wall.ws-wide #workJournalCol .pj
 <script>/* 2026-11-21 조조: wall 모드 스위치. ?wall=1 → 이 기기 기억, ?wall=0 → 끔. 가로 1500~2600px·가로로 긴 화면에서만 적용 */
 (function(){try{var q=new URLSearchParams(location.search).get('wall');if(q==='1')localStorage.setItem('dash_wall_v1','1');else if(q==='0')localStorage.removeItem('dash_wall_v1');}catch(_){}})();
 /* 2026-11-21 조조: 「화면 맞춤」 — PC마다 창 크기(CSS 폭)로 자동 단계: 2400px 이상=32인치(큰 화면), 1600~2399=24인치, 1100~1599=노트북. 머리줄 선택으로 이 PC에 고정 가능(브라우저에 기억). ?wall=1 → 32인치 고정, ?fit=auto|24|32|lap 도 됨. 세로 화면·폭 1100 미만(태블릿 세로·키오스크·휴대폰)은 예전 배치 그대로 */
-(function(){try{var q=new URLSearchParams(location.search),f=q.get('fit');if(f&&/^(auto|24|32|lap)$/.test(f))localStorage.setItem('dash_fit_v1',f);else if(q.get('wall')==='1')localStorage.setItem('dash_fit_v1','32');else if(q.get('wall')==='0')localStorage.setItem('dash_fit_v1','auto');if(!localStorage.getItem('dash_fit_v1')&&localStorage.getItem('dash_wall_v1')==='1')localStorage.setItem('dash_fit_v1','32');}catch(_){}})();
-function FITC(){try{var v=localStorage.getItem('dash_fit_v1');return /^(24|32|lap)$/.test(v||'')?v:'auto';}catch(_){return 'auto';}}
+(function(){try{var q=new URLSearchParams(location.search),f=q.get('fit');if(f&&/^(auto|24|27|32|lap)$/.test(f))localStorage.setItem('dash_fit_v1',f);else if(q.get('wall')==='1')localStorage.setItem('dash_fit_v1','32');else if(q.get('wall')==='0')localStorage.setItem('dash_fit_v1','auto');if(!localStorage.getItem('dash_fit_v1')&&localStorage.getItem('dash_wall_v1')==='1')localStorage.setItem('dash_fit_v1','32');}catch(_){}})();
+function FITC(){try{var v=localStorage.getItem('dash_fit_v1');return /^(24|27|32|lap)$/.test(v||'')?v:'auto';}catch(_){return 'auto';}}
 function FITA(){var w=innerWidth;return w>=2400?'32':w>=1600?'24':'lap';}
 function FITP(){var w=innerWidth,h=innerHeight;if(w<1100||w<h*1.15)return 'none';var c=FITC();return c==='auto'?FITA():c;}
 function WALL(){return FITP()!=='none';}
-function wallSync(){var p=FITP(),b=document.body;if(b){b.classList.toggle('wall',p!=='none');b.classList.toggle('fp-32',p==='32');b.classList.toggle('fp-24',p==='24');b.classList.toggle('fp-lap',p==='lap');var s=document.getElementById('fitSel');if(s){var c=FITC();if(s.value!==c)s.value=c;var o=s.querySelector('option[value=auto]');if(o)o.textContent='화면 맞춤: 자동 ('+({'32':'32인치','24':'24인치','lap':'노트북'}[FITA()])+')';}}return p!=='none';}
+function wallSync(){var p=FITP(),b=document.body;if(b){b.classList.toggle('wall',p!=='none');b.classList.toggle('fp-32',p==='32');b.classList.toggle('fp-24',p==='24');b.classList.toggle('fp-27',p==='27');/* 2026-11-23 v122: 27인치 — QHD(2560)·125%(2048)·FHD(1920) 어느 것이든 2048 폭 기준으로 머리·칸 글씨를 키움 */document.documentElement.style.setProperty('--f27',String(p==='27'?Math.max(1,Math.min(1.4,innerWidth/2048)):1));b.classList.toggle('fp-lap',p==='lap');var s=document.getElementById('fitSel');if(s){var c=FITC();if(s.value!==c)s.value=c;var o=s.querySelector('option[value=auto]');if(o)o.textContent='화면 맞춤: 자동 ('+({'32':'32인치','24':'24인치','lap':'노트북'}[FITA()])+')';}}return p!=='none';}
 document.addEventListener('change',function(e){if(!e.target||e.target.id!=='fitSel')return;try{localStorage.setItem('dash_fit_v1',e.target.value);}catch(_){}wallSync();try{dispatchEvent(new Event('resize'));}catch(_){}setTimeout(function(){try{dispatchEvent(new Event('resize'));}catch(_){}},400);});
 addEventListener('resize',wallSync);document.addEventListener('DOMContentLoaded',wallSync);
 </script>
@@ -1230,7 +1230,7 @@ function fill(el,force){const id=el.getAttribute('gs-id');const it=CAT.find(c=>c
     const oi=o.querySelectorAll('img'),ci=c.querySelectorAll('img');oi.forEach((x,i)=>{if(ci[i]&&ci[i].src!==x.src)ci[i].src=x.src;});
     const of=o.querySelector('iframe'),cf=c.querySelector('iframe');if(cf){if(of&&cf.src!==of.src)cf.src=of.src;const bx=cf.parentElement;const w=bx.clientWidth||300,h=bx.clientHeight||200;const z=w/1024;cf.style.width='1024px';cf.style.height=Math.ceil(h/z)+'px';cf.style.transform='scale('+z+')';}
     const ot=o.querySelectorAll('.scr-t,.scr-s,small,span');const ct=c.querySelectorAll('.scr-t,.scr-s,small,span');ot.forEach((x,i)=>{if(ct[i]&&ct[i].textContent!==x.textContent&&!x.children.length)ct[i].textContent=x.textContent;});return;}
-  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const z=Math.max(0.3,Math.min(1.25,bw/W1,bh/h0));c.style.zoom=String(z);}
+  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const zmax=1.25*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1);const z=Math.max(0.3,Math.min(zmax,bw/W1,bh/h0));c.style.zoom=String(z);}
 function w0(id){if(id==='notice')return 700;if(id==='x:delivery')return 640;if(/^x:sk/.test(id))return 560;const k=id.slice(2);if(k==='khday')return 560;if(k.startsWith('core4:'))return 280;return {stock:460,fneed:460,fraw:380,'fraw:todo':800,ftodo:900,ford:900}[k]||560;}
 function syncAll(force){const bd=document.getElementById('mybBoard');if(!bd||!document.body.classList.contains('myb-on'))return;catalog();bd.querySelectorAll('.grid-stack-item').forEach(el=>fill(el,force));}
 function widgetEl(id){const it=CAT.find(c=>c.id===id);const d=document.createElement('div');d.className='myb-w';d.innerHTML='<div class="myb-h"><b>'+esc2(it?it.n:id)+'</b><button type="button" class="myb-x" data-mybx="'+esc2(id)+'">끄기 ✕</button></div><div class="myb-b'+(it&&it.kind==='main'?' kpis':'')+'"></div>';return d;}
@@ -1240,7 +1240,7 @@ function current(){return grid?grid.save(false).map(n=>[n.id,n.w,n.h,n.x,n.y]):[
 let BAROPEN=false;
 function paintBar(){const bar=document.getElementById('mybBar');if(!bar)return;bar.classList.toggle('myb-collapsed',WALL1?(!EDIT&&!(BAROPEN&&UNLOCK)):(S.tab==='all'&&!EDIT&&!BAROPEN));bar.querySelectorAll('.myb-tab').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===S.tab)));bar.classList.toggle('editing',EDIT);document.getElementById('mybBoard')?.classList.toggle('editing',EDIT);}
 let WALLMODE=false;
-function wallAll(){const b=document.body.classList;return !STAFFV&&(b.contains('fp-24')||b.contains('fp-32'));}
+function wallAll(){const b=document.body.classList;return !STAFFV&&(b.contains('fp-24')||b.contains('fp-27')||b.contains('fp-32'));}
 async function show(tab){S.tab=tab;keep();paintBar();if(tab==='all'&&wallAll()){WALLMODE=true;try{GS=await loadGS();}catch(e){WALLMODE=false;document.body.classList.remove('myb-on','myb-wall');return;}document.body.classList.add('myb-on','myb-wall');build(expand(PRESET.wall),true);grid.setStatic(true);return;}WALLMODE=false;document.body.classList.remove('myb-wall');if(tab==='all'){EDIT=false;paintBar();document.body.classList.remove('myb-on');document.getElementById('mybList')?.classList.remove('show');try{dispatchEvent(new Event('resize'));}catch(_){}return;}
   try{GS=await loadGS();}catch(e){alert('맞춤 화면 도구를 불러오지 못했어요(인터넷 확인). 전체 화면으로 돌아갑니다.\n'+e.message);S.tab='all';keep();paintBar();return;}
   document.body.classList.add('myb-on');build(layoutOf(tab));grid.setStatic(!EDIT);}
@@ -1286,6 +1286,10 @@ body.night #sheetBar .sh-dash:not([aria-pressed="true"]){color:#FCF1D0}
 body.night #sheetBar .sh-haccp:not([aria-pressed="true"]){color:#4ade80}
 body.night #sheetBar .sh-utca:not([aria-pressed="true"]){color:#93c5fd}
 body.wall #sheetBar button{min-height:46px;font-size:17px;padding:0 14px}
+/* 2026-11-23 v122: 27인치 — 머리줄·칸 제목을 --f27 배로 */
+body.fp-27 header{zoom:var(--f27,1)}
+body.fp-27 .myb-h{zoom:var(--f27,1)}
+body.fp-27 .myb-b>.myb-fill{zoom:var(--f27,1)!important}
 #sheetFrame{display:none;position:fixed;left:0;right:0;bottom:0;width:100%;border:0;z-index:25;background:#eef0f2}
 #sheetMsg{display:none;position:fixed;left:0;right:0;bottom:0;z-index:26;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:800;color:#374151;background:#eef0f2}
 #sheetMsg small{font-size:18px;font-weight:600}
@@ -1313,7 +1317,7 @@ globalThis.installSheets=function(api){
  function paint(){const bar=document.getElementById('sheetBar');if(!bar)return;bar.querySelectorAll('[data-sheet]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sheet===cur)));}
  function place(){const h=document.querySelector('header');const t=h?Math.max(0,Math.round(h.getBoundingClientRect().bottom)):0;if(frame){frame.style.top=t+'px';frame.style.height=Math.max(200,innerHeight-t)+'px';}if(msg){msg.style.top=t+'px';msg.style.height=Math.max(200,innerHeight-t)+'px';}}
  function select(){try{const d=frame.contentWindow.document;const b=d.getElementById(cur==='utca'?'tb2':'tb1');if(b&&!b.classList.contains('on'))b.click();}catch(_){}}
- function feed(){if(!frame)return;const k=key();if(!k){msg.style.display='flex';return;}msg.style.display='none';try{const w=frame.contentWindow;if(!w||!w.document||w.document.readyState==='loading')return;if(w.CCP02_KEY!==k){w.CCP02_KEY=k;if(typeof w.__ccpKeyed==='function')w.__ccpKeyed();}select();}catch(_){}}
+ function feed(){if(!frame)return;const k=key();if(!k){msg.style.display='flex';return;}msg.style.display='none';try{const w=frame.contentWindow;if(!w||!w.document||w.document.readyState==='loading')return;if(w.CCP02_KEY!==k){w.CCP02_KEY=k;if(typeof w.__ccpKeyed==='function')w.__ccpKeyed();}select();try{const f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1;const z=f>1.001?String(f):'';if(w.document.documentElement.style.zoom!==z){w.document.documentElement.style.zoom=z;try{w.dispatchEvent(new Event('resize'));}catch(_){}}}catch(_){}}catch(_){}}
  function ensure(){if(!frame){frame=document.createElement('iframe');frame.id='sheetFrame';frame.title='해썹 일지 현황 · UTCA 출력일보';frame.src='ccpview.html?v=121';frame.addEventListener('load',()=>setTimeout(feed,50));document.body.append(frame);msg=document.createElement('div');msg.id='sheetMsg';msg.innerHTML='<div>해썹·UTCA 자료 열쇠를 받는 중이에요.<br><small>사무실 PC가 다음에 대시보드 자료를 올리면 자동으로 보입니다.</small></div>';document.body.append(msg);}place();feed();}
  function go(s,quiet){cur=s;try{localStorage.setItem(LS,s);}catch(_){}paint();if(s==='dash'){document.body.classList.remove('sheet-on');if(!quiet)try{dispatchEvent(new Event('resize'));}catch(_){}return;}document.body.classList.add('sheet-on');ensure();}
  function mount(){if(document.getElementById('sheetBar'))return;const br=document.querySelector('header .dash-top .brand')||document.querySelector('header .brand');if(!br)return;const bar=document.createElement('div');bar.id='sheetBar';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','시트');
@@ -1330,7 +1334,7 @@ globalThis.installSheets=function(api){
 </head>
 <body>
 <header><div class="dash-top"><div class="hd">
-  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><div class="brand-meta"><div class="bm-top"><span class="nm">빵을그리다 주식회사</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span></div><div class="bm-ttl"><span class="tt">업무 대시보드</span><span class="fit-pick"><select id="fitSel" aria-label="화면 맞춤" title="화면 맞춤 · 이 PC에 맞는 배치를 고르면 이 브라우저에 기억돼요"><option value="auto">화면 맞춤: 자동</option><option value="24">화면 맞춤: 24인치</option><option value="32">화면 맞춤: 32인치</option><option value="lap">화면 맞춤: 노트북</option></select></span></div></div></div>
+  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><div class="brand-meta"><div class="bm-top"><span class="nm">빵을그리다 주식회사</span><span class="dash-version" id="dashVersion"></span><span class="dash-mode" id="dashMode"></span></div><div class="bm-ttl"><span class="tt">업무 대시보드</span><span class="fit-pick"><select id="fitSel" aria-label="화면 맞춤" title="화면 맞춤 · 이 PC에 맞는 배치를 고르면 이 브라우저에 기억돼요"><option value="auto">화면 맞춤: 자동</option><option value="24">화면 맞춤: 24인치</option><option value="27">화면 맞춤: 27인치</option><option value="32">화면 맞춤: 32인치</option><option value="lap">화면 맞춤: 노트북</option></select></span></div></div></div>
   <div class="sp"></div>
   <div class="now"><div class="t num" id="ct"></div><div class="d" id="cd"></div></div>
   <div class="tools">
