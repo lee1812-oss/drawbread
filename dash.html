@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v118"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 15:05 내 맞춤 화면(탭·화면 편집·이 PC 저장·배치 코드), 03 전광판은 그대로">
+<meta name="dash-ver" content="v119"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 15:18 전광판 「화면 편집(관리자)」 버튼·관리자 확인·끌 때 글자 선택 막기">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1151,6 +1151,8 @@ body.night .myb-h{background:rgba(252,241,208,.07)}
 #mybBoard.editing .myb-x{display:inline-block}
 #mybBoard.editing .myb-h{cursor:move;background:#FCF1D0;color:#0D1C42}
 #mybBoard.editing .myb-b{pointer-events:none;opacity:.85}
+#mybBoard.editing,#mybBoard.editing *{user-select:none!important;-webkit-user-select:none!important}
+body.myb-dragging,body.myb-dragging *{user-select:none!important;-webkit-user-select:none!important}
 .myb-b{flex:1 1 0;min-height:0;overflow-y:auto;overflow-x:hidden;padding:4px}
 .myb-b>*{margin:0!important;max-width:none!important;position:static!important;height:auto;min-height:0;box-sizing:border-box}
 .myb-b>.scr{width:100%!important}
@@ -1172,7 +1174,9 @@ body.night .myb-h{background:rgba(252,241,208,.07)}
    칸 목록은 지금 이 화면에 실제로 있는 칸만 → 관리자 칸(배송정보·재고·기기 화면 등)은 권한이 없으면 목록에도 안 나옴.
    저장: 이 PC 브라우저(dash_myb_v1). 다른 PC로는 「내보내기」 코드(칸 이름·위치만, 자료·열쇠 없음)로 옮김. 03 전광판(?wall=1)은 탭·편집 없음. */
 globalThis.installMyBoard=function(api){
-let WALL1=/[?&]wall=1(?:&|$)/.test(location.search);try{if(localStorage.getItem('dash_wall_v1')==='1')WALL1=true;}catch(_){}const LS='dash_myb_v1';if(WALL1)return;const cdId=api.cdId,cdName=api.cdName,dashOff=api.dashOff;
+let WALL1=/[?&]wall=1(?:&|$)/.test(location.search);try{if(localStorage.getItem('dash_wall_v1')==='1')WALL1=true;}catch(_){}const LS='dash_myb_v1';let STAFFV=false;try{STAFFV=!!api.isStaff();}catch(_){}if(WALL1&&STAFFV)return; /* 2026-11-23 v119: 전광판은 관리자 화면에서만 「화면 편집(관리자)」 버튼 — 이 PC 관리자 열쇠 끝 4자리 확인 뒤 열림 */
+let UNLOCK=!WALL1,FAIL=0,FAILAT=0;
+function unlock(){if(UNLOCK)return true;if(FAIL>=3&&Date.now()-FAILAT<60000){alert('여러 번 틀려서 1분 뒤에 다시 해 주세요.');return false;}let k='';try{k=String(api.getKey()||'');}catch(_){}if(k.length<8){alert('이 PC에 관리자 연결이 없어 편집할 수 없어요.');return false;}const v=prompt('관리자 확인: 이 PC 관리자 열쇠의 맨 끝 4글자를 넣어 주세요.');if(v==null)return false;if(String(v).trim()===k.slice(-4)){UNLOCK=true;FAIL=0;return true;}FAIL++;FAILAT=Date.now();alert('맞지 않아요.');return false;}const cdId=api.cdId,cdName=api.cdName,dashOff=api.dashOff;
 const TABS=[['all','전체(대표님)'],['office','사무실'],['prod','생산실'],['haccp','HACCP'],['mine','내 화면']];
 const PRESET={
  office:[['notice',6,4],['c:ftodo',6,4],['x:delivery',6,9],['x:sk0',3,9],['x:sk1',3,9],['c:core4:*',3,4],['c:stock',4,3],['c:fneed',4,3],['c:fraw:todo',4,3],['x:scr:pos',4,5]],
@@ -1206,15 +1210,15 @@ function fill(el,force){const id=el.getAttribute('gs-id');const it=CAT.find(c=>c
 function w0(id){if(id==='notice')return 1100;if(id==='x:delivery')return 640;if(/^x:sk/.test(id))return 560;const k=id.slice(2);if(k==='khday')return 950;if(k.startsWith('core4:'))return 300;return {stock:560,fneed:560,fraw:420,'fraw:todo':900,ftodo:1100,ford:1100}[k]||600;}
 function syncAll(force){const bd=document.getElementById('mybBoard');if(!bd||!document.body.classList.contains('myb-on'))return;catalog();bd.querySelectorAll('.grid-stack-item').forEach(el=>fill(el,force));}
 function widgetEl(id){const it=CAT.find(c=>c.id===id);const d=document.createElement('div');d.className='myb-w';d.innerHTML='<div class="myb-h"><b>'+esc2(it?it.n:id)+'</b><button type="button" class="myb-x" data-mybx="'+esc2(id)+'">끄기 ✕</button></div><div class="myb-b'+(it&&it.kind==='main'?' kpis':'')+'"></div>';return d;}
-function build(items){const bd=document.getElementById('mybBoard');if(grid){try{grid.destroy(true);}catch(_){}grid=null;}{bd.innerHTML='<div class="grid-stack"></div>';grid=GS.init({column:12,cellHeight:56,margin:5,float:false,staticGrid:true,animate:false,draggable:{handle:'.myb-h'},resizable:{handles:'se'},columnOpts:{breakpointForWindow:true,breakpoints:[{w:760,c:1}]}},bd.querySelector('.grid-stack'));grid.on('resizestop',()=>setTimeout(()=>syncAll(true),50));}
+function build(items){const bd=document.getElementById('mybBoard');if(grid){try{grid.destroy(true);}catch(_){}grid=null;}{bd.innerHTML='<div class="grid-stack"></div>';grid=GS.init({column:12,cellHeight:56,margin:5,float:false,staticGrid:true,animate:false,draggable:{handle:'.myb-h'},resizable:{handles:'se'},columnOpts:{breakpointForWindow:true,breakpoints:[{w:760,c:1}]}},bd.querySelector('.grid-stack'));grid.on('resizestop',()=>setTimeout(()=>syncAll(true),50));grid.on('dragstart resizestart',()=>{document.body.classList.add('myb-dragging');try{getSelection().removeAllRanges();}catch(_){}});grid.on('dragstop resizestop',()=>document.body.classList.remove('myb-dragging'));}
   items.forEach(n=>{const el=grid.addWidget(Object.assign({id:n.id,w:n.w,h:n.h,minW:2,minH:2},n.x==null?{autoPosition:true}:{x:n.x,y:n.y}));const ct=el.querySelector('.grid-stack-item-content');ct.replaceChildren(widgetEl(n.id));});syncAll(true);}
 function current(){return grid?grid.save(false).map(n=>[n.id,n.w,n.h,n.x,n.y]):[];}
 let BAROPEN=false;
-function paintBar(){const bar=document.getElementById('mybBar');if(!bar)return;bar.classList.toggle('myb-collapsed',S.tab==='all'&&!EDIT&&!BAROPEN);bar.querySelectorAll('.myb-tab').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===S.tab)));bar.classList.toggle('editing',EDIT);document.getElementById('mybBoard')?.classList.toggle('editing',EDIT);}
+function paintBar(){const bar=document.getElementById('mybBar');if(!bar)return;bar.classList.toggle('myb-collapsed',WALL1?(!EDIT&&!(BAROPEN&&UNLOCK)):(S.tab==='all'&&!EDIT&&!BAROPEN));bar.querySelectorAll('.myb-tab').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===S.tab)));bar.classList.toggle('editing',EDIT);document.getElementById('mybBoard')?.classList.toggle('editing',EDIT);}
 async function show(tab){S.tab=tab;keep();paintBar();if(tab==='all'){EDIT=false;paintBar();document.body.classList.remove('myb-on');document.getElementById('mybList')?.classList.remove('show');try{dispatchEvent(new Event('resize'));}catch(_){}return;}
   try{GS=await loadGS();}catch(e){alert('맞춤 화면 도구를 불러오지 못했어요(인터넷 확인). 전체 화면으로 돌아갑니다.\n'+e.message);S.tab='all';keep();paintBar();return;}
   document.body.classList.add('myb-on');build(layoutOf(tab));grid.setStatic(!EDIT);}
-function edit(on){if(!grid&&on){show(S.tab==='all'?'mine':S.tab).then(()=>edit(true));return;}if(on&&S.tab==='all'){show('mine').then(()=>edit(true));return;}EDIT=on;EDITFROM=on?S.tab:'';if(grid)grid.setStatic(!on);paintBar();if(on)paintList();else document.getElementById('mybList')?.classList.remove('show');}
+function edit(on){if(on&&!unlock())return;if(!grid&&on){show(S.tab==='all'?'mine':S.tab).then(()=>edit(true));return;}if(on&&S.tab==='all'){show('mine').then(()=>edit(true));return;}EDIT=on;EDITFROM=on?S.tab:'';if(grid)grid.setStatic(!on);paintBar();if(on)paintList();else document.getElementById('mybList')?.classList.remove('show');}
 function paintList(){const L=document.getElementById('mybList');if(!L)return;const have=new Set(current().map(r=>r[0]));L.innerHTML='<h3>보일 칸 고르기</h3>'+catalog().map(c=>'<label><input type="checkbox" data-mybchk="'+esc2(c.id)+'"'+(have.has(c.id)?' checked':'')+'>'+esc2(c.n)+'</label>').join('')+'<p style="font-size:15px;margin:8px 0 0">이 목록에는 지금 이 화면에서 볼 수 있는 칸만 나옵니다.</p>';}
 function enc(arr){const j=JSON.stringify({v:1,i:arr});return 'DB1-'+btoa(unescape(encodeURIComponent(j)));}
 function dec(s){s=String(s||'').trim();if(!s.startsWith('DB1-'))throw new Error('코드 모양이 달라요');const o=JSON.parse(decodeURIComponent(escape(atob(s.slice(4)))));if(!o||o.v!==1||!Array.isArray(o.i))throw new Error('코드 내용이 이상해요');
@@ -1222,7 +1226,7 @@ function dec(s){s=String(s||'').trim();if(!s.startsWith('DB1-'))throw new Error(
 function mount(){if(document.getElementById('mybBar'))return;const hd=document.querySelector('header');if(!hd)return;
   const bar=document.createElement('div');bar.id='mybBar';bar.innerHTML=TABS.map(t=>'<button type="button" class="myb-tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'<button type="button" class="myb-btn myb-edit" data-myb="edit">화면 편집</button>'+
    '<div class="myb-tools"><span class="myb-hint">모서리를 끌어 크기 조절, 머리를 끌어 위치 이동</span><button type="button" class="myb-btn" data-myb="list">칸 끄기·켜기</button><button type="button" class="myb-btn" data-myb="reset">기본으로 되돌리기</button><button type="button" class="myb-btn" data-myb="export">배치 내보내기</button><button type="button" class="myb-btn" data-myb="import">배치 가져오기</button><button type="button" class="myb-btn" data-myb="cancel">취소</button><button type="button" class="myb-btn myb-save" data-myb="save">저장</button></div>';
-  hd.after(bar);try{const kb=[...hd.querySelectorAll('button')].find(b=>b.textContent.trim()==='칸 고르기');if(kb){const hb=document.createElement('button');hb.type='button';hb.className=(kb.className||'')+' myb-hbtn';hb.textContent='맞춤 화면';hb.addEventListener('click',()=>{BAROPEN=!BAROPEN;paintBar();try{dispatchEvent(new Event('resize'));}catch(_){}});kb.after(hb);}}catch(_){}const bd=document.createElement('div');bd.id='mybBoard';document.body.append(bd);const L=document.createElement('div');L.id='mybList';document.body.append(L);
+  hd.after(bar);try{const kb=[...hd.querySelectorAll('button')].find(b=>b.textContent.trim()==='칸 고르기');if(kb){const hb=document.createElement('button');hb.type='button';hb.className=(kb.className||'')+' myb-hbtn';hb.textContent=WALL1?'화면 편집(관리자)':'맞춤 화면';hb.addEventListener('click',()=>{if(WALL1&&!unlock())return;BAROPEN=!BAROPEN;if(WALL1&&!BAROPEN&&EDIT){edit(false);}paintBar();try{dispatchEvent(new Event('resize'));}catch(_){}});kb.after(hb);}}catch(_){}const bd=document.createElement('div');bd.id='mybBoard';document.body.append(bd);const L=document.createElement('div');L.id='mybList';document.body.append(L);
   bar.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t){if(EDIT&&!confirm('편집 중인 배치를 저장하지 않고 다른 탭으로 갈까요?'))return;EDIT=false;show(t.dataset.tab);return;}
     const b=e.target.closest('[data-myb]');if(!b)return;const k=b.dataset.myb;
     if(k==='edit')edit(true);
@@ -2962,7 +2966,7 @@ if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyG
 
 if(typeof globalThis.installImportantNotice==='function')globalThis.installImportantNotice({getData:()=>D,isStaff:()=>STAFF,getKey:()=>{let k='';try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK)||'';}catch(_){}return k||window.__MEMKEY||'';},getRender:()=>render,setRender:f=>render=f});
 /* 2026-11-23 v118: 내 맞춤 화면 연결 */
-if(typeof globalThis.installMyBoard==='function')globalThis.installMyBoard({cdId,cdName,dashOff,isStaff:()=>STAFF,getRender:()=>render,setRender:f=>render=f});
+if(typeof globalThis.installMyBoard==='function')globalThis.installMyBoard({cdId,cdName,dashOff,isStaff:()=>STAFF,getKey:()=>{let k='';try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK)||'';}catch(_){}return k||window.__MEMKEY||'';},getRender:()=>render,setRender:f=>render=f});
 })();
 </script>
 
