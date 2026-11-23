@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v122"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 21:47 화면 맞춤 27인치 추가(?fit=27)">
+<meta name="dash-ver" content="v123"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 22:00 재고 두 칸 세로로 길게 나란히·글씨 크게, 배송표 폭 꽉 채움, 화면 칸 좁게">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1146,17 +1146,21 @@ body.myb-on.myb-on.myb-on{padding-right:0!important}
 /* 2026-11-23 v120: 배송정보·재고 칸은 칸을 꽉 채움(그림이 칸 크기에 맞춰 커짐) */
 .myb-b>.myb-fill{width:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;zoom:1!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:hidden}
 .myb-b>.myb-fill .ds-preview,.myb-b>.myb-fill .sk-prev{flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:none!important;padding:0!important}
-.myb-b>.myb-fill .ds-preview img,.myb-b>.myb-fill .sk-prev img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:top center!important}
+.myb-b>.myb-fill .ds-preview img{width:100%!important;height:auto!important;max-height:none!important;object-fit:fill!important;display:block!important;margin:0!important}
+.myb-b>.myb-fill .ds-preview{overflow:hidden!important;background:#fff!important;padding:0!important;margin:0!important;display:block!important}
+.myb-b>.myb-fill .sk-prev{overflow:hidden!important;padding:0!important;background:#fff!important}
+.myb-b>.myb-fill .sk-prev .skp{transform:none!important;transform-origin:0 0}
 .myb-b>.myb-fill .ds-foot{display:none!important}
 .myb-b>.myb-fill .sk-head{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:6px 8px 4px!important}
-.myb-b>.myb-fill .sk-head h2{font-size:18px!important;margin:0!important;width:auto!important}
+.myb-b>.myb-fill .sk-head h2{font-size:22px!important;margin:0!important;width:auto!important}
 .myb-b>.myb-fill .sk-head .work-owner{display:inline!important;font-size:13px!important}
 .myb-b>.myb-fill .sk-from{display:none!important}
 .myb-b>.myb-fill .sk-date{font-size:15px!important;margin:0!important;width:auto!important}
 .myb-b>.myb-fill .sk-chips{width:100%;margin:2px 0!important}
-.myb-b>.myb-fill .sk-chips span{padding:1px 4px!important;min-height:0!important;font-size:12px!important}
-.myb-b>.myb-fill .sk-chips span b{font-size:22px!important}
-.myb-b>.myb-fill .sk-stat{font-size:12px!important;padding:2px 6px!important;width:100%}
+.myb-b>.myb-fill .sk-chips span{padding:2px 4px!important;min-height:0!important;font-size:15px!important}
+.myb-b>.myb-fill .sk-chips span b{font-size:32px!important}
+.myb-b>.myb-fill .sk-stat{font-size:16px!important;padding:4px 8px!important;width:100%}
+.myb-b>.myb-fill .sk-date{font-size:18px!important}
 .myb-b>.myb-fill .sk-foot{display:none!important}
 .myb-b:has(>.myb-fill){overflow:hidden;padding:0}
 /* 2026-11-23 v120: 격자 24칸 위치·폭 (gridstack 기본 CSS에 없음) */
@@ -1205,7 +1209,8 @@ const PRESET={
  prod:[['c:ford',8,5],['x:scr:kiosk',4,10],['c:core4:*',2,4],['c:stock',4,3],['c:fneed',4,3],['c:fraw',4,3],['c:fraw:todo',4,3],['c:ftodo',8,4],['x:delivery',8,8]],
  haccp:[['c:khday',8,11],['x:scr:kiosk',4,11],['notice',6,4],['c:ftodo',6,4],['x:scr:health',4,5],['c:fraw',4,3],['c:ford',4,5]],
  /* 2026-11-23 v120: 32·24인치 「전체(대표님)」 기본 — 24칸 × 18줄, 한 화면에 맞춤. 위: 재고 두 칸(세로) | 배송정보 | K-HACCP | 키오스크·포스기·건강일지, 아래: 글자 칸 */
- wall:[['x:sk0',7,6,0,0],['x:sk1',7,6,0,6],['x:delivery',8,12,7,0],['x:scr:kiosk',3,8,15,0],['x:scr:pos',6,4,18,0],['x:scr:health',6,4,18,4],['notice',9,4,15,8],['c:core4:*',3,3,0,12],['c:stock',4,3,12,12],['c:fneed',4,3,16,12],['c:ftodo',4,6,20,12],['c:ford',8,3,0,15],['c:fraw',4,3,8,15],['c:fraw:todo',8,3,12,15]]};
+ /* 2026-11-23 v123: 재고 두 칸 세로로 길게 좌우 나란히 | 배송정보 | 좁은 화면 단(키오스크·포스기·건강일지) */
+ wall:[['x:sk0',6,12,0,0],['x:sk1',6,12,6,0],['x:delivery',10,12,12,0],['x:scr:kiosk',2,6,22,0],['x:scr:pos',2,3,22,6],['x:scr:health',2,3,22,9],['c:core4:*',3,3,0,12],['c:stock',4,3,12,12],['c:fneed',4,3,16,12],['notice',4,3,20,12],['c:ford',8,3,0,15],['c:fraw',4,3,8,15],['c:fraw:todo',8,3,12,15],['c:ftodo',4,3,20,15]]};
 let S={tab:'all',mine:null};try{const o=JSON.parse(localStorage.getItem(LS)||'null');if(o&&typeof o==='object'){if(TABS.some(t=>t[0]===o.tab))S.tab=o.tab;if(Array.isArray(o.mine))S.mine=o.mine;}}catch(_){}
 const keep=()=>{try{localStorage.setItem(LS,JSON.stringify({tab:S.tab,mine:S.mine}));}catch(_){}};
 let GS=null,grid=null,EDIT=false,EDITFROM='',loading=null,CAT=[];
@@ -1230,7 +1235,7 @@ function fill(el,force){const id=el.getAttribute('gs-id');const it=CAT.find(c=>c
     const oi=o.querySelectorAll('img'),ci=c.querySelectorAll('img');oi.forEach((x,i)=>{if(ci[i]&&ci[i].src!==x.src)ci[i].src=x.src;});
     const of=o.querySelector('iframe'),cf=c.querySelector('iframe');if(cf){if(of&&cf.src!==of.src)cf.src=of.src;const bx=cf.parentElement;const w=bx.clientWidth||300,h=bx.clientHeight||200;const z=w/1024;cf.style.width='1024px';cf.style.height=Math.ceil(h/z)+'px';cf.style.transform='scale('+z+')';}
     const ot=o.querySelectorAll('.scr-t,.scr-s,small,span');const ct=c.querySelectorAll('.scr-t,.scr-s,small,span');ot.forEach((x,i)=>{if(ct[i]&&ct[i].textContent!==x.textContent&&!x.children.length)ct[i].textContent=x.textContent;});return;}
-  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const zmax=1.25*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1);const z=Math.max(0.3,Math.min(zmax,bw/W1,bh/h0));c.style.zoom=String(z);}
+  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);if(/^x:sk/.test(id)){try{const pv=c.querySelector('.sk-prev'),sp=pv&&pv.querySelector('.skp');if(sp){sp.style.zoom='1';const nat=sp.offsetWidth||1600;sp.style.zoom=String(Math.max(0.1,(pv.clientWidth-2)/nat));}}catch(_){}}return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const zmax=1.25*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1);const z=Math.max(0.3,Math.min(zmax,bw/W1,bh/h0));c.style.zoom=String(z);}
 function w0(id){if(id==='notice')return 700;if(id==='x:delivery')return 640;if(/^x:sk/.test(id))return 560;const k=id.slice(2);if(k==='khday')return 560;if(k.startsWith('core4:'))return 280;return {stock:460,fneed:460,fraw:380,'fraw:todo':800,ftodo:900,ford:900}[k]||560;}
 function syncAll(force){const bd=document.getElementById('mybBoard');if(!bd||!document.body.classList.contains('myb-on'))return;catalog();bd.querySelectorAll('.grid-stack-item').forEach(el=>fill(el,force));}
 function widgetEl(id){const it=CAT.find(c=>c.id===id);const d=document.createElement('div');d.className='myb-w';d.innerHTML='<div class="myb-h"><b>'+esc2(it?it.n:id)+'</b><button type="button" class="myb-x" data-mybx="'+esc2(id)+'">끄기 ✕</button></div><div class="myb-b'+(it&&it.kind==='main'?' kpis':'')+'"></div>';return d;}
