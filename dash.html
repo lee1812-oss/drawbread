@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v112"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-22 16:58 배송 주간표 머리칸 색(요일 남색·입고 연초록·출고 연주황·구분 크림)">
+<meta name="dash-ver" content="v113"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 13:36 벽 화면 배치: 배송정보 가운데 위 크게·키오스크 가운데 아래·포스기/건강일지 달력 아래">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1009,6 +1009,28 @@ body.ws-inline #deliveryCol .ds-preview,body.ds-inline #deliveryCol .ds-preview{
 body.wall.rsc #scrCol>#khRail{flex:0 1 auto!important;min-height:0;overflow:auto}
 #khRail .khd-top .lg img{height:32px!important;width:auto!important}#khRail .khd-top .lg{width:auto!important;height:auto!important}
 #khRail .khm-g{grid-template-columns:.34fr repeat(5,minmax(0,1fr)) .34fr!important}#khRail .khw.khm .khc{font-size:12.4px!important;line-height:1.14!important}
+/* 2026-11-23 v113 lay14: 32·24인치 배치 — 큰 배송정보(가운데 위), 키오스크(가운데 아래 오른쪽), 포스기·건강일지(달력 아래) */
+#dsTop{position:fixed;z-index:5;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card,#fff)}
+body:not(.lay14) #dsTop{display:none}
+#dsTop>#deliveryCol{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;width:100%!important;height:100%!important;margin:0!important;zoom:1!important;display:flex!important;flex-direction:column!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;max-height:none!important;overflow:hidden}
+#dsTop>#deliveryCol .ds-preview{flex:1 1 0!important;min-height:0!important;height:auto!important}
+#dsTop>#deliveryCol .ds-preview img{width:100%!important;height:100%!important}
+#dsTop>#deliveryCol .ds-foot{display:none!important}
+body.lay14 #scrCol>#devRail{display:flex;gap:8px;flex:1 1 0;min-height:0}
+body.lay14 #devRail>.scr{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;margin:0!important}
+body.lay14 #devRail>.scr .scr-b{flex:1 1 0;min-height:0;height:auto!important}
+body.lay14 #stockCol .sk-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding-bottom:4px!important}
+body.lay14 #stockCol .sk-head h2{font-size:17px!important;margin:0!important;width:auto!important}
+body.lay14 #stockCol .sk-head .work-owner{display:inline!important;font-size:13px!important}
+body.lay14 #stockCol .sk-from{display:none!important}
+body.lay14 #stockCol .sk-date{font-size:15px!important;margin:0!important;width:auto!important}
+body.lay14 #stockCol .sk-chips{width:100%;margin:2px 0!important}
+body.lay14 #stockCol .sk-chips span{padding:2px 4px!important;min-height:0!important}
+body.lay14 #stockCol .sk-chips span b{font-size:20px!important}
+body.lay14 #stockCol .sk-stat{font-size:12px!important;padding:3px 6px!important;width:100%}
+body.lay14 #stockCol .sk-foot{padding:4px 6px!important}
+body.lay14 #stockCol .sk-foot button{min-height:34px!important;height:34px!important;font-size:14px!important}
+
 
 .khm-lg span,.khm-lg span[class*="s-"]{gap:3px!important;color:var(--kIn)!important;background:none!important;padding:0!important}.khm-lg span.s-bad{color:var(--kBad)!important}.khm-lg i{width:auto!important;height:auto!important;border-radius:0!important;background:none!important;font-style:normal;font-weight:900;font-size:1.1em;font-family:"Segoe UI Symbol","Segoe UI",sans-serif}
 /* 2026-11-22 v109: K-HACCP 달력 — 얇고 선명한 글자(400~500), 미작성 600, CCP 일지는 노란 바탕 */
@@ -2477,9 +2499,16 @@ function dsTint(c,h){const x=c.getContext('2d',{willReadFrequently:true}),W=c.wi
   mul(cells[0][0],cells[0][1],y0,y3-1,[252,241,208]);
   for(let i=0;i<5;i++)inv(cells[1+2*i][0],cells[2+2*i][1],y0,y1-1,[1,7,54]);
   for(let i=1;i<=10;i++)mul(cells[i][0],cells[i][1],y2,y3-1,i%2?[220,239,227]:[252,228,207]);
-  x.putImageData(d,0,0);return true;}
-function dsCropSet(img,src){if(!img)return;const hit=DS_CROP.get(src);if(hit){img.src=hit;return;}img.src=src;
-  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,src);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);if(k.hdr){try{dsTint(c,k.hdr);}catch(_){}}const u=c.toDataURL('image/png');if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,u);if(img.isConnected)img.src=u;}catch(_){DS_CROP.set(src,src);}};im.src=src;}
+  x.putImageData(d,0,0);return vl;}
+/* 2026-11-23 v113: 칸이 좁고 높으면 표를 두 줄(월~수 / 목·금)로 나눠 더 크게 */
+function dsSplit(c,vl){if(!vl||vl.length!==12)return null;const W=c.width,H=c.height,lab=vl[1].e+1,cut=vl[7].s,wA=vl[7].e+1,wB=lab+(W-cut),gap=10;const o=document.createElement('canvas');o.width=Math.max(wA,wB);o.height=H*2+gap;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,o.width,o.height);g.drawImage(c,0,0,wA,H,0,0,wA,H);g.drawImage(c,0,0,lab,H,0,H+gap,lab,H);g.drawImage(c,cut,0,W-cut,H,lab,H+gap,W-cut,H);return o;}
+function dsPick(img){const e=img&&DS_CROP.get(img.dataset.src||'');if(!e)return;let u=e.u1;if(e.u2){const b=img.parentElement,W=b.clientWidth,H=b.clientHeight;const fixed=!!img.closest('#dsTop,#scrCol');if(fixed&&W&&H){const s1=Math.min(W/e.w1,H/e.h1),s2=Math.min(W/e.w2,H/e.h2);if(s2>s1*1.05)u=e.u2;}else if(W&&W/e.w1<0.75)u=e.u2;}
+  img.dataset.a1=(e.h1/e.w1).toFixed(4);if(e.u2)img.dataset.a2=(e.h2/e.w2).toFixed(4);if(img.getAttribute('src')!==u)img.src=u;}
+function dsCropSet(img,src){if(!img)return;img.dataset.src=src;const hit=DS_CROP.get(src);if(hit){dsPick(img);return;}img.src=src;
+  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,{u1:src,w1:im.naturalWidth,h1:im.naturalHeight});dsPick(img);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);let vl=null;if(k.hdr){try{vl=dsTint(c,k.hdr);}catch(_){}}
+    const ent={u1:c.toDataURL('image/png'),w1:k.w,h1:k.h};try{const sp=Array.isArray(vl)?dsSplit(c,vl):null;if(sp){ent.u2=sp.toDataURL('image/png');ent.w2=sp.width;ent.h2=sp.height;}}catch(_){}
+    if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,ent);if(img.isConnected){dsPick(img);try{devFill();}catch(_){}}}catch(_){DS_CROP.set(src,{u1:src,w1:im.naturalWidth||1,h1:im.naturalHeight||1});dsPick(img);}};im.src=src;}
+addEventListener('resize',()=>{try{const i=document.querySelector('#deliveryCol .ds-preview img');if(i)dsPick(i);}catch(_){}});
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
 function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?215:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
@@ -2519,7 +2548,7 @@ render=(orig=>function(){orig();try{dsSchedulePaint();}catch(_){}})(render);scrS
 // ===== 2026-11-08 이정현 과장 생산·소모 일지 =====
 const PJS={mode:'auto',date:'',cache:{},busy:{},err:{},errAt:{},focus:null};try{const v=JSON.parse(localStorage.getItem('dash_pj_ui_v1')||'null');if(v&&v.mode==='manual'&&/^20\d\d-\d\d-\d\d$/.test(v.date||'')){PJS.mode='manual';PJS.date=v.date;}}catch(_){}
 function pjToday(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10);}function pjAdd(d,n){return new Date(new Date(d+'T12:00:00Z').getTime()+n*864e5).toISOString().slice(0,10);}function pjEntries(){return (D&&D.productionJournal&&D.productionJournal.entries)||[];}function pjDate(){const t=pjToday();return PJS.mode==='manual'?PJS.date:(pjEntries().some(e=>e.date===t)?t:pjAdd(t,-1));}function pjLabel(d){const k=new Date(d+'T12:00:00Z');return (k.getUTCMonth()+1)+'월 '+k.getUTCDate()+'일 ('+'일월화수목금토'[k.getUTCDay()]+')';}function pjSave(){try{localStorage.setItem('dash_pj_ui_v1',JSON.stringify({mode:PJS.mode,date:PJS.date}));}catch(_){}}
-function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail&&!d.closest('#scrCol'))rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn()&&FITP()!=='lap';document.documentElement.style.setProperty('--workZoom',String(WALL()?(FITP()==='24'?.76:.7):Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
+function pjSize(){if(STAFF)return;const d=document.getElementById('deliveryCol'),p=document.getElementById('productionCol');let rail=document.getElementById('workJournalCol');if(d&&p&&!rail){rail=document.createElement('aside');rail.id='workJournalCol';rail.setAttribute('aria-label','배송 정보와 생산일지');d.before(rail);rail.append(d,p);}else if(rail){if(d&&d.parentElement!==rail&&!d.closest('#scrCol,#dsTop'))rail.prepend(d);if(p&&p.parentElement!==rail)rail.append(p);}const wide=innerWidth>=1100&&scrOn()&&FITP()!=='lap';document.documentElement.style.setProperty('--workZoom',String(WALL()?(FITP()==='24'?.76:.7):Math.min(1,Math.max(.6,(innerHeight-26)/1120))));document.body.classList.remove('pj-wide','pj-inline');document.body.classList.toggle('ws-wide',wide);document.body.classList.toggle('ws-inline',!wide);document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);}
 function pjValidImg(s){return /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s||'');}
 async function pjLoad(d,e){if(PJS.busy[d])return;PJS.busy[d]=true;delete PJS.err[d];try{let doc=null;if(window.__PRODUCTION_TEST)doc=window.__PRODUCTION_TEST[d];else{if(!/^production_20\d{6}\.enc\.json$/.test(e.file||''))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('원본을 못 읽었어요');doc=await decrypt(await r.json(),k);}if(!doc||doc.date!==d||!(doc.images||[]).some(pjValidImg))throw new Error('원본 날짜·사진 확인 필요');PJS.cache[d]={rev:e.revision,doc};}catch(err){PJS.err[d]=String(err.message||err);PJS.errAt[d]=Date.now();}finally{delete PJS.busy[d];if(pjDate()===d)pjPaint();}}
 function pjPaint(){if(!D||STAFF){const old=document.getElementById('productionCol');if(old)old.remove();document.body.classList.remove('pj-wide','pj-inline');return;}let a=document.getElementById('productionCol');if(!a){a=document.createElement('aside');a.id='productionCol';a.setAttribute('aria-label','이정현 과장 생산일지');document.getElementById('main').after(a);}const d=pjDate(),today=pjToday(),idx=D.productionJournal||{},rows=pjEntries(),e=rows.find(x=>x.date===d),latest=rows.slice().sort((a,b)=>b.date.localeCompare(a.date))[0];const cached=PJS.cache[d],doc=e&&cached&&cached.rev===e.revision?cached.doc:null;const imgs=doc?(doc.images||[]).filter(pjValidImg):[];const auto=PJS.mode==='auto',notToday=!rows.some(x=>x.date===today);const sub=auto&&notToday?'오늘 일지가 아직 없어 전일자로 표시':auto?'오늘 생산일지': '날짜를 직접 선택했어요';
@@ -2666,23 +2695,25 @@ render=(orig=>function(){orig();try{skPaint();}catch(_){}})(render);scrSize=(ori
 // ===== 2026-11-22 조조 lay6 (사용자 요청): ① 이정현 과장 생산일지 칸 뺌(화면에서 숨김, 만드는 코드·인쇄는 남김) ② 넓은 화면 맞춤(32·24인치)에서 사무실 포스기·건강일지 미리보기를 배송정보 아래로
 // ③ K-HACCP 종합현황(월 달력)을 오른쪽 단 생산실 키오스크 바로 아래로, 그 단을 넓힘 ④ 달력에 일지 이름(줄임)·상태 색. 노트북·세로·태블릿·휴대폰·직원용은 예전처럼 본문에 달력.
 function devPlace(){const a=document.getElementById('scrCol'),r=document.getElementById('workJournalCol'),dc=document.getElementById('deliveryCol');if(!a)return;
-  /* 2026-11-22 lay8: 32·24인치 — 가운데 단 = 생산실 키오스크·사무실 포스기·건강일지, 오른쪽 넓은 단 = K-HACCP 달력 + 배송정보 */
-  const wide=document.body.classList.contains('rsc')&&document.body.classList.contains('ws-wide')&&!!r&&WALL();let box=document.getElementById('devMove');
-  if(wide){if(!box){box=document.createElement('div');box.id='devMove';box.addEventListener('click',scrClick);}if(box.parentElement!==r)r.append(box);
-    ['kiosk','pos','health'].forEach(d=>{const s=document.querySelector('.scr[data-dev="'+d+'"]');if(s&&s.parentElement!==box)box.append(s);});
-    if(dc&&dc.parentElement!==a)a.append(dc);
-    const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--workZoom'))||1;
-    ['kiosk','pos','health'].forEach(d=>{const b=document.querySelector('#devMove .scr[data-dev="'+d+'"] .scr-b');if(!b||!b.clientWidth)return;let h=b.clientWidth/(d==='health'?HL_VIEW:SCR[d]).ar;if(d==='kiosk')h=Math.min(h,innerHeight*0.32/z);b.style.height=Math.floor(h)+'px';});}
-  else{if(box){['kiosk','pos','health'].forEach(d=>{const s=box.querySelector('.scr[data-dev="'+d+'"]');if(s)a.append(s);});box.remove();}
-    if(dc&&r&&dc.parentElement!==r)r.prepend(dc);}
+  /* 2026-11-23 v113 lay14: 32·24인치 — 가운데 위 = 큰 배송정보(재고 단+키오스크 단 폭), 가운데 아래 = 재고 현황·관리 요망 재고 | 생산실 키오스크, 오른쪽 = K-HACCP 달력 + (사무실 포스기 · 건강일지) */
+  const wide=document.body.classList.contains('rsc')&&document.body.classList.contains('ws-wide')&&!!r&&WALL();let box=document.getElementById('devMove'),dr=document.getElementById('devRail'),top=document.getElementById('dsTop');
+  if(wide){document.body.classList.add('lay14');if(!box){box=document.createElement('div');box.id='devMove';box.addEventListener('click',scrClick);}if(box.parentElement!==r)r.append(box);
+    const k=document.querySelector('.scr[data-dev="kiosk"]');if(k&&k.parentElement!==box)box.append(k);
+    if(!dr){dr=document.createElement('div');dr.id='devRail';dr.addEventListener('click',scrClick);}if(dr.parentElement!==a||dr.previousElementSibling!==document.getElementById('khRail')){const kr=document.getElementById('khRail');if(kr&&kr.parentElement===a)kr.after(dr);else a.append(dr);}
+    ['pos','health'].forEach(d=>{const s=document.querySelector('.scr[data-dev="'+d+'"]');if(s&&s.parentElement!==dr)dr.append(s);});
+    if(!top){top=document.createElement('div');top.id='dsTop';document.body.append(top);}if(dc&&dc.parentElement!==top)top.append(dc);}
+  else{document.body.classList.remove('lay14');[box,dr].forEach(x=>{if(!x)return;['kiosk','pos','health'].forEach(d=>{const s=x.querySelector('.scr[data-dev="'+d+'"]');if(s)a.append(s);});x.remove();});
+    if(dc&&r&&dc.parentElement!==r)r.prepend(dc);if(top)top.remove();const sk=document.getElementById('stockCol');[sk,r].forEach(x=>{if(x)x.style.top='';});}
   try{devFill();}catch(_){}try{hlViewFit();}catch(_){}}
-/* 2026-11-22 v108: 가운데 단 아래 빈 여백을 건강일지 화면 높이로 채워 좌우 단 끝을 맞춤 */
-function devFill(){const r=document.getElementById('workJournalCol'),box=document.getElementById('devMove');if(!r||!box||box.parentElement!==r)return;
-  /* 2026-11-22 v109: 포스기·건강일지 = 같은 높이(포스기 원래 비율 높이의 1.5배), 남는 높이는 모두 생산실 키오스크(세로 화면) */
-  const g=d=>box.querySelector('.scr[data-dev="'+d+'"] .scr-b');const kb=g('kiosk'),pb=g('pos'),hb=g('health');if(!kb||!pb||!hb||!pb.clientWidth)return;
-  const ph=Math.round(pb.clientWidth/SCR.pos.ar*1.5);pb.style.height=ph+'px';hb.style.height=ph+'px';
-  const wr=r.getBoundingClientRect(),zz=wr.height/(r.clientHeight||1)||1,br=box.getBoundingClientRect();const extra=Math.floor((wr.bottom-br.bottom)/zz)-2;
-  kb.style.height=Math.max(160,kb.clientHeight+extra)+'px';try{hlViewFit();}catch(_){}}
+function devFill(){if(!document.body.classList.contains('lay14'))return;const r=document.getElementById('workJournalCol'),box=document.getElementById('devMove'),top=document.getElementById('dsTop'),sk=document.getElementById('stockCol');if(!r||!box||!top)return;
+  const skOn=!!sk&&document.body.classList.contains('sk-wide')&&sk.offsetWidth>0;const rr=r.getBoundingClientRect(),L=Math.round(skOn?sk.getBoundingClientRect().left:rr.left),R=Math.round(rr.right),W=Math.max(200,R-L);
+  const im=top.querySelector('.ds-preview img'),bar=top.querySelector('.ds-bar');const bh=bar?bar.offsetHeight:40;
+  const asp=(im&&im.dataset.a2)?Number(im.dataset.a2):(im&&im.dataset.a1?Number(im.dataset.a1):0.8625);
+  const H1=Math.round(Math.min(innerHeight*0.56,Math.max(innerHeight*0.30,bh+W*asp+4)));
+  Object.assign(top.style,{left:L+'px',width:W+'px',top:'8px',height:H1+'px'});
+  const z=parseFloat(getComputedStyle(r).zoom)||1;const t2=(8+H1+8)/z+'px';r.style.top=t2;if(skOn)sk.style.top=t2;
+  const kb=box.querySelector('.scr[data-dev="kiosk"] .scr-b');if(kb){const wr=r.getBoundingClientRect(),zz=wr.height/(r.clientHeight||1)||1,br=box.getBoundingClientRect();const extra=Math.floor((wr.bottom-br.bottom)/zz)-2;kb.style.height=Math.max(140,kb.clientHeight+extra)+'px';}
+  try{if(im)dsPick(im);}catch(_){}try{hlViewFit();}catch(_){}}
 function khPlace(){const a=document.getElementById('scrCol'),m=document.getElementById('main');if(!m)return;const kp=m.querySelector('.kpis');
   const wide=!!a&&document.body.classList.contains('rsc')&&WALL()&&!STAFF;let r=document.getElementById('khRail');
   if(wide){if(!r){r=document.createElement('div');r.id='khRail';}if(a.firstElementChild!==r)a.prepend(r);
