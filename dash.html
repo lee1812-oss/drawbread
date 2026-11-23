@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v113"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 13:36 벽 화면 배치: 배송정보 가운데 위 크게·키오스크 가운데 아래·포스기/건강일지 달력 아래">
+<meta name="dash-ver" content="v114"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 13:52 달력·배송정보 반반 폭·새 배송표 오늘 열 크게">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1019,6 +1019,11 @@ body:not(.lay14) #dsTop{display:none}
 body.lay14 #scrCol>#devRail{display:flex;gap:8px;flex:1 1 0;min-height:0}
 body.lay14 #devRail>.scr{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;margin:0!important}
 body.lay14 #devRail>.scr .scr-b{flex:1 1 0;min-height:0;height:auto!important}
+/* 2026-11-23 v114: 오늘 열만 보는 중 표시 */
+#deliveryCol .ds-preview{position:relative}
+body.lay14 #scrCol>#khRail{overflow-x:hidden!important}
+#deliveryCol .ds-preview.ds-daymode::after{content:attr(data-mode);position:absolute;right:6px;bottom:6px;background:rgba(1,7,54,.88);color:#fff;font-size:13px;font-weight:700;padding:3px 9px;border-radius:999px;pointer-events:none;white-space:nowrap}
+
 body.lay14 #stockCol .sk-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding-bottom:4px!important}
 body.lay14 #stockCol .sk-head h2{font-size:17px!important;margin:0!important;width:auto!important}
 body.lay14 #stockCol .sk-head .work-owner{display:inline!important;font-size:13px!important}
@@ -2440,7 +2445,7 @@ function scrBuild(){if(document.getElementById('scrCol'))return;const a=document
   addEventListener('keydown',e=>{if(e.key==='Escape'&&SCS.big)scrBigOpen('');});}
 function scrSize(){const on=scrOn(),wide=on&&innerWidth>=1100&&FITP()!=='lap';const was=document.body.classList.contains('rsc');document.body.classList.toggle('rsc',wide);document.body.classList.toggle('rsc-inline',on&&!wide);const a=document.getElementById('scrCol');if(!a)return;
   let W=SCS.W;if(on){const ids=Object.keys(SCR).concat('health');const hh=54,gap=8,pad=16;const sum=ids.reduce((s,d)=>s+1/(d==='health'?HL_VIEW:SCR[d]).ar,0);
-    W=wide&&wallSync()?Math.max(600,Math.min(1000,Math.round(innerWidth*0.38))):wide?Math.max(200,Math.min(innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
+    W=wide&&wallSync()?lay15W().s:wide?Math.max(200,Math.min(innerWidth*0.3,Math.round((innerHeight-pad-gap*(ids.length-1)-hh*ids.length)/sum))):Math.max(180,Math.floor((innerWidth-40-(innerWidth>=700?16:0))/(innerWidth>=700?2:1)));
     document.documentElement.style.setProperty('--scrW',W+'px');try{devPlace();khPlace();}catch(_){}ids.forEach(d=>{const b=document.querySelector('.scr[data-dev="'+d+'"] .scr-b');if(!b)return;const ar=(d==='health'?HL_VIEW:SCR[d]).ar;let h=W/ar;if(wide&&WALL()&&b.closest('#devMove')){h=b.clientWidth/ar;if(d==='kiosk'){const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--workZoom'))||1;h=Math.min(h,innerHeight*0.32/z);}}b.style.height=Math.floor(h)+'px';});try{devFill();}catch(_){}}
   hlViewFit();if(wide!==was||W!==SCS.W){SCS.W=W;setTimeout(()=>{try{dispatchEvent(new Event('resize'));}catch(_){}},30);}}
 function scrT(ms){const d=new Date(ms);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');}
@@ -2502,16 +2507,40 @@ function dsTint(c,h){const x=c.getContext('2d',{willReadFrequently:true}),W=c.wi
   x.putImageData(d,0,0);return vl;}
 /* 2026-11-23 v113: 칸이 좁고 높으면 표를 두 줄(월~수 / 목·금)로 나눠 더 크게 */
 function dsSplit(c,vl){if(!vl||vl.length!==12)return null;const W=c.width,H=c.height,lab=vl[1].e+1,cut=vl[7].s,wA=vl[7].e+1,wB=lab+(W-cut),gap=10;const o=document.createElement('canvas');o.width=Math.max(wA,wB);o.height=H*2+gap;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,o.width,o.height);g.drawImage(c,0,0,wA,H,0,0,wA,H);g.drawImage(c,0,0,lab,H,0,H+gap,lab,H);g.drawImage(c,cut,0,W-cut,H,lab,H+gap,W-cut,H);return o;}
-function dsPick(img){const e=img&&DS_CROP.get(img.dataset.src||'');if(!e)return;let u=e.u1;if(e.u2){const b=img.parentElement,W=b.clientWidth,H=b.clientHeight;const fixed=!!img.closest('#dsTop,#scrCol');if(fixed&&W&&H){const s1=Math.min(W/e.w1,H/e.h1),s2=Math.min(W/e.w2,H/e.h2);if(s2>s1*1.05)u=e.u2;}else if(W&&W/e.w1<0.75)u=e.u2;}
-  img.dataset.a1=(e.h1/e.w1).toFixed(4);if(e.u2)img.dataset.a2=(e.h2/e.w2).toFixed(4);if(img.getAttribute('src')!==u)img.src=u;}
-function dsCropSet(img,src){if(!img)return;img.dataset.src=src;const hit=DS_CROP.get(src);if(hit){dsPick(img);return;}img.src=src;
-  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(src,{u1:src,w1:im.naturalWidth,h1:im.naturalHeight});dsPick(img);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);let vl=null;if(k.hdr){try{vl=dsTint(c,k.hdr);}catch(_){}}
+function dsPick(img){const e=img&&DS_CROP.get(img.dataset.src||'');if(!e)return;let u=e.u1,asp=e.h1/e.w1,mode='';const pv=img.parentElement;if(e.u3&&pv){const W=pv.clientWidth,H=pv.clientHeight,fx=!!img.closest('#dsTop,#scrCol');const s1=fx&&H?Math.min(W/e.w1,H/e.h1):W/e.w1;if(s1<0.33){u=e.u3;asp=e.h3/e.w3;if(e.u4&&fx&&H){const s3=Math.min(W/e.w3,H/e.h3),s4=Math.min(W/e.w4,H/e.h4);if(s4>s3*1.1){u=e.u4;asp=e.h4/e.w4;}}mode=e.lab3+' 열만 보는 중 · 누르면 전체 보기';}}
+  if(pv){if(mode){pv.dataset.mode=mode;pv.classList.add('ds-daymode');}else{pv.classList.remove('ds-daymode');delete pv.dataset.mode;}}img.dataset.asp=asp.toFixed(4);
+  if(u===e.u3||u===e.u4){if(img.getAttribute('src')!==u)img.src=u;return;}if(e.u2){const b=img.parentElement,W=b.clientWidth,H=b.clientHeight;const fixed=!!img.closest('#dsTop,#scrCol');if(fixed&&W&&H){const s1=Math.min(W/e.w1,H/e.h1),s2=Math.min(W/e.w2,H/e.h2);if(s2>s1*1.05)u=e.u2;}else if(W&&W/e.w1<0.75)u=e.u2;}
+  if(u===e.u2)img.dataset.asp=(e.h2/e.w2).toFixed(4);img.dataset.a1=(e.h1/e.w1).toFixed(4);if(e.u2)img.dataset.a2=(e.h2/e.w2).toFixed(4);if(img.getAttribute('src')!==u)img.src=u;}
+/* 2026-11-23 v114: 벽 화면 — K-HACCP 달력 폭 = 배송정보 폭(반반). s=달력 단, d=키오스크 단, k=재고 단 (d+k+10=s) */
+function lay15W(){const s=Math.max(560,Math.min(1000,Math.round(innerWidth*0.33))),d=Math.round(s*0.40);return {s,d,k:s-10-d};}
+/* 2026-11-23 v114: 세로로 긴 새 배송표 양식 — 날짜 머리(남색·주황)에서 열 위치를 찾아 「구분 + 오늘 열」만 잘라 빈 띠를 줄여 크게. 못 찾으면 null(전체 보기) */
+function dsDayCrop(im,idx){const W=im.naturalWidth,H=im.naturalHeight;if(!(idx>=0&&idx<=4)||W<1200||H<W*0.6)return null;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0);const p=x.getImageData(0,0,W,H).data;
+  const hd=(i)=>{const r=p[i],g=p[i+1],b=p[i+2],L=.299*r+.587*g+.114*b;return (b>r+25&&L<120)||(r>200&&g>95&&g<205&&b<130);};
+  const runsAt=(y)=>{const rs=[];let s=-1,gp=0;for(let X=0;X<W;X++){if(hd((y*W+X)*4)){if(s<0)s=X;gp=0;}else if(s>=0){gp++;if(gp>3){const e=X-gp;if(e-s>=W*0.04)rs.push([s,e]);s=-1;gp=0;}}}if(s>=0&&W-1-s>=W*0.04)rs.push([s,W-1]);return rs;};
+  const ok6=(rs)=>{if(rs.length!==6)return false;const ws=rs.slice(1).map(r=>r[1]-r[0]);return Math.min(...ws)>W*0.12&&Math.max(...ws)/Math.min(...ws)<1.3&&rs[0][1]-rs[0][0]>W*0.04;};
+  let y0=-1,y1=-1,runs=null;for(let y=0;y<H*0.22;y+=2){const rs=runsAt(y);if(ok6(rs)){if(y0<0){y0=y;runs=rs;}y1=y;}else if(y0>=0&&y-y1>6)break;}
+  if(y0<0||!runs)return null;const mid=runsAt(Math.round((y0+y1)/2));if(ok6(mid))runs=mid;
+  const lab=runs[0],day=runs[idx+1];if(!(day[1]-day[0]>W*0.12))return null;
+  let bot=H;for(let y=H-1;y>H*0.85;y-=2){let n=0;for(let X=lab[0];X<=lab[1];X+=3)if(hd((y*W+X)*4))n++;if(n>(lab[1]-lab[0])/6){let t=y;while(t>H*0.8){let m=0;for(let X=lab[0];X<=lab[1];X+=3)if(hd((t*W+X)*4))m++;if(m<=(lab[1]-lab[0])/30)break;t-=2;}bot=t-6;break;}}
+  const top=Math.max(0,y0-4),cols=[[lab[0]-2,lab[1]+2],[day[0]-2,day[1]+2]].map(([a,b])=>[Math.max(0,a),Math.min(W-1,b)]);
+  const keep=[];let last=-1e9,run=null;for(let y=top;y<bot;y++){let n=0;for(const [a,b] of cols){for(let X=a;X<=b;X+=2){const i=(y*W+X)*4;if(.299*p[i]+.587*p[i+1]+.114*p[i+2]<190){n++;if(n>2)break;}}if(n>2)break;}
+    if(n>2){if(run&&y-run[1]<=40)run[1]=y;else{if(run)keep.push(run);run=[y,y];}}}if(run)keep.push(run);if(!keep.length)return null;
+  const seg=keep.map(([a,b])=>[Math.max(top,a-10),Math.min(bot-1,b+10)]);const lw=cols[0][1]-cols[0][0]+1,dw=cols[1][1]-cols[1][0]+1,gap=6,sg=14;
+  const oh=seg.reduce((s,[a,b])=>s+(b-a+1),0)+sg*(seg.length-1);if(oh<80)return null;const o=document.createElement('canvas');o.width=lw+gap+dw;o.height=oh;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,o.width,o.height);
+  let oy=0;for(const [a,b] of seg){const h=b-a+1;g.drawImage(c,cols[0][0],a,lw,h,0,oy,lw,h);g.drawImage(c,cols[1][0],a,dw,h,lw+gap,oy,dw,h);oy+=h+sg;}
+  let two=null;try{if(oh>o.width*1.6){const q=g.getImageData(lw+gap,0,dw,oh).data;const emp=(y)=>{let n=0;for(let X=0;X<dw;X+=2){const i=(y*dw+X)*4;if(.299*q[i]+.587*q[i+1]+.114*q[i+2]<190)n++;}return n<=1;};let sp=-1;for(let d=0;d<oh*0.2;d++){for(const y of [Math.round(oh/2)+d,Math.round(oh/2)-d]){if(y>0&&y<oh-1&&emp(y)&&emp(y-1)&&emp(y+1)){sp=y;break;}}if(sp>0)break;}
+    if(sp>0){const t=document.createElement('canvas'),g2=12;t.width=o.width*2+g2;t.height=Math.max(sp,oh-sp);const h2=t.getContext('2d');h2.fillStyle='#fff';h2.fillRect(0,0,t.width,t.height);h2.drawImage(o,0,0,o.width,sp,0,0,o.width,sp);h2.drawImage(o,0,sp,o.width,oh-sp,o.width+g2,0,o.width,oh-sp);two=t;}}}catch(_){}
+  o.two=two;return o;}
+function dsDayIdx(){try{const e=dsEntry(),d=dsDate();if(!e||!e.weekStart)return -1;const n=Math.round((Date.parse(d)-Date.parse(e.weekStart))/864e5);return n<0?0:n>4?-1:n;}catch(_){return -1;}}
+function dsCropSet(img,src){if(!img)return;const di=dsDayIdx(),key=src+'|'+di;img.dataset.src=key;const hit=DS_CROP.get(key);if(hit){dsPick(img);return;}img.src=src;
+  const im=new Image();im.onload=()=>{try{const k=dsCropCalc(im);if(!k||k.w<200||k.h<80){DS_CROP.set(key,{u1:src,w1:im.naturalWidth,h1:im.naturalHeight});dsPick(img);return;}const c=document.createElement('canvas');c.width=k.w;c.height=k.h;c.getContext('2d').drawImage(im,k.x,k.y,k.w,k.h,0,0,k.w,k.h);let vl=null;if(k.hdr){try{vl=dsTint(c,k.hdr);}catch(_){}}
     const ent={u1:c.toDataURL('image/png'),w1:k.w,h1:k.h};try{const sp=Array.isArray(vl)?dsSplit(c,vl):null;if(sp){ent.u2=sp.toDataURL('image/png');ent.w2=sp.width;ent.h2=sp.height;}}catch(_){}
-    if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(src,ent);if(img.isConnected){dsPick(img);try{devFill();}catch(_){}}}catch(_){DS_CROP.set(src,{u1:src,w1:im.naturalWidth||1,h1:im.naturalHeight||1});dsPick(img);}};im.src=src;}
+    try{const dc=dsDayCrop(im,di);if(dc){ent.u3=dc.toDataURL('image/png');ent.w3=dc.width;ent.h3=dc.height;if(dc.two){ent.u4=dc.two.toDataURL('image/png');ent.w4=dc.two.width;ent.h4=dc.two.height;}try{const e=dsEntry(),dd=new Date(Date.parse(e.weekStart)+di*864e5);ent.lab3=(dd.getMonth()+1)+'/'+dd.getDate()+'('+'일월화수목금토'[dd.getDay()]+')';}catch(_){ent.lab3='오늘';}}}catch(_){}
+    if(DS_CROP.size>6)DS_CROP.clear();DS_CROP.set(key,ent);if(img.isConnected){dsPick(img);try{devFill();}catch(_){}}}catch(_){DS_CROP.set(key,{u1:src,w1:im.naturalWidth||1,h1:im.naturalHeight||1});dsPick(img);}};im.src=src;}
 addEventListener('resize',()=>{try{const i=document.querySelector('#deliveryCol .ds-preview img');if(i)dsPick(i);}catch(_){}});
 function dsControls(big){const d=dsDate();return '<div class="work-date"><button data-dsch="prev" aria-label="배송정보 전날"'+(big?'':'')+'>◀ 전날</button><strong>'+pjLabel(d)+'</strong><button data-dsch="next" aria-label="배송정보 다음날">다음날 ▶</button><input type="date" value="'+d+'" aria-label="배송정보 날짜 선택" data-ds-date><button data-dsch="latest">최근 배송표</button><button data-dsch="today">오늘</button></div>';}
 async function dsLoad(e){if(!e||!e.file||DSS.busy[e.file]||(DSS.err[e.file]&&Date.now()-(DSS.errAt[e.file]||0)<60e3))return;DSS.busy[e.file]=true;delete DSS.err[e.file];try{if(!/^delivery_20\d{6}\.enc\.json$/.test(e.file))throw new Error('원본 연결 오류');let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)throw new Error('관리자 연결 필요');const r=await fetch(e.file+'?t='+encodeURIComponent(e.revision||Date.now()),{cache:'no-store'});if(!r.ok)throw new Error('배송표 원본을 못 읽었어요');const doc=await decrypt(await r.json(),k);if(doc.scheduleDate!==e.scheduleDate||doc.weekStart!==e.weekStart||doc.weekEnd!==e.weekEnd||!pjValidImg(doc.image))throw new Error('원본 날짜·사진 확인 필요');DSS.cache[e.file]={rev:e.revision,doc};}catch(err){DSS.err[e.file]=String(err.message||err);DSS.errAt[e.file]=Date.now();}finally{delete DSS.busy[e.file];dsSchedulePaint();}}
-function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?215:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
+function dsScheduleSize(){const a=document.getElementById('deliveryCol');if(!a)return;const wide=innerWidth>=1100&&!STAFF&&scrOn()&&FITP()!=='lap';document.body.classList.toggle('ds-wide',wide);document.body.classList.toggle('ds-inline',!wide);document.documentElement.style.setProperty('--dsW',(WALL()?lay15W().d:Math.max(260,Math.min(360,Math.round(innerWidth*.19))))+'px');}
 function dsMissing(e){return e?(DSS.err[e.file]||'배송표 원본을 불러오는 중입니다.'):'선택한 날짜가 포함된 배송표가 없습니다. 다른 날짜의 표를 대신 표시하지 않습니다.';}
 let WORK_PRINT_BUSY=false;
 function workPrintButtons(){for(const [id,ok,attr] of [['deliveryBig',!!dsDoc(dsEntry()),'data-dsch'],['productionBig',(()=>{const d=pjDate(),e=pjEntries().find(x=>x.date===d),c=PJS.cache[d];return !!(e&&c?.rev===e.revision&&(c.doc?.images||[]).some(pjValidImg));})(),'data-pj']]){const b=document.getElementById(id)?.querySelector('['+attr+'="print"]');if(b){b.disabled=WORK_PRINT_BUSY||!ok;b.title=ok?'선택한 날짜 원본만 인쇄합니다. 인쇄는 원본 전체를 A4에 최대 크기로 맞춥니다. 인쇄창에서 단면을 선택하고 머리말·꼬리말을 꺼 주세요.':'이 날짜에 불러온 원본이 없어 인쇄할 수 없습니다.';}}}
@@ -2667,7 +2696,7 @@ function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday(
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
 function skSize(){const a=document.getElementById('stockCol');if(!a){document.body.classList.remove('sk-wide','sk-inline');return;}
-  const rs=getComputedStyle(document.documentElement),skW=WALL()?290:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
+  const rs=getComputedStyle(document.documentElement),skW=WALL()?lay15W().k:Math.max(320,Math.min(600,Math.round(innerWidth*.14))),scrW=parseFloat(rs.getPropertyValue('--scrW'))||0,dsW=parseFloat(rs.getPropertyValue('--dsW'))||0;
   // 본문이 860px 넘게 남을 때만 오른쪽 세로 칸, 아니면 본문 아래 카드
   const wide=document.body.classList.contains('ws-wide')&&innerWidth-scrW-dsW-skW-60>=(WALL()?520:860);
   document.documentElement.style.setProperty('--skW',skW+'px');
@@ -2708,7 +2737,7 @@ function devPlace(){const a=document.getElementById('scrCol'),r=document.getElem
 function devFill(){if(!document.body.classList.contains('lay14'))return;const r=document.getElementById('workJournalCol'),box=document.getElementById('devMove'),top=document.getElementById('dsTop'),sk=document.getElementById('stockCol');if(!r||!box||!top)return;
   const skOn=!!sk&&document.body.classList.contains('sk-wide')&&sk.offsetWidth>0;const rr=r.getBoundingClientRect(),L=Math.round(skOn?sk.getBoundingClientRect().left:rr.left),R=Math.round(rr.right),W=Math.max(200,R-L);
   const im=top.querySelector('.ds-preview img'),bar=top.querySelector('.ds-bar');const bh=bar?bar.offsetHeight:40;
-  const asp=(im&&im.dataset.a2)?Number(im.dataset.a2):(im&&im.dataset.a1?Number(im.dataset.a1):0.8625);
+  const asp=(im&&im.dataset.asp)?Number(im.dataset.asp):(im&&im.dataset.a2)?Number(im.dataset.a2):(im&&im.dataset.a1?Number(im.dataset.a1):0.8625);
   const H1=Math.round(Math.min(innerHeight*0.56,Math.max(innerHeight*0.30,bh+W*asp+4)));
   Object.assign(top.style,{left:L+'px',width:W+'px',top:'8px',height:H1+'px'});
   const z=parseFloat(getComputedStyle(r).zoom)||1;const t2=(8+H1+8)/z+'px';r.style.top=t2;if(skOn)sk.style.top=t2;
