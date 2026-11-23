@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v127"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 22:47 단가표 바로가기를 별도 보통 창으로 열기(상시화면에서 돌아갈 길 확보)">
+<meta name="dash-ver" content="v128"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 23:21 주소로 시트 고르기(?sheet=), 숨은 시트·가려진 창은 자료 갱신 멈춤">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1308,7 +1308,7 @@ function mount(){if(document.getElementById('mybBar'))return;const hd=document.q
   paintBar();if(S.tab!=='all'||wallAll()||p2On())show(S.tab);}
 try{api.setRender((o=>function(){const x=o.apply(this,arguments);try{mount();syncAll(false);}catch(_){}return x;})(api.getRender()));}catch(_){}
 addEventListener('resize',()=>{clearTimeout(window.__mybRz);window.__mybRz=setTimeout(()=>{try{if(p2On()){show(S.tab);return;}if(S.tab==='all'&&wallAll()!==WALLMODE){show('all');return;}if(WALLMODE&&grid){show('all');return;}syncAll(true);}catch(_){}},400);});
-setInterval(()=>{try{syncAll(false);}catch(_){}},3000);
+setInterval(()=>{if(document.hidden||document.body.classList.contains('sheet-on'))return;try{syncAll(false);}catch(_){}},3000);
 if(document.readyState!=='loading')setTimeout(mount,500);else addEventListener('DOMContentLoaded',()=>setTimeout(mount,500));
 window.__myb={show,edit,current,catalog:()=>catalog().map(c=>c.id+' = '+c.n),refresh:()=>show(S.tab)};
 };
@@ -1348,25 +1348,34 @@ body.khoff #main .khday,body.khoff #khRail{display:none!important}
 /* 2026-11-23 v121 조조: 머리줄 「시트」 버튼 3개 — ① 업무 대시보드 ② 해썹 일지 현황 ③ UTCA 출력일보 (관리자 화면만).
    ②·③은 같은 주소의 ccpview.html(02 「빵을그리다 해썹 주요 일지 현황」 v012 복사본)을 안에 띄우고, 02 열쇠는 관리자 열쇠로 푼 자료(D.ccp02key)에서만 넘김.
    02 열쇠로 UTCA 자료도 풀리기 때문에 직원용 화면에는 시트 버튼·화면·열쇠가 모두 없음(직원 자료에 열쇠 안 넣음). 고른 시트는 이 PC에 기억(dash_sheet_v1). */
+/* 2026-11-23 v128: 주소로 시트 고르기 ?sheet=dash|dash2|haccp|utca (기억값보다 우선, 직원용은 무시). 열쇠 주소 정리 전에 미리 읽어 둠 */
+(function(){try{var v=new URLSearchParams(location.search).get('sheet');if(v&&/^(dash|dash2|haccp|utca)$/.test(v))window.__SHEET_Q=v;}catch(_){}})();
 globalThis.installSheets=function(api){
  const LS='dash_sheet_v1';let STAFF=false;try{STAFF=!!api.isStaff();}catch(_){}
  if(STAFF){document.body.classList.remove('khoff','sheet-on');return;}
  document.body.classList.add('khoff');
  let cur='dash';try{const v=localStorage.getItem(LS);if(v==='haccp'||v==='utca'||v==='dash2')cur=v;}catch(_){}
+ if(window.__SHEET_Q){cur=window.__SHEET_Q;try{localStorage.setItem(LS,cur);}catch(_){}}
  let frame=null,msg=null;
  const key=()=>{try{const d=api.getData();return (d&&d.ccp02key)||'';}catch(_){return '';}};
  const ITEMS=[['dash','업무 1면'],['dash2','업무 2면'],['haccp','해썹 일지 현황'],['utca','UTCA 출력일보']];
  function paint(){const bar=document.getElementById('sheetBar');if(!bar)return;bar.querySelectorAll('[data-sheet]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sheet===cur)));}
  function place(){const h=document.querySelector('header');const t=h?Math.max(0,Math.round(h.getBoundingClientRect().bottom)):0;if(frame){frame.style.top=t+'px';frame.style.height=Math.max(200,innerHeight-t)+'px';}if(msg){msg.style.top=t+'px';msg.style.height=Math.max(200,innerHeight-t)+'px';}}
  function select(){try{const d=frame.contentWindow.document;const b=d.getElementById(cur==='utca'?'tb2':'tb1');if(b&&!b.classList.contains('on'))b.click();}catch(_){}}
- function feed(){if(!frame)return;const k=key();if(!k){msg.style.display='flex';return;}msg.style.display='none';try{const w=frame.contentWindow;if(!w||!w.document||w.document.readyState==='loading')return;if(w.CCP02_KEY!==k){w.CCP02_KEY=k;if(typeof w.__ccpKeyed==='function')w.__ccpKeyed();}select();try{const f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1;const z=f>1.001?String(f):'';if(w.document.documentElement.style.zoom!==z){w.document.documentElement.style.zoom=z;try{w.dispatchEvent(new Event('resize'));}catch(_){}}}catch(_){}}catch(_){}}
- function ensure(){if(!frame){frame=document.createElement('iframe');frame.id='sheetFrame';frame.title='해썹 일지 현황 · UTCA 출력일보';frame.src='ccpview.html?v=121';frame.addEventListener('load',()=>setTimeout(feed,50));document.body.append(frame);msg=document.createElement('div');msg.id='sheetMsg';msg.innerHTML='<div>해썹·UTCA 자료 열쇠를 받는 중이에요.<br><small>사무실 PC가 다음에 대시보드 자료를 올리면 자동으로 보입니다.</small></div>';document.body.append(msg);}place();feed();}
- function go(s,quiet){cur=s;try{localStorage.setItem(LS,s);}catch(_){}paint();const p2=s==='dash2';const was2=document.body.classList.contains('sheet-p2');document.body.classList.toggle('sheet-p2',p2);if(s==='dash'||p2){document.body.classList.remove('sheet-on');if(was2!==p2){try{window.__myb&&window.__myb.refresh();}catch(_){}}if(!quiet)try{dispatchEvent(new Event('resize'));}catch(_){}return;}document.body.classList.add('sheet-on');ensure();}
+ /* 2026-11-23 v128: 해썹·UTCA 시트가 안 보이거나(다른 시트) 창이 가려지면 안쪽 자료 당김 멈춤, 다시 보이면 바로 한 번 새로 받음 */
+ let paused=null;function shown(){return !document.hidden&&(cur==='haccp'||cur==='utca');}
+ function syncPause(){if(!frame)return;const p=!shown();let w=null;try{w=frame.contentWindow;}catch(_){}if(!w)return;try{w.__ccpPaused=p;}catch(_){}if(paused===true&&!p){try{if(typeof w.__ccpKeyed==='function'&&w.CCP02_KEY)w.__ccpKeyed();}catch(_){}}paused=p;}
+ function feed(){if(!frame)return;const k=key();if(!k){msg.style.display='flex';return;}msg.style.display='none';try{const w=frame.contentWindow;if(!w||!w.document||w.document.readyState==='loading')return;if(w.CCP02_KEY!==k){w.CCP02_KEY=k;w.__ccpPaused=!shown();paused=w.__ccpPaused;if(typeof w.__ccpKeyed==='function')w.__ccpKeyed();}else syncPause();select();try{const f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1;const z=f>1.001?String(f):'';if(w.document.documentElement.style.zoom!==z){w.document.documentElement.style.zoom=z;try{w.dispatchEvent(new Event('resize'));}catch(_){}}}catch(_){}}catch(_){}}
+ function ensure(){if(!frame){frame=document.createElement('iframe');frame.id='sheetFrame';frame.title='해썹 일지 현황 · UTCA 출력일보';frame.src='ccpview.html?v=128';frame.addEventListener('load',()=>setTimeout(feed,50));document.body.append(frame);msg=document.createElement('div');msg.id='sheetMsg';msg.innerHTML='<div>해썹·UTCA 자료 열쇠를 받는 중이에요.<br><small>사무실 PC가 다음에 대시보드 자료를 올리면 자동으로 보입니다.</small></div>';document.body.append(msg);}place();feed();}
+ function go0(s,quiet){cur=s;try{localStorage.setItem(LS,s);}catch(_){}paint();const p2=s==='dash2';const was2=document.body.classList.contains('sheet-p2');document.body.classList.toggle('sheet-p2',p2);if(s==='dash'||p2){document.body.classList.remove('sheet-on');if(was2!==p2){try{window.__myb&&window.__myb.refresh();}catch(_){}}if(!quiet)try{dispatchEvent(new Event('resize'));}catch(_){}return;}document.body.classList.add('sheet-on');ensure();}
+ function goV(s,quiet){go0(s,quiet);syncPause();try{dispatchEvent(new CustomEvent('dash-sheetvis',{detail:{sheet:s}}));}catch(_){}}
  function mount(){if(document.getElementById('sheetBar'))return;const br=document.querySelector('header .dash-top .brand')||document.querySelector('header .brand');if(!br)return;const bar=document.createElement('div');bar.id='sheetBar';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','시트');
   bar.innerHTML=ITEMS.map(x=>'<button type="button" class="sh-'+x[0]+'" data-sheet="'+x[0]+'" aria-pressed="false">'+x[1]+'</button>').join('');br.after(bar);
   bar.addEventListener('click',e=>{const b=e.target.closest('[data-sheet]');if(b)go(b.dataset.sheet);});paint();if(cur!=='dash')go(cur,true);}
+ const go=goV;
+ document.addEventListener('visibilitychange',()=>{syncPause();if(!document.hidden){try{dispatchEvent(new CustomEvent('dash-sheetvis',{detail:{sheet:cur}}));}catch(_){}}});
  try{api.setRender((o=>function(){const x=o.apply(this,arguments);try{mount();if(cur!=='dash'){place();feed();}}catch(_){}return x;})(api.getRender()));}catch(_){}
- setInterval(()=>{if(cur!=='dash'){try{place();feed();}catch(_){}}},2000);
+ setInterval(()=>{if(cur!=='dash'&&!document.hidden){try{place();feed();}catch(_){}}},2000);
  addEventListener('resize',()=>{if(cur!=='dash')place();});
  document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('.bk-strip .bk-chip');if(!c)return;if(/K-HACCP/.test(c.textContent||'')){e.preventDefault();e.stopPropagation();go('haccp');return;}/* 2026-11-23 v124: 벽 화면에서는 경고 칸이 모두 업무 2면에 있으므로 2면으로 */if(document.body.classList.contains('wall')&&cur!=='dash2'){e.preventDefault();e.stopPropagation();go('dash2');}},true);
  if(document.readyState!=='loading')setTimeout(mount,400);else addEventListener('DOMContentLoaded',()=>setTimeout(mount,400));
@@ -1410,7 +1419,7 @@ globalThis.installSheets=function(api){
   <div class="pb" id="pB"></div>
 </aside>
 <script src="dash_company_gmail.js?v=20261108-01"></script>
-<script src="dash_notice.js?v=20261120-02"></script>
+<script src="dash_notice.js?v=20261123-128"></script>
 <script>
 (function(){
 'use strict';
@@ -1452,7 +1461,7 @@ let STAFF=!ADMIN_ENTRY&&!!f0;try{if(!ADMIN_ENTRY&&!STAFF&&!k0&&!localStorage.get
 if(STAFF)document.body.classList.add('staff');
 if(k0){try{localStorage.setItem(LS_KEY,k0);localStorage.setItem(LS_KEY_BAK,k0);}catch(_){}window.__MEMKEY=k0;}
 // 주소에 열쇠를 항상 남겨 둔다 → 이 주소를 즐겨찾기/홈 화면에 추가하면 어느 브라우저에서든 바로 열림
-function keepKeyInUrl(k){try{if(k&&pickKey(location.search)!==k)history.replaceState(null,'',location.pathname+'?k='+k);}catch(_){}}
+function keepKeyInUrl(k){try{if(k&&pickKey(location.search)!==k){/* 2026-11-23 v128: ?sheet= ?fit= ?wall= 같은 다른 옵션은 그대로 둠 */const q=new URLSearchParams(location.search);q.delete('k');const r=q.toString().replace(/%2C/g,',');history.replaceState(null,'',location.pathname+'?k='+k+(r?'&'+r:''));}}catch(_){}}
 try{if(STAFF){const fk=f0||localStorage.getItem(LS_FKEY);if(fk&&pickF(location.search)!==fk)history.replaceState(null,'',location.pathname+'?f='+fk);}else keepKeyInUrl(k0||localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK));}catch(_){}
 
 function kst(d){const x=d?new Date(d):new Date();return new Date(x.getTime()+(x.getTimezoneOffset()+540)*60000);}
@@ -2501,7 +2510,7 @@ document.head.insertAdjacentHTML('beforeend','<style>.ss-rule{margin-top:10px;li
 applyNight();
 try{const c0=JSON.parse(localStorage.getItem(STAFF?LS_DATA+'_f':LS_DATA)||'null');if(c0&&(STAFF||localStorage.getItem(LS_KEY))){D=companyScreenData(c0.d);lastLoad=c0.at;render();}}catch(_){}
 tick();setInterval(tick,15000);
-load();setInterval(load,5*60000);
+load();setInterval(()=>{if(!document.hidden)load();},5*60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-(lastLoad||0)>60e3)load();});/* 2026-11-23 v128: 창이 가려지거나 최소화되면 자료 갱신 멈춤 */
 pcPoll(true);setInterval(()=>pcPoll(false),60000);
 // ===== 2026-10-22 공휴일·연휴 표시 (Aside): 자료 = D.stock.holidays (stock_build.js sbHolidays가 한국천문연구원 특일 정보로 채움). 기존 코드는 고치지 않고 아래만 덧붙임 =====
 (function(){const st=document.createElement('style');st.textContent='.hdm{table-layout:fixed}.hdm td,.hdm th{padding:4px 2px;font-size:.8rem}.hdm .hd-n{display:block;font-size:.62rem;line-height:1.15;word-break:keep-all;color:#dc2626;font-weight:700}.hd-d{font-weight:700}.hd-hol{color:#dc2626;font-weight:800}.hd-sat{color:#1d4ed8}.hd-tag{display:block;color:#dc2626;font-size:.66rem;font-weight:700;line-height:1.15}';document.head.appendChild(st);})();
@@ -2711,7 +2720,7 @@ PANELS.cards=['대시보드 칸 고르기',pCards,'cards'];
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-cd-toggle],#cdAll');if(!t||STAFF)return;e.preventDefault();if(t.id==='cdAll'){cdSet(new Set());return;}const n=new Set(CD.hide),id=t.dataset.cdToggle;if(n.has(id))n.delete(id);else n.add(id);cdSet(n);});
 (function(){const b=document.getElementById('bCards');if(b&&STAFF)b.style.display='none';})();
 (async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;KIO_URL=await decrypt(KIO_ENC,k);}catch(_){}})();
-cdPull();setInterval(cdPull,5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cdPull();});
+cdPull();setInterval(()=>{if(!document.hidden)cdPull();},5*60e3);document.addEventListener('visibilitychange',()=>{if(!document.hidden)cdPull();});
 // ===== 2026-11-06 조조: 키오스크·포스기 화면 고정 (오른쪽 세로 단) =====
 // 사용자 「화면 연결 누르지 않고 고정으로 나오게」. 브라우저는 다른 창 화면을 버튼 없이 가져올 수 없어서, 방식을 바꿈:
 // 키오스크·포스기에 깔린 작은 도우미가 10초마다 자기 화면 사진을 「빵을그리다 기기 화면 사진 저장소」(drawbread01 Apps Script)에 올리고,
@@ -2724,7 +2733,7 @@ const SCR={kiosk:{name:'생산실 키오스크',ar:9/16,open(){if(!KIO_URL){aler
 const HL_VIEW={name:'건강일지 메인화면',ar:4/3,key:'',frame:null,enc:{"v":1,"kdf":"PBKDF2-SHA256-100000","salt":"r2TXPD1Vzj8dh0urxMWbww==","iv":"8sHe+OKficdbA97D","ct":"qkLEXHMZPqTvB5NF3xlFWUsEMTtoC053CX/bcL/msEy1GnOmqEBjMbY="}};
 function hlViewUrl(app){return 'https://lee1812-oss.github.io/health/'+(app?'':'app.html')+'?m=tablet&k='+encodeURIComponent(HL_VIEW.key);}
 function hlViewFit(){const f=HL_VIEW.frame;if(!f)return;const b=f.parentElement;const w=b.clientWidth,h=b.clientHeight;if(b.closest('#devMove,#devRail')&&h>w*768/1024+4){const z=w/1024;f.style.transform='scale('+z+')';f.style.left='0px';f.style.top='0px';f.style.height=Math.ceil(h/z)+'px';return;}f.style.height='';const z=Math.min(w/1024,h/768);f.style.transform='scale('+z+')';f.style.left=Math.max(0,(w-1024*z)/2)+'px';f.style.top=Math.max(0,(h-768*z)/2)+'px';}
-async function hlViewInit(k){try{const j=await decrypt(HL_VIEW.enc,k);if(!j||!j.key)return;HL_VIEW.key=j.key;const sec=document.querySelector('.scr[data-dev="health"]');if(!sec)return;const f=document.createElement('iframe');f.className='hl-frame';f.title='건강일지 메인화면 보기 전용';f.setAttribute('sandbox','allow-scripts');f.setAttribute('referrerpolicy','no-referrer');f.setAttribute('allow',"camera 'none'; microphone 'none'; autoplay 'none'");f.setAttribute('tabindex','-1');f.setAttribute('inert','');f.src=hlViewUrl(false);HL_VIEW.frame=f;sec.querySelector('.scr-b').prepend(f);sec.querySelector('.scr-st').textContent='메인화면 · 보기 전용';sec.querySelector('.scr-m').textContent='';hlViewFit();setInterval(()=>{if(!document.hidden&&SCS.big!=='health')f.src=hlViewUrl(false);},5*60e3);}catch(_){const s=document.querySelector('.scr[data-dev="health"] .scr-m');if(s)s.textContent='건강일지 연결을 확인해 주세요';}}
+async function hlViewInit(k){try{const j=await decrypt(HL_VIEW.enc,k);if(!j||!j.key)return;HL_VIEW.key=j.key;const sec=document.querySelector('.scr[data-dev="health"]');if(!sec)return;const f=document.createElement('iframe');f.className='hl-frame';f.title='건강일지 메인화면 보기 전용';f.setAttribute('sandbox','allow-scripts');f.setAttribute('referrerpolicy','no-referrer');f.setAttribute('allow',"camera 'none'; microphone 'none'; autoplay 'none'");f.setAttribute('tabindex','-1');f.setAttribute('inert','');f.src=hlViewUrl(false);HL_VIEW.frame=f;sec.querySelector('.scr-b').prepend(f);sec.querySelector('.scr-st').textContent='메인화면 · 보기 전용';sec.querySelector('.scr-m').textContent='';hlViewFit();setInterval(()=>{const bc=document.body.classList;if(!document.hidden&&SCS.big!=='health'&&!bc.contains('sheet-on')&&!(bc.contains('sheet-p2')&&bc.contains('wall')))f.src=hlViewUrl(false);},5*60e3);}catch(_){const s=document.querySelector('.scr[data-dev="health"] .scr-m');if(s)s.textContent='건강일지 연결을 확인해 주세요';}}
 const SCS={rt:'',have:{},busy:false,big:'',err:'',skew:0,W:0};
 function scrOn(){return !STAFF&&!!SCS.rt;}
 function scrBuild(){if(document.getElementById('scrCol'))return;const a=document.createElement('aside');a.id='scrCol';a.setAttribute('aria-label','기기 화면');
@@ -2754,7 +2763,7 @@ function scrBigOpen(d){const b=document.getElementById('scrBig');if(!b)return;co
   if(isHl){if(HL_VIEW.frame)b.querySelector('.sb-b').prepend(HL_VIEW.frame);const st=b.querySelector('.scr-st');st.className='scr-st live';st.textContent='메인화면 · 보기 전용';hlViewFit();return;}b.querySelector('.sb-b img').removeAttribute('src');scrPaint(d);}
 function scrClick(e){const t=e.target.closest&&e.target.closest('[data-s]');if(!t)return;const k=t.dataset.s;const sec=t.closest('.scr');const d=sec?sec.dataset.dev:SCS.big;
   if(k==='open'){if(d==='health'){if(HL_VIEW.key)window.open(hlViewUrl(true),'dbhealth','noopener');}else if(d&&SCR[d])SCR[d].open();}else if(k==='big'){if(d)scrBigOpen(d);}else if(k==='close'){if(e.target.tagName!=='IMG'||t.tagName==='BUTTON')scrBigOpen('');}}
-async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;SCS.busy=true;
+async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;/* 2026-11-23 v128 */{const bc=document.body.classList;if(bc.contains('sheet-on')||(bc.contains('sheet-p2')&&bc.contains('wall')))return;}SCS.busy=true;
   try{const r=await fetch(SCR_API,{method:'POST',body:JSON.stringify({op:'get',rt:SCS.rt,have:SCS.have}),cache:'no-store',credentials:'omit'});const j=await r.json();
     if(!j||!j.ok){SCS.err=j&&j.err==='auth'?'보기 권한이 안 맞아요':'잠시 연결이 안 돼요';}
     else{SCS.err='';if(j.now)SCS.skew=j.now-Date.now();
@@ -2765,7 +2774,7 @@ async function scrPull(){if(!scrOn()||document.hidden||SCS.busy)return;SCS.busy=
 (async()=>{if(STAFF)return;try{let k=null;try{k=localStorage.getItem(LS_KEY)||localStorage.getItem(LS_KEY_BAK);}catch(_){}k=k||window.__MEMKEY;if(!k)return;
   const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('scr|'+k));SCS.rt=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
   scrBuild();scrSize();hlViewInit(k);scrPull();setInterval(scrPull,8000);setInterval(()=>{try{Object.keys(SCR).forEach(scrPaint);}catch(_){}},5000);
-  addEventListener('resize',scrSize);document.addEventListener('fullscreenchange',scrSize);document.addEventListener('visibilitychange',()=>{if(!document.hidden)scrPull();});}catch(_){}})();
+  addEventListener('resize',scrSize);document.addEventListener('fullscreenchange',scrSize);document.addEventListener('visibilitychange',()=>{if(!document.hidden)scrPull();});addEventListener('dash-sheetvis',()=>setTimeout(scrPull,300));}catch(_){}})();
 
 
 // ===== 2026-11-08 서재우 차장 카톡 배송표 =====
