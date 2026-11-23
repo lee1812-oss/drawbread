@@ -1,0 +1,162 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>해썹 일지 현황 (업무 대시보드 시트)</title><meta name="robots" content="noindex"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><style>html.in-dash #tabs{display:none!important}</style><script>if(window.parent!==window)document.documentElement.classList.add("in-dash");</script><style>@font-face{font-family:'Pretendard Variable';font-weight:45 920;font-style:normal;font-display:swap;src:url('PretendardVariable.woff2') format('woff2-variations'),local('Pretendard Variable'),local('Pretendard')}
+
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+body{font:18px/1.35 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;color:#1a1a1a;background:#eef0f2;display:flex;flex-direction:column}
+header{flex:none;display:flex;align-items:center;gap:10px;padding:6px 14px;background:#fff;border-bottom:3px solid #1F3A68}
+h1{margin:0;font-size:29px;line-height:1.1;font-weight:800;color:#14284B;letter-spacing:-.8px}
+#date{font-size:26px;font-weight:800;color:#14284B;min-width:300px;text-align:center}
+button{height:44px;padding:0 18px;font:800 20px 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;border:2px solid #1F3A68;background:#fff;color:#14284B;border-radius:8px;cursor:pointer}
+button:disabled{color:#aab;border-color:#ccd;cursor:default}#last{background:#1F3A68;color:#fff}#last:disabled{background:#cdd6e3;color:#fff;border-color:#cdd6e3}
+#main{flex:1;min-height:0;display:grid;grid-template-columns:var(--wc,37fr) var(--wr,63fr);gap:8px;padding:8px}#rt{min-height:0;min-width:0;display:flex;flex-direction:column;gap:8px}#mid{flex:21 1 0;min-height:0;min-width:0;display:flex;flex-direction:column}#rt #ccp{flex:79 1 0}header button,#tabs button{white-space:nowrap}h1{font-size:25px!important;white-space:nowrap}.co{white-space:nowrap}#date{min-width:0!important;white-space:nowrap;font-size:22px!important}.sum{white-space:nowrap;font-size:17px!important;margin:0 6px!important}.sum b{font-size:15px!important;padding:2px 8px!important}header>button{height:44px;padding:0 12px;font-size:18px}#tabs{display:flex;gap:8px;margin:0 auto 0 14px;flex:none}header .brand{margin-right:0!important;flex:none}#tabs button{height:50px;padding:0 18px;font:800 20px 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;border:2px solid #1F3A68;background:#fff;color:#14284B;border-radius:10px}#tabs button.on{background:#1F3A68;color:#fff}#tabs #tb1{border-color:#1E7B3C;color:#1E7B3C}#tabs #tb1.on{background:#1E7B3C;border-color:#1E7B3C;color:#fff}#sheet2{flex:1;min-height:0;display:none;background:#fff}#sheet2 iframe{width:100%;height:100%;border:0;display:block}#s2msg{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:800;color:#5b6577;line-height:1.6}body.s2 #main{display:none}body.s2 #sum,body.s2 #prev,body.s2 #next,body.s2 #last,body.s2 #date{visibility:hidden}body.s2 #sheet2{display:block}#mid .p.pr{flex:1 1 0}#utBody{flex:1;min-height:0;overflow:hidden;position:relative;background:#fff}#utImg{position:absolute;left:0;top:0;width:100%;display:none;cursor:pointer}#utMsg{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:20px;font-weight:800;color:#5b6577;line-height:1.5}#ccp .band,#mid .band{font-size:19px;letter-spacing:0;padding:4px 8px;gap:6px}#ccp .band em,#mid .band em{font-size:13px;margin-right:4px}#ccp .pbtn,#mid .pbtn{height:34px;min-width:64px;padding:0 10px;font-size:16px}#ccp .band i,#mid .band i{width:24px;height:24px;font-size:14px}#ccp .ap,#mid .ap{padding:2px 6px}#ccp .ap th,#ccp .ap td{font-size:13px;padding:0 6px}#ccp .ap .lb{font-size:14px}#ccp th,#ccp td{padding:1px 2px;border-width:1px}#ccp th{word-break:keep-all;overflow-wrap:anywhere;font-size:.88em;line-height:1.15}#ccp .in{padding:3px}#ccp{min-height:0;min-width:0;display:grid;grid-template-columns:var(--c1,1fr) var(--c2,1fr);grid-template-rows:1fr 1fr;gap:8px}.row{display:flex;gap:8px;min-height:0;min-width:0}.row.r1{flex:52 1 0}.row.r2{flex:48 1 0}.row .p{flex:1 1 0}.row.r1 .p.h{flex:64 1 0}.row.r1 .p.pr{flex:36 1 0}.row .p.e{flex:0 0 122px}.p.e .band{word-break:keep-all;font-size:17px;letter-spacing:0;padding:6px 8px;flex-wrap:wrap;gap:4px}.p.e .band em,.p.e .pbtn{display:none}.p.e .band i{width:24px;height:24px;font-size:15px}.p.e .none{font-size:22px;text-align:center;line-height:1.3}
+.p{background:#fff;border:2px solid #1F3A68;border-radius:6px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+#cal{background:#fff;border:2px solid #1F3A68;border-radius:6px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}.cs{flex:none;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:5px 8px;background:#F4F7FB;border-bottom:2px solid #1F3A68;font-size:16px;font-weight:800;color:#14284B}.cs .b{padding:2px 10px;border-radius:12px;color:#fff}.cs .at{margin-left:auto;font-size:14px;font-weight:600;color:#5b6577}.clg{flex:none;display:flex;flex-wrap:wrap;gap:3px 10px;padding:4px 8px;font-size:14px;font-weight:700;border-bottom:1px solid #c5cedb;color:#333}.clg span{white-space:nowrap}.clg i{font-style:normal;font-weight:900;margin-right:2px;padding:0 3px;border-radius:3px}.chd,.cg{display:grid;grid-template-columns:.3fr repeat(5,1fr) .3fr}.chd{flex:none;background:#1F3A68;color:#fff;font-size:15px;font-weight:800;text-align:center}.chd div{padding:2px 0}.cg{flex:1;min-height:0;grid-auto-rows:1fr;font-size:15px}.cc{border:1px solid #c5cedb;padding:1px 2px;overflow:hidden;min-height:0;min-width:0;display:flex;flex-direction:column;gap:1px;cursor:pointer;background:#fff}.cc.out{background:#f1f3f5;color:#adb5bd;cursor:default}.cc.wk{background:#f8fafd}.cc.today{box-shadow:inset 0 0 0 3px #1F3A68}.cc.sel{background:#E6ECF5}.cc .dn{font-weight:800;font-size:15px;line-height:1.15;display:flex;gap:3px;align-items:center;white-space:nowrap}.cc .dn i{font-style:normal;background:#1F3A68;color:#fff;border-radius:8px;padding:0 5px;font-size:12px}.cc .dn i.y{background:#868e96}.cc.sun .dn{color:#c92a2a}.cc.sat .dn{color:#1c5bd6}.kc{flex:none;display:block;line-height:1.1;font-weight:700;white-space:nowrap;letter-spacing:-.07em;overflow:visible;border-radius:3px;padding:0 2px}.kc b{font-weight:900;margin-right:2px}.kc.c{background:#FFF3BF}.kc.p.c{box-shadow:inset 4px 0 #f1c40f}.k-ok{color:#1e7b34}.k-bad{color:#fff;background:#c92a2a!important}.k-rej,.k-arej{color:#fff;background:#a61e1e!important}.k-rv{color:#7a4100;background:#ffe2b8!important}.k-ing{color:#7a4100;background:#ffd8a8!important}.k-prep,.k-hol{color:#868e96}.k-hol{font-size:13px;padding:0}.cc.sun .dn i,.cc.sat .dn i{display:none}.cg.wrap .kc{white-space:normal;word-break:keep-all}.kc.sm{color:#1e7b34;font-weight:800}.cnone{color:#adb5bd;font-size:.9em}
+.band{flex:none;display:flex;align-items:center;gap:10px;padding:5px 12px;background:linear-gradient(90deg,#14284B,#1F3A68);color:#fff;font-size:24px;font-weight:800;letter-spacing:1px}
+.band i{font-style:normal;background:#fff;color:#14284B;border-radius:50%;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.band em{font-style:normal;margin-left:auto;font-size:15px;font-weight:600;opacity:.85}
+.body{flex:1;min-height:0;overflow:hidden;position:relative}.in{position:absolute;left:0;top:0;width:100%;padding:6px}
+.sub{font-weight:800;color:#14284B;margin:6px 2px 3px;font-size:.8em}
+table{border-collapse:collapse;width:100%;table-layout:auto;margin-bottom:8px}
+th,td{border:2px solid #5B6F8C;padding:3px 4px;text-align:center;vertical-align:middle;white-space:pre-line;word-break:keep-all;overflow-wrap:normal}
+th{background:#1F3A68;color:#fff;font-weight:800}tr.t th{background:#14284B;font-size:1.25em;letter-spacing:2px}
+tbody td{font-weight:600}tr.z1 td{background:#F2F6FB}tr.z0 td{background:#fff}
+.none{height:100%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:#b42318}
+.sum{font-size:20px;font-weight:800;color:#14284B;margin:0 14px}.sum b{padding:2px 10px;border-radius:12px;color:#fff;margin-left:6px;font-size:18px}
+.s-ok{background:#2b8a3e}.s-wait{background:#e8890c}.s-rej{background:#c92a2a}.s-none{background:#868e96}
+.ap{flex:none;display:flex;align-items:stretch;gap:0;padding:4px 8px;background:#F4F7FB;border-bottom:2px solid #1F3A68}
+.ap table{width:auto;margin:0;border-collapse:collapse;font-size:15px}.ap th,.ap td{border:2px solid #5B6F8C;padding:1px 10px;white-space:nowrap;font-size:15px}
+.ap th{background:#1F3A68;color:#fff;font-weight:800}.ap td{font-weight:800;background:#fff;text-align:center}
+.ap .ok{background:#d7efdc;color:#14532d}.ap .wait{background:#ffe2b8;color:#8a4b00}.ap .rej{background:#ffd5d5;color:#a61e1e}
+.ap .lb{align-self:center;margin-left:12px;font-weight:800;font-size:16px;padding:2px 12px;border-radius:12px;color:#fff}.blank{margin:8px 6px;padding:10px 14px;background:#eceff3;color:#6b7686;border:2px dashed #aab4c3;border-radius:6px;font-weight:700;font-size:.85em}
+.sub.warn{color:#b45309}.chk{margin:4px 6px 10px;padding:6px 12px;background:#ffe2b8;color:#8a4b00;border:2px solid #e8890c;border-radius:6px;font-weight:800;font-size:.8em}
+.sub{background:#E6ECF5;padding:3px 8px;border-left:6px solid #1F3A68;margin:6px 2px 4px}.sub.warn{border-left-color:#e8890c;background:#fff1dc}.note td{text-align:left!important;font-size:.78em!important;font-weight:600;background:#F2F6FB!important}.p:first-child td,.p:first-child th{padding:1px 3px!important;line-height:1.12!important}.p:first-child .ap{padding:2px 8px}.p:first-child .band{padding:3px 12px}.brand{display:flex;align-items:center;gap:12px;margin-right:auto}.brand .lg{height:44px;width:auto;display:block}.co{font-size:15px;font-weight:700;letter-spacing:-.2px;color:#6E3F1C;line-height:1.2}.co .vtop{font-size:13.5px;font-weight:500;letter-spacing:0;color:#7a828e}.band em{margin-left:auto;margin-right:10px}.pbtn{height:44px;min-width:92px;padding:0 16px;font:800 20px 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;background:#fff;color:#1F3A68;border:2px solid #fff;border-radius:8px;cursor:pointer}.pbtn:active{background:#dfe8f5}.pbtn:disabled{opacity:.4;cursor:default}.ptitle{display:none}
+.ptoast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#14284B;color:#fff;padding:14px 26px;border-radius:10px;font:800 22px 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;z-index:50;display:none}</style></head><body>
+<header><div class="brand"><img class="lg" src="brand_logo.png" alt=""><div><div class="co">빵을그리다 주식회사<span class="vtop"> · v012 · 11/23 21:30 업데이트</span></div><h1>빵을그리다 해썹 주요 일지 현황</h1></div></div><div id="tabs"><button id="tb1" class="on">해썹 일지 현황</button><button id="tb2">UTCA 출력일보</button></div><span id="sum" class="sum"></span><button id="prev">◀ 전일자</button><div id="date">-</div><button id="next">다음 ▶</button><button id="last">최신</button></header>
+<div id="main"><div id="cal"></div><div id="rt"><div id="mid"></div><div id="ccp"></div></div></div><div id="sheet2"><div id="s2msg">UTCA 출력일보 화면 자료 준비 중<br><span style="font-size:18px">사무실 PC가 다음 갱신 때 보냅니다</span></div><iframe id="utf" title="UTCA 출력일보" style="display:none"></iframe></div><div id="ptoast" class="ptoast"></div>
+<!-- 2026-11-23 업무 대시보드 v121 시트용 복사본: 자료(data.js)·열쇠(key.js)·원본 그림(orig)은 넣지 않음. 열쇠는 대시보드(관리자 열쇠로 푼 자료)가 같은 주소 안에서만 넘겨 줌 --><script>
+var K=[['1_생산일지','생산일지'],['5_오븐가열','오븐 가열 공정'],['3_급속냉동','급속냉동 공정'],['4_크림배합','크림 배합 공정'],['2_금속검출','금속검출 공정(CCP)']],N=['①','②','③','④','⑤'];/* v009: 건강일지는 02 2번 모니터 키오스크에 있어 빼고, 그 자리에 UTCA 출력일보 공수 현황 */
+var DATA=window.CCP_DATA||{days:{}},D=Object.keys(DATA.days).sort(),cur=D.length-1,W='일월화수목금토',timers=[];
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function isHdr(r,key){if(r.h)return true;if(key!='0_건강상태')return false;return r.cells.some(function(c){return /^(종사자명|질문내용|특이사항 및 개선조치 내역)$/.test(c.t)})||r.cells.some(function(c){return /\?$/.test(c.t)})||(r.cells.length>2&&r.cells.every(function(c){return /^[OX]$/.test(c.t)}))}
+function tbl(t,key){var h='<table>',b=false;t.rows.forEach(function(r){var hd=isHdr(r,key),z='';if(hd&&r.cells.length==1&&r.cells[0].cs>1)z=' class="t"';else if(key=='0_건강상태'&&!hd&&r.cells.length==1)z=' class="note"';var tag=hd?'th':'td';
+ if(!hd&&!b){h+='<tbody>';b=true}
+ h+='<tr'+z+'>';r.cells.forEach(function(c){h+='<'+tag+(/^[\d:.,~\-\s℃%]+$/.test(c.t)&&c.t?' style="white-space:nowrap"':'')+(c.cs>1?' colspan='+c.cs:'')+(c.rs>1?' rowspan='+c.rs:'')+'>'+esc(c.t)+'</'+tag+'>'});h+='</tr>'});
+ return h+(b?'</tbody>':'')+'</table>'}
+function st(a){var c=a.code;return c=='200'?['ok','승인 완료']:(c=='030'||c=='300'||/REJ|반려/.test(a.st))?['rej','반려']:['wait',a.st||'승인 대기']}
+function apbox(rs){var h='';rs.forEach(function(r){var a=r.ap||{},s=st(a);h+='<div class="ap"><table><tr><th>담당</th><th>승인</th></tr><tr><td>'+esc(a.writer||'-')+'</td><td class="'+s[0]+'">'+esc(a.apprName||a.appr||'-')+'</td></tr><tr><td style="font-size:13px">'+esc((a.sub||'').slice(5))+'</td><td style="font-size:13px" class="'+s[0]+'">'+esc(a.at?a.at.slice(5):(s[0]=='rej'&&a.rej?a.rej.slice(5):'-'))+'</td></tr></table><span class="lb s-'+s[0]+'">'+s[1]+'</span></div>'});return h}
+var TM=/\d{1,2}:\d{2}/;
+function chk(t,key){if(!/^[2-5]_/.test(key))return 'ok';var rows=[];t.tables.forEach(function(tb){tb.rows.forEach(function(r){rows.push(r)})});var hdr=rows.filter(function(r){return r.h}),body=rows.filter(function(r){return !r.h});
+ var last=hdr.length?hdr[hdr.length-1]:null,exp=0;if(last)last.cells.forEach(function(c){if(/(통과|측정|시작|종료)\s*시간/.test(c.t))exp++});
+ var tot=0,short=false;body.forEach(function(r){var n=0;r.cells.forEach(function(c){if(TM.test(c.t))n++});tot+=n;if(exp&&n<exp)short=true});
+ if(!body.length||tot==0)return 'blank';return short?'part':'ok'}
+function zebra(el){var n=0;el.querySelectorAll('tbody tr').forEach(function(tr){tr.className=(n++%2)?'z1':'z0'})}
+function fit(body,inn,mx){var s=mx||30;for(;s>=12;s-=1){inn.style.fontSize=s+'px';if(inn.scrollWidth<=body.clientWidth+1&&inn.scrollHeight<=body.clientHeight+1)return s}inn.style.fontSize='12px';if(inn.scrollWidth>body.clientWidth+1){var k=body.clientWidth/inn.scrollWidth;inn.style.transformOrigin='0 0';inn.style.transform='scale('+k+')';inn.style.width=(body.clientWidth/k)+'px'}return 12}
+function scroll(body,inn){var over=Math.ceil(inn.getBoundingClientRect().height)-body.clientHeight;if(over<=2||inn.scrollWidth>body.clientWidth+1&&false)return;var t0=Date.now(),dur=Math.max(12000,over*40),cyc=dur*2+6000;
+ (function step(){var e=(Date.now()-t0)%cyc,p;if(e<2000)p=0;else if(e<2000+dur)p=(e-2000)/dur;else if(e<4000+dur)p=1;else p=1-(e-4000-dur)/dur;p=Math.min(1,Math.max(0,p));inn.style.top=(-over*p)+'px';timers.push(requestAnimationFrame(step))})()}
+function render(){if(typeof SHEET!=='undefined'&&SHEET==2)return;timers.forEach(cancelAnimationFrame);timers=[];var g=$('mid');$('ccp').innerHTML='';
+ if(!D.length){g.innerHTML='<div class="none" style="grid-column:1/-1">아직 저장된 자료가 없습니다</div>';return}
+ var d=D[cur],day=DATA.days[d]||{},dt=new Date(d+'T00:00:00');$('date').textContent=d+' ('+W[dt.getDay()]+')'+(cur==D.length-1?' 마지막 작성일':'');
+ var c={ok:0,wait:0,rej:0,none:0};K.forEach(function(k){var rs=day[k[0]]||[];if(!rs.length)c.none++;rs.forEach(function(r){c[st(r.ap||{})[0]]++})});$('sum').innerHTML='결재 <b class="s-ok">승인 '+c.ok+'</b><b class="s-wait">대기 '+c.wait+'</b>'+(c.rej?'<b class="s-rej">반려 '+c.rej+'</b>':'')+'<b class="s-none">기록 없음 '+c.none+'</b>';
+ $('prev').disabled=cur<=0;$('next').disabled=cur>=D.length-1;$('last').disabled=cur>=D.length-1;
+ /* v008: 오른쪽 일지 6칸 — 위 줄 건강일지(넓게)·생산일지, 아래 줄 CCP 4칸(기록 없는 칸은 좁게 접음) */
+ var MID=$('mid'),CCP=$('ccp');MID.innerHTML='';CCP.innerHTML='';var P=[];
+ K.forEach(function(k,i){var p=document.createElement('div');p.className='p'+(i==0?' pr':'');
+  p.innerHTML='<div class="ptitle">빵을그리다 해썹 주요 일지 현황 · <b>'+k[1]+'</b> · 작성일 '+d+' ('+W[dt.getDay()]+')</div><div class="band"><i>'+N[i]+'</i>'+k[1]+'<em>'+d.slice(5)+'</em><button class="pbtn" data-i="'+i+'"'+(hasOrig(d,k[0])?'':' disabled')+'>인쇄</button></div><div class="body"><div class="in"></div></div>';(i<1?MID:CCP).appendChild(p);P.push(p)});
+ K.forEach(function(k,i){var p=P[i],body=p.querySelector('.body'),inn=p.querySelector('.in'),recs=day[k[0]]||[];
+  if(!recs.length){body.innerHTML='<div class="none">기록 없음</div>';return}
+  var pa=document.createElement('div');pa.innerHTML=apbox(recs);while(pa.firstChild)p.insertBefore(pa.firstChild,body);
+  var h='',npart=0;recs.forEach(function(r){r.tabs.forEach(function(t){var q=chk(t,k[0]);var nm=t.prod||((t.name&&!/^\s*$/.test(t.name)&&(r.tabs.length>1||recs.length>1))?t.name:'');
+   if(q=='blank'){h+='<div class="blank">'+esc(nm||'빈 탭')+' — 이 날 기록 없음(빈 탭)</div>';return}
+   if(nm)h+='<div class="sub'+(q=='part'?' warn':'')+'">'+esc(nm)+(t.qty?' · 수량 '+esc(t.qty):'')+'</div>';
+   t.tables.forEach(function(tb){h+=tbl(tb,k[0])});if(q=='part'){npart++;h+='<div class="chk">⚠ 확인 필요: 시간 등 필수 칸이 빈 줄이 있습니다</div>'}if(t.extra)h+='<div class="sub">'+esc(t.extra)+'</div>'})});
+  inn.innerHTML=h;zebra(inn);fit(body,inn,i>0?18:30);scroll(body,inn)});
+ calRender()}
+
+/* v009: UTCA 출력일보 공수 현황 (03 2번 모니터 다이어리와 같은 그림). 사무실 PC가 주간·월간 그림을 02 열쇠로 암호화해 utca02.enc.json 으로 올림 → 10분마다 받음. 누르면 주간↔월간 */
+var UTD=null,UTW=true,UTEL=null,UT0=Date.now();
+function utPanel(){if(UTEL)return UTEL;var p=document.createElement('div');p.className='p ut';p.innerHTML='<div class="band"><i>U</i>UTCA 출력일보 공수 현황<em id="utAt"></em><button class="pbtn" id="utTog">월간</button></div><div id="utBody"><img id="utImg" alt=""><div id="utMsg">UTCA 공수 자료 준비 중<br><span style="font-size:16px">사무실 PC가 다음 갱신 때 보냅니다</span></div></div>';UTEL=p;
+ p.querySelector('#utTog').onclick=function(){UTW=!UTW;utShow()};p.querySelector('#utImg').onclick=function(){UTW=!UTW;utShow()};return p}
+function utShow(){if(!UTEL)return;var im=UTEL.querySelector('#utImg'),ms=UTEL.querySelector('#utMsg'),src=UTD&&(UTW?UTD.weekly:UTD.monthly);UTEL.querySelector('#utTog').textContent=UTW?'월간':'주간';
+ UTEL.querySelector('#utAt').textContent=UTD?((UTW?'주간':'월간')+' · '+String(UTW?UTD.wName:UTD.mName).slice(0,8).replace(/^(\d{4})(\d{2})(\d{2})$/,'$2/$3')+' 기준'):'';
+ if(!src){im.style.display='none';ms.style.display='flex';return}if(im.getAttribute('data-k')!==(UTW?'w':'m')+UTD.at){im.src=src;im.setAttribute('data-k',(UTW?'w':'m')+UTD.at)}im.style.display='block';ms.style.display='none';UT0=Date.now()}
+(function utLoop(){try{var b=UTEL&&UTEL.querySelector('#utBody'),im=b&&b.querySelector('#utImg');if(im&&im.style.display!=='none'){var over=im.getBoundingClientRect().height-b.clientHeight,s=((Date.now()-UT0)/1000)%80,y=0;if(over>2){y=s<15?0:s<55?over*(s-15)/40:over}im.style.top=(-y)+'px'}}catch(e){}requestAnimationFrame(utLoop)})();
+
+/* v010: 둘째 시트 = 03 컴퓨터 UTCA 출력일보 화면(출력일보방·로컬방·공수 현황)과 같은 구성. 03 화면 원본(틀)·카톡 원문·반영 명단은 utcak02.enc.json, 다이어리 그림은 utca02.enc.json 으로 받아(02 열쇠로 풀기) 안쪽 창에 그대로 띄움. 고른 시트는 자료 갱신 때도 유지 */
+var SHEET=1,UTK=null,UTI=null,S2K='';
+function sheet(n){SHEET=n;document.body.classList.toggle('s2',n==2);$('tb1').classList.toggle('on',n==1);$('tb2').classList.toggle('on',n==2);if(n==1)render();else s2build()}
+$('tb1').onclick=function(){sheet(1)};$('tb2').onclick=function(){sheet(2)};
+function s2build(){if(!UTK||!UTK.tpl){return}var key=UTK.at+'|'+(UTI?UTI.at:'');if(key===S2K)return;S2K=key;
+ var t=UTK.tpl,inj='<script>'+[UTK.kakao,UTK.refl,UTK.local].map(function(x){return String(x||'').replace(/<\/script/gi,'<\\/script')}).join('\n')+'\nwindow.UTIMG='+JSON.stringify(UTI?{w:UTI.weekly,m:UTI.monthly}:null)+';<\/script>';
+ t=t.replace(/<head>/i,'<head>'+inj).replace('async function findLatest(){','async function findLatest(){if(window.UTIMG&&(weekly?UTIMG.w:UTIMG.m))return {name:"",d:new Date(),src:weekly?UTIMG.w:UTIMG.m};')
+  .replace("img.src=encodeURI(r.name)+'?t='+Date.now();","img.src=r.src||(encodeURI(r.name)+'?t='+Date.now());")
+  .replace("location.hash=weekly?'':'weekly';location.reload();","weekly=!weekly;document.getElementById('img').className=weekly?'weekly':'';refresh();")
+  .replace("setTimeout(function(){location.reload();},10*60*1000);","");
+ var f=$('utf');f.srcdoc=t;f.style.display='block';$('s2msg').style.display='none'}
+/* v008: K-HACCP 종합현황 월 달력 (업무 대시보드 달력과 같은 자료·상태 색. 자료는 사무실 PC가 ccp02.enc.json 에 함께 실어 보냄) */
+var KS={'[D5] 기계·기구류의 세척 및 소독 관리 대장':'세척·소독 대장','종사자 건강상태 확인 일지':'건강상태 확인 일지','[W2] 위생설비 점검 체크리스트':'위생설비 점검','[W3] 설비(기계)별 작동여부 점검표(청결구역)':'설비 작동여부 점검','[W8] 창고 보관(냉동/냉장/실온) 시설 관리 일지':'창고 보관 시설 관리','[W1] 생산실 직원 위생 점검일지':'직원 위생 점검','[W4] 작업장 위생점검 체크리스트':'작업장 위생점검','[M3] 작업장·창고의 방역(소독)실시 관리대장':'방역(소독) 관리대장'};
+function kNm(t){t=String(t||'');if(KS[t])return KS[t];if(/생산\s*작업/.test(t))return '생산일지';return t.replace(/CCP-\w+\s*/,'').replace(/^\[[A-Za-z]+\d*\]\s*/,'').replace(/\[([^\]]*)\]/,'$1').replace(/빵류\s*/,'').replace(/공정$/,'').replace(/\s+/g,' ').trim()}
+function kEv(s){s=String(s||'');if(s==='승인완료')return ['ok','✓'];if(/미작성/.test(s))return ['bad','✕'];if(/검토\s*반려/.test(s))return ['rej','↩'];if(/반려/.test(s))return ['arej','↩'];if(/검토/.test(s))return ['rv','◐'];if(/작성\s*예정/.test(s))return ['prep','○'];return ['ing','◑']}
+function kAdd(y,n){var t=new Date(y+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)}
+var CALF=0;
+function calRender(){var el=$('cal');if(!el)return;var cal=DATA.cal,today=new Date(Date.now()+9*3600e3).toISOString().slice(0,10),sel=D[cur];
+ var band='<div class="band"><i>H</i>K-HACCP 종합현황<em></em></div>';
+ if(!cal||!cal.months||!cal.months.length){el.innerHTML=band+'<div class="none" style="font-size:22px;text-align:center;line-height:1.4">달력 자료 준비 중<br><span style="font-size:17px;color:#5b6577">다음 자동 갱신 때 나타납니다</span></div>';return}
+ var ym=today.slice(0,7),M=cal.months.filter(function(x){return x.ym===ym})[0]||cal.months[cal.months.length-1];ym=M.ym;
+ var first=ym+'-01',t1=new Date(first+'T12:00:00Z'),dim=new Date(Date.UTC(t1.getUTCFullYear(),t1.getUTCMonth()+1,0)).getUTCDate(),last=ym+'-'+(dim<10?'0':'')+dim;
+ var start=kAdd(first,-t1.getUTCDay()),end=kAdd(last,6-new Date(last+'T12:00:00Z').getUTCDay()),yd=kAdd(today,-1),t0=new Date(today+'T12:00:00Z'),wkS=kAdd(today,-t0.getUTCDay()),wkE=kAdd(wkS,6);
+ var wb=0,wi=0,wo=0,wn=0,ORD={bad:0,rej:1,arej:2,rv:3,ing:4},cells=[];
+ for(var d=start,j=0;d<=end;d=kAdd(d,1),j++){var dow=j%7,inM=d.slice(0,7)===ym,n=+d.slice(8);
+  var cls='cc'+(inM?'':' out')+(d===today?' today':'')+(d===sel?' sel':'')+(d>=wkS&&d<=wkE?' wk':'')+(dow==0?' sun':dow==6?' sat':'');
+  var dn='<div class="dn">'+(inM?n:(+d.slice(5,7))+'/'+n)+(d===today?'<i>오늘</i>':d===yd&&inM?'<i class="y">전일</i>':'')+'</div>';
+  if(!inM){cells.push({d:d,cls:cls,dn:dn,pr:[],ok:[],hol:false,none:false});continue}
+  var per=M.per.filter(function(x){return x[0]===n}),ccp=M.ccp.filter(function(x){return x[0]===n}),hol=(M.hol||[]).indexOf(n)>=0,pr=[],ok=[];
+  per.map(function(x){return [x,0]}).concat(ccp.map(function(x){return [x,/생산\s*작업/.test(x[1])?0:1]})).forEach(function(a){var c=kEv(a[0][2]);if(d<=today){wn++;if(c[0]=='ok')wo++;else if(c[0]=='bad'||c[0]=='rej'||c[0]=='arej')wb++;else if(c[0]!='prep')wi++}
+   (c[0]=='ok'||c[0]=='prep'?ok:pr).push({n:kNm(a[0][1]),full:a[0][1],s:a[0][2],c:c,cc:a[1]})});
+  pr.sort(function(a,b){return (ORD[a.c[0]]||9)-(ORD[b.c[0]]||9)});ok.sort(function(a,b){return a.cc-b.cc});
+  cells.push({d:d,cls:cls,dn:dn,pr:pr,ok:ok,hol:hol,col:false,none:!hol&&!per.length&&!ccp.length&&d<=today})}
+ function chip(x){return '<span class="kc k-'+x.c[0]+(x.cc?' c':'')+(x.c[0]!='ok'&&x.c[0]!='prep'?' p':'')+'" title="'+esc((x.cc?'CCP · ':'')+x.full+' : '+x.s)+'"><b>'+x.c[1]+'</b>'+esc(x.n)+'</span>'}
+ function inner(c,col){var h=c.dn;if(c.hol&&!c.pr.length&&!c.ok.length)h+='<span class="kc k-hol">휴일</span>';h+=c.pr.map(chip).join('');
+  if(col){var oo=c.ok.filter(function(x){return x.c[0]=='ok'}),a=oo.filter(function(x){return !x.cc}).length,b=oo.length-a,pp=c.ok.length-oo.length;if(a)h+='<span class="kc sm">✓ 일지 '+a+'</span>';if(b)h+='<span class="kc sm c">✓ CCP '+b+'</span>';if(pp)h+='<span class="kc k-prep">○ 예정 '+pp+'</span>'}else h+=c.ok.map(chip).join('');
+  if(c.none)h+='<span class="cnone">일지 없음</span>';return h}
+ var big=wb?'<span class="b" style="background:#c92a2a">⚠ 확인할 일지 '+wb+'건</span>':wi?'<span class="b" style="background:#e8890c">결재 진행 '+wi+'건</span>':wn?'<span class="b" style="background:#2b8a3e">✓ '+wo+'/'+wn+' 승인완료</span>':'';
+ el.innerHTML='<div class="band"><i>H</i>K-HACCP 종합현황<em>'+t1.getUTCFullYear()+'년 '+(t1.getUTCMonth()+1)+'월</em></div>'+
+  '<div class="cs">'+big+(wb&&wi?'<span class="b" style="background:#e8890c">결재 진행 '+wi+'건</span>':'')+'<span class="at">자료 '+esc(String(cal.at||'').slice(5,16))+'</span></div>'+
+  '<div class="clg"><span><i class="k-bad">✕</i>미작성</span><span><i class="k-rv">◐</i>검토중</span><span><i class="k-ing">◑</i>승인중</span><span><i class="k-ok">✓</i>승인 완료</span><span><i class="k-rej">↩</i>반려</span><span><i class="k-prep">○</i>예정</span><span><i style="background:#FFF3BF">　</i>노란 바탕 = CCP</span></div>'+
+  '<div class="chd">'+'일월화수목금토'.split('').map(function(w){return '<div>'+w+'</div>'}).join('')+'</div><div class="cg"></div>';
+ var cg=el.querySelector('.cg');cg.innerHTML=cells.map(function(c){return '<div class="'+c.cls+'" data-d="'+c.d+'">'+inner(c,c.col)+'</div>'}).join('');
+ function over(){var o=[];[].forEach.call(cg.children,function(x,i){if(x.scrollHeight>x.clientHeight+1||[].some.call(x.querySelectorAll('.kc'),function(k){return k.scrollWidth>k.clientWidth+1}))o.push(i)});return o}
+ var fs=16,o;cg.classList.remove('wrap');for(;fs>=11;fs--){cg.style.fontSize=fs+'px';o=over();if(!o.length)break}
+ if(o.length){cg.classList.add('wrap');for(fs=13;fs>=11;fs--){cg.style.fontSize=fs+'px';if(!over().length)break}}
+ CALF=fs}
+document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cc');if(!c||/out/.test(c.className))return;var i=D.indexOf(c.getAttribute('data-d'));if(i>=0){cur=i;render()}else toast('이 날짜의 일지 원본 자료는 아직 없습니다',2500)});
+function toast(t,ms){var e=$('ptoast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},ms||3000)}
+function ld(src,cb){var s=document.createElement('script');s.src=src;s.onload=function(){cb(true)};s.onerror=function(){cb(false)};document.head.appendChild(s)}
+function hasOrig(d,k){var ix=window.CCP_ORIG_INDEX||{};return !!(ix[d]&&ix[d].indexOf(k)>=0)}
+function needLoad(d,cb){var n=0,need=[];if(!window.CCP_HEADS)need.push('orig/heads.js');if(!window.CCP_IMGS)need.push('orig/imgs.js');if(!(window.CCP_ORIG&&window.CCP_ORIG[d]))need.push('orig/'+d+'.js');if(!need.length)return cb(true);var ok=true,left=need.length;need.forEach(function(u){ld(u,function(r){if(!r)ok=false;if(--left==0)cb(ok)})})}
+function printOrig(i){var d=D[cur],k=K[i];if(!hasOrig(d,k[0])){toast('이 날짜 원본 출력물이 없습니다');return}
+ toast('K-HACCP 원본을 불러오는 중…',8000);
+ needLoad(d,function(ok){if(!ok){toast('원본 파일을 읽지 못했습니다',4000);return}
+  var recs=(window.CCP_ORIG[d][k[0]]||[]),sheets=[];recs.forEach(function(r){r.tabs.forEach(function(t){sheets.push(t)})});if(!sheets.length){toast('원본 출력물이 없습니다',3000);return}
+  var head=window.CCP_HEADS[sheets[0].h]||'',body='';sheets.forEach(function(t){var b=t.b.replace(/@@(i[0-9a-z]+)@@/g,function(m,id){return window.CCP_IMGS[id]||''});var m=/\.Section-0\s*\{\s*width:\s*([\d.]+)mm/.exec(b);var land=m&&parseFloat(m[1])>=250;body+='<div class="sh '+(land?'land':'port')+'">'+b+'</div>'});
+  var f=document.createElement('iframe');f.name='ccpPrintFrame';f.setAttribute('style','position:fixed;left:-9999px;top:0;width:1123px;height:794px;border:0;visibility:hidden');document.body.appendChild(f);
+  var w=f.contentWindow,doc=w.document;doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8">'+head.replace(/@media\s+print/g,'@media all').replace(/@page\s*\{[^}]*\}/g,'')+'<style>@page land{size:A4 landscape;margin:5mm}@page port{size:A4 portrait;margin:8mm}.sh{box-sizing:border-box;overflow:visible;text-align:left}.sh.land{page:land}.sh.port{page:port}.sh+.sh{break-before:page;page-break-before:always}html,body{margin:0!important;background:#fff!important}</style></head><body>'+body.replace(/@media\s+print/g,'@media all').replace(/@page\s*\{[^}]*\}/g,'')+'</body></html>');doc.close();
+  setTimeout(function(){try{
+   var shs=doc.querySelectorAll('.sh');for(var q=0;q<shs.length;q++){var sh=shs[q],own=sh.className.indexOf('land')>=0,nw=own?1123:794;sh.style.zoom=1;sh.style.width=nw+'px';sh.style.marginLeft='0';sh.style.overflow='visible';var sw=Math.max(sh.scrollWidth,nw),h=sh.scrollHeight,zwL=Math.min(1.2,1080/sw),zwP=Math.min(1.2,728/sw),land=own,z;
+   if(own){z=(h*zwL<=2.0*740)?Math.min(zwL,740/h):zwL}else{z=(h*zwP<=1.6*1045)?Math.min(zwP,1045/h):zwP}
+   var W=land?1080:728;sh.className='sh '+(land?'land':'port');sh.style.zoom=z;sh.style.width=sw+'px';sh.style.marginLeft=Math.max(0,(W-z*sw)/2/z)+'px'}
+   w.focus();toast('인쇄 창을 엽니다 · 프린터를 골라 주세요',4000);w.print()}catch(e){toast('인쇄 창을 열지 못했습니다',4000)}setTimeout(function(){try{f.remove()}catch(e){}},1500)},1800)})}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pbtn');if(b&&!b.disabled)printOrig(+b.getAttribute('data-i'))});
+$('prev').onclick=function(){if(cur>0){cur--;render()}};$('next').onclick=function(){if(cur<D.length-1){cur++;render()}};$('last').onclick=function(){cur=D.length-1;render()};
+render();window.onresize=render;
+setInterval(function(){var s=document.createElement('script');s.src='data.js?t='+Date.now();s.onload=function(){var n=window.CCP_DATA||{days:{}};if(JSON.stringify(n)!=JSON.stringify(DATA)&&!(DATA.updated&&n.updated&&n.updated<DATA.updated)){var keep=D[cur],atLast=cur==D.length-1;DATA=n;D=Object.keys(n.days).sort();cur=atLast?D.length-1:Math.max(0,D.indexOf(keep));render()}};document.head.appendChild(s)},600000);
+
+/* v007 2026-11-23: 키오스크 완료 → K-HACCP 작성 뒤 사무실 PC가 올린 최신 자료(암호화)를 2분마다 받아 스스로 갱신. 열쇠는 02 PC의 key.js 에만 있음. 못 받으면 기존 data.js 그대로 */
+(function(){var U='https://lee1812-oss.github.io/drawbread/ccp02.enc.json',last='';function b(s){var x=atob(s),u=new Uint8Array(x.length);for(var i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return u}
+function dec(e,pw){var enc=new TextEncoder();return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(base){return crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.salt),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}).then(function(key){return crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))}).then(function(buf){return JSON.parse(new TextDecoder().decode(buf))})}
+function pull(){var pw=window.CCP02_KEY;if(!pw||!window.crypto||!crypto.subtle)return;fetch(U+'?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(e){if(!e||e.updated===last)return;return dec(e,pw).then(function(n){last=e.updated;if(!n||!n.days)return;if(DATA.updated&&n.updated&&n.updated<=DATA.updated)return;var keep=D[cur],atLast=cur==D.length-1;DATA=n;D=Object.keys(n.days).sort();cur=atLast?D.length-1:Math.max(0,D.indexOf(keep));render()})}).catch(function(){})}
+setTimeout(pull,3000);setInterval(pull,120000);window.__ccpKeyed=function(){pull();setTimeout(function(){try{pullU()}catch(e){}},300)};
+var UL1='',UL2='';function pullU(){var pw=window.CCP02_KEY;if(!pw||!window.crypto||!crypto.subtle)return;var B='https://lee1812-oss.github.io/drawbread/';
+ fetch(B+'utcak02.enc.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(e){if(!e||e.updated===UL1)return;return dec(e,pw).then(function(n){UL1=e.updated;if(n&&n.tpl){UTK=n;if(SHEET==2)s2build()}})}).catch(function(){});
+ fetch(B+'utca02.enc.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(e){if(!e||e.updated===UL2)return;return dec(e,pw).then(function(n){UL2=e.updated;if(n&&(n.weekly||n.monthly)){UTI=n;if(SHEET==2)s2build()}})}).catch(function(){})}
+setTimeout(pullU,5000);setInterval(pullU,600000)})();
+</script></body></html>
