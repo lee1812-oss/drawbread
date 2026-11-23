@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v115"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 14:15 배송표 주간 전체 원래 양식+오늘 테두리·재고 두 칸 아래·달력 좁힘·키오스크 오른쪽">
+<meta name="dash-ver" content="v116"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 14:29 K-HACCP 달력 높이 = 배송정보 높이(위·아래 끝 맞춤)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1038,6 +1038,20 @@ body.lay14 #stockCol .sk-card{flex:1 1 0!important;min-width:0;min-height:0}
 body.lay14 #khRail .khm-g{grid-template-columns:.32fr repeat(5,minmax(0,1fr)) .32fr!important}
 body.lay14 #khRail .khw.khm .khc{font-size:11.8px!important;line-height:1.1!important;letter-spacing:-.6px!important}
 body.lay14 #khRail .khm-c{padding:2px 2px!important}
+/* 2026-11-23 v116: 달력 높이 = 배송정보 높이 — 글자·줄높이·칸 여백 줄임(글자 11px 이상) */
+body.lay14 #scrCol>#khRail{align-self:flex-start!important;flex-grow:0!important}
+body.lay14 #khRail .khday.bk-hot{padding:6px 6px 4px!important}
+body.lay14 #khRail .khd-top{gap:3px 6px!important;margin-bottom:2px!important}
+body.lay14 #khRail .khd-top .lg img{height:24px!important}
+body.lay14 #khRail .khd-top .lb,body.lay14 #khRail .khd-top .khd-date{font-size:17px!important}
+body.lay14 #khRail .khd-big{font-size:12.5px!important;padding:2px 8px!important}
+body.lay14 #khRail .khw-k{font-size:11.5px!important;padding:1px 6px!important}
+body.lay14 #khRail .khw-lg{font-size:11px!important;gap:0 6px!important;margin:1px 0 2px!important}
+body.lay14 #khRail .khw.khm .khc{font-size:11px!important;line-height:1.02!important;letter-spacing:-.5px!important}
+body.lay14 #khRail .khm-c{padding:1px 2px!important}
+body.lay14 #khRail .khm-c .khw-d{font-size:11px!important;line-height:1.05!important;margin:0!important}
+body.lay14 #khRail .khm-h{font-size:11px!important;padding:1px 0!important}
+
 #deliveryCol .ds-nav .ds-view{background:#BF913C!important;color:#fff!important;border-color:#BF913C!important}
 #deliveryCol .ds-nav .ds-view[hidden]{display:none!important}
 
@@ -2765,6 +2779,8 @@ function devFill(){if(!document.body.classList.contains('lay14'))return;const to
   const im=top.querySelector('.ds-preview img'),bar=top.querySelector('.ds-bar');const bh=bar?bar.offsetHeight:40;const asp=(im&&im.dataset.asp)?Number(im.dataset.asp):1.17;
   const H1=Math.round(Math.min(innerHeight*0.72,Math.max(innerHeight*0.45,bh+W*asp+4)));
   Object.assign(top.style,{left:L+'px',width:W+'px',top:'8px',height:H1+'px'});
+  /* 2026-11-23 v116: K-HACCP 달력 위·아래 끝 = 배송정보 칸. 안 들어가면 달력 안에서만 세로 스크롤하고 이번 주가 보이게 */
+  const kr=document.getElementById('khRail');if(kr){const tb=top.getBoundingClientRect(),kb0=kr.getBoundingClientRect();kr.style.height=Math.round(tb.bottom-kb0.top)+'px';if(kr.scrollHeight>kr.clientHeight+2){const tw=kr.querySelector('.khm-c.today,.khm-c.wk');if(tw&&!kr.dataset.scrolled){kr.dataset.scrolled='1';kr.scrollTop=Math.max(0,tw.offsetTop-kr.querySelector('.khm-g').offsetTop-40);}}}
   if(skOn){const z=parseFloat(getComputedStyle(sk).zoom)||1;sk.style.top=(8+H1+8)/z+'px';}
   try{if(im)dsPick(im);}catch(_){}try{hlViewFit();}catch(_){}}
 function khPlace(){const a=document.getElementById('scrCol'),m=document.getElementById('main');if(!m)return;const kp=m.querySelector('.kpis');
@@ -2809,7 +2825,7 @@ khDayWide=function(){const k0=latest(D&&D.khaccp);const cal=k0&&k0.cal;const tod
     '<span class="khw-ks">'+kc('미작성',c.unwritten||0,'r')+kc('미결재',c.unapproved||0,'a')+kc('이탈',dv,'r')+'</span>'+
     '<span class="khw-at">자료 '+esc(cal.at||'')+' · '+khNextTxt()+'</span>'+
     (STAFF?'':'<a class="khw-go" href="khday.html" target="_blank" rel="noopener">HACCP 통합 현황 ↗</a>')+'<a class="khw-go" href="https://www.k-haccp.co.kr/home.do" target="_blank" rel="noopener">K-HACCP ↗</a></div>'+
-    '<div class="khw-lg khm-lg"><span class="s-bad"><i>✕</i>미작성</span><span class="s-rv"><i>◐</i>검토중</span><span class="s-ing"><i>◑</i>승인중</span><span class="s-ok"><i>✓</i>승인 완료</span><span class="s-rej"><i>↩</i>반려(검토·승인)</span><span class="s-prep"><i>○</i>작성 예정</span><span class="s-hol"><i>–</i>휴일</span><span><span class="khm-cy">노란 바탕 = CCP 일지</span></span></div>'+
+    '<div class="khw-lg khm-lg"><span class="s-bad"><i>✕</i>미작성</span><span class="s-rv"><i>◐</i>검토중</span><span class="s-ing"><i>◑</i>승인중</span><span class="s-ok"><i>✓</i>승인 완료</span><span class="s-rej" title="검토 반려·승인 반려"><i>↩</i>반려</span><span class="s-prep"><i>○</i>작성 예정</span><span class="s-hol"><i>–</i>휴일</span><span><span class="khm-cy">노란 바탕 = CCP 일지</span></span></div>'+
     '<div class="khm-g">'+head+cells+'</div></div>';};
 if(typeof globalThis.installCompanyGmail==='function')globalThis.installCompanyGmail({getData:()=>D,isStaff:()=>STAFF,getScreen:()=>companyScreenData,setScreen:f=>companyScreenData=f,getMail:()=>pMail,setMail:f=>pMail=f,getKpis:()=>kpis,setKpis:f=>kpis=f,setWide:f=>mailWide=f,setMailAll:f=>pMailAll=f,latest,nAct,esc,logoHtml,chev,acctLine,whenShort,render,pNaver,stat,empty,ui,panels:PANELS});
 
