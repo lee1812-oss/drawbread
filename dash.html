@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v124"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-23 22:12 업무 1면(재고·배송·화면 칸 6개)·업무 2면(글자 칸) 시트 나눔">
+<meta name="dash-ver" content="v125"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-23 22:32 재고 두 칸 품목 글자 목록으로 칸 꽉 채움(글씨 자동 크기, 품목 누르면 세부)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1153,7 +1153,7 @@ body.myb-on.myb-on.myb-on{padding-right:0!important}
 .myb-b>.myb-fill .ds-foot{display:none!important}
 .myb-b>.myb-fill .sk-head{display:flex!important;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:6px 8px 4px!important}
 .myb-b>.myb-fill .sk-head h2{font-size:22px!important;margin:0!important;width:auto!important}
-.myb-b>.myb-fill .sk-head .work-owner{display:inline!important;font-size:13px!important}
+.myb-b>.myb-fill .sk-head .work-owner{display:none!important}
 .myb-b>.myb-fill .sk-from{display:none!important}
 .myb-b>.myb-fill .sk-date{font-size:15px!important;margin:0!important;width:auto!important}
 .myb-b>.myb-fill .sk-chips{width:100%;margin:2px 0!important}
@@ -1162,6 +1162,36 @@ body.myb-on.myb-on.myb-on{padding-right:0!important}
 .myb-b>.myb-fill .sk-stat{font-size:16px!important;padding:4px 8px!important;width:100%}
 .myb-b>.myb-fill .sk-date{font-size:18px!important}
 .myb-b>.myb-fill .sk-foot{display:none!important}
+/* 2026-11-23 v125: 재고 두 칸은 보고서를 통째로 줄인 그림 대신, 같은 자료(D.stockReport)로 품목 글자 목록을 칸 크기에 맞춰 다시 흘려 꽉 채움. 품목을 누르면 세부 표 */
+.sk-flow,.sk-hb{display:none}
+.myb-b>.myb-fill .sk-prev{display:none!important}
+.myb-b>.myb-fill .sk-flow{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:hidden;padding:2px 6px 4px;font-size:20px;line-height:1.2;word-break:keep-all;overflow-wrap:break-word;color:var(--ink)}
+.myb-b>.myb-fill .sk-flow.two{flex-flow:column wrap;column-gap:8px;align-content:stretch}
+.myb-b>.myb-fill .sk-flow.two>*{width:calc(50% - 4px)}
+.myb-b>.myb-fill .sk-flow.nogrow>.skf-r{flex-grow:0}
+.skf-h{flex:0 0 auto;display:flex;align-items:baseline;gap:.4em;margin:.3em 0 0;padding:.12em .45em;border-radius:.3em .3em 0 0;font-weight:900;font-size:.9em;background:var(--fc-bg);color:var(--fc);cursor:pointer}
+.skf-h:first-child{margin-top:0}
+.skf-h b{margin-left:auto;font-size:1.2em;line-height:1}
+.skf-r{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center;padding:.12em .45em;border-left:.3em solid var(--fc);border-bottom:1px solid var(--line,#e3e7ee);cursor:pointer}
+.skf-r .a{display:flex;align-items:baseline;gap:.5em}
+.skf-r .nm{flex:1;min-width:0;font-weight:800}
+.skf-r .rs{flex:none;font-weight:900;color:var(--fc);white-space:nowrap}
+.skf-r .s{font-size:.8em;font-weight:700;line-height:1.22;color:#4b5563}
+.skf-r .s .no{color:#a85a00;font-weight:900}.skf-r .s .ok{color:#17763f}
+.skf-r.none{cursor:default}.skf-r.none .nm{font-weight:700;color:#6b7280}
+.skf-r:focus-visible{outline:3px solid #BF913C;outline-offset:-3px}
+.f-red{--fc:#c0262d;--fc-bg:#fdeeee}.f-grn{--fc:#17763f;--fc-bg:#e8f5ed}.f-gry{--fc:#3f4a5a;--fc-bg:#eceff4}.f-amb{--fc:#a85a00;--fc-bg:#fff3df}.f-nv{--fc:#22396F;--fc-bg:#e6ecf8}
+body.night .f-red{--fc:#f4877f;--fc-bg:#3a1d21}body.night .f-grn{--fc:#61d394;--fc-bg:#123223}body.night .f-gry{--fc:#d3dbe7;--fc-bg:#1d2638}body.night .f-amb{--fc:#f6bd55;--fc-bg:#3a2c10}body.night .f-nv{--fc:#9db8f2;--fc-bg:#16213a}
+body.night .skf-r .s{color:#c3ccd9}body.night .skf-r .s .no{color:#f6bd55}body.night .skf-r .s .ok{color:#61d394}body.night .skf-r.none .nm{color:#9aa5b5}
+.myb-b>.myb-fill .sk-hb{display:flex;gap:6px;margin-left:auto;align-self:center}
+.myb-b>.myb-fill .sk-hb button{min-height:38px;padding:0 12px;font:inherit;font-size:16px;font-weight:800;border-radius:8px;border:1px solid var(--line,#d1d5db);background:var(--card,#fff);color:var(--ink);cursor:pointer}
+#skItem{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center}
+#skItem .ski-box{background:#fff;color:#111827;border-radius:14px;width:min(820px,94vw);max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.4);zoom:var(--f27,1)}
+#skItem .ski-h{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid #e3e7ee;position:sticky;top:0;background:#fff;z-index:1}
+#skItem .ski-h b{flex:1;font-size:20px}
+#skItem .ski-h button{min-height:48px;padding:0 14px;font:inherit;font-size:17px;font-weight:800;border-radius:9px;border:1px solid #d1d5db;background:#f6f8fb;color:#111827;cursor:pointer}
+#skItem .ski-b{padding:14px}
+#skItem .skp.skp-one{width:auto;zoom:1.45;box-shadow:none;border:0;padding:0;margin:0;pointer-events:auto;background:transparent}
 .myb-b:has(>.myb-fill){overflow:hidden;padding:0}
 /* 2026-11-23 v120: 격자 24칸 위치·폭 (gridstack 기본 CSS에 없음) */
 .gs-24>.grid-stack-item[gs-w="1"]{width:4.1667%}.gs-24>.grid-stack-item[gs-w="2"]{width:8.3333%}.gs-24>.grid-stack-item[gs-w="3"]{width:12.5000%}.gs-24>.grid-stack-item[gs-w="4"]{width:16.6667%}.gs-24>.grid-stack-item[gs-w="5"]{width:20.8333%}.gs-24>.grid-stack-item[gs-w="6"]{width:25.0000%}.gs-24>.grid-stack-item[gs-w="7"]{width:29.1667%}.gs-24>.grid-stack-item[gs-w="8"]{width:33.3333%}.gs-24>.grid-stack-item[gs-w="9"]{width:37.5000%}.gs-24>.grid-stack-item[gs-w="10"]{width:41.6667%}.gs-24>.grid-stack-item[gs-w="11"]{width:45.8333%}.gs-24>.grid-stack-item[gs-w="12"]{width:50.0000%}.gs-24>.grid-stack-item[gs-w="13"]{width:54.1667%}.gs-24>.grid-stack-item[gs-w="14"]{width:58.3333%}.gs-24>.grid-stack-item[gs-w="15"]{width:62.5000%}.gs-24>.grid-stack-item[gs-w="16"]{width:66.6667%}.gs-24>.grid-stack-item[gs-w="17"]{width:70.8333%}.gs-24>.grid-stack-item[gs-w="18"]{width:75.0000%}.gs-24>.grid-stack-item[gs-w="19"]{width:79.1667%}.gs-24>.grid-stack-item[gs-w="20"]{width:83.3333%}.gs-24>.grid-stack-item[gs-w="21"]{width:87.5000%}.gs-24>.grid-stack-item[gs-w="22"]{width:91.6667%}.gs-24>.grid-stack-item[gs-w="23"]{width:95.8333%}.gs-24>.grid-stack-item[gs-w="24"]{width:100.0000%}.gs-24>.grid-stack-item[gs-x="0"]{left:0.0000%}.gs-24>.grid-stack-item[gs-x="1"]{left:4.1667%}.gs-24>.grid-stack-item[gs-x="2"]{left:8.3333%}.gs-24>.grid-stack-item[gs-x="3"]{left:12.5000%}.gs-24>.grid-stack-item[gs-x="4"]{left:16.6667%}.gs-24>.grid-stack-item[gs-x="5"]{left:20.8333%}.gs-24>.grid-stack-item[gs-x="6"]{left:25.0000%}.gs-24>.grid-stack-item[gs-x="7"]{left:29.1667%}.gs-24>.grid-stack-item[gs-x="8"]{left:33.3333%}.gs-24>.grid-stack-item[gs-x="9"]{left:37.5000%}.gs-24>.grid-stack-item[gs-x="10"]{left:41.6667%}.gs-24>.grid-stack-item[gs-x="11"]{left:45.8333%}.gs-24>.grid-stack-item[gs-x="12"]{left:50.0000%}.gs-24>.grid-stack-item[gs-x="13"]{left:54.1667%}.gs-24>.grid-stack-item[gs-x="14"]{left:58.3333%}.gs-24>.grid-stack-item[gs-x="15"]{left:62.5000%}.gs-24>.grid-stack-item[gs-x="16"]{left:66.6667%}.gs-24>.grid-stack-item[gs-x="17"]{left:70.8333%}.gs-24>.grid-stack-item[gs-x="18"]{left:75.0000%}.gs-24>.grid-stack-item[gs-x="19"]{left:79.1667%}.gs-24>.grid-stack-item[gs-x="20"]{left:83.3333%}.gs-24>.grid-stack-item[gs-x="21"]{left:87.5000%}.gs-24>.grid-stack-item[gs-x="22"]{left:91.6667%}.gs-24>.grid-stack-item[gs-x="23"]{left:95.8333%}
@@ -1237,7 +1267,7 @@ function fill(el,force){const id=el.getAttribute('gs-id');const it=CAT.find(c=>c
     const oi=o.querySelectorAll('img'),ci=c.querySelectorAll('img');oi.forEach((x,i)=>{if(ci[i]&&ci[i].src!==x.src)ci[i].src=x.src;});
     const of=o.querySelector('iframe'),cf=c.querySelector('iframe');if(cf){if(of&&cf.src!==of.src)cf.src=of.src;const bx=cf.parentElement;const w=bx.clientWidth||300,h=bx.clientHeight||200;const z=w/1024;cf.style.width='1024px';cf.style.height=Math.ceil(h/z)+'px';cf.style.transform='scale('+z+')';}
     const ot=o.querySelectorAll('.scr-t,.scr-s,small,span');const ct=c.querySelectorAll('.scr-t,.scr-s,small,span');ot.forEach((x,i)=>{if(ct[i]&&ct[i].textContent!==x.textContent&&!x.children.length)ct[i].textContent=x.textContent;});return;}
-  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);if(/^x:sk/.test(id)){try{const pv=c.querySelector('.sk-prev'),sp=pv&&pv.querySelector('.skp');if(sp){sp.style.zoom='1';const nat=sp.offsetWidth||1600;sp.style.zoom=String(Math.max(0.1,(pv.clientWidth-2)/nat));}}catch(_){}}return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const zmax=1.25*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1);const z=Math.max(0.3,Math.min(zmax,bw/W1,bh/h0));c.style.zoom=String(z);}
+  const sig=o.outerHTML.length+':'+o.textContent.length+':'+(o.querySelector('img')?.src||'').length+':'+b.clientWidth+':'+b.clientHeight;if(!force&&b.dataset.sig===sig)return;b.dataset.sig=sig;const c=stripIds(o.cloneNode(true));if(id==='x:delivery'||/^x:sk/.test(id)){c.classList.add('myb-fill');b.replaceChildren(c);if(/^x:sk/.test(id)){try{const sf=c.querySelector('.sk-flow');if(sf&&window.skFlowFit){window.skFlowFit(sf);setTimeout(()=>window.skFlowFit(sf),500);}}catch(_){}try{const pv=c.querySelector('.sk-prev'),sp=pv&&pv.querySelector('.skp');if(sp){sp.style.zoom='1';const nat=sp.offsetWidth||1600;sp.style.zoom=String(Math.max(0.1,(pv.clientWidth-2)/nat));}}catch(_){}}return;}const W0=w0(id),bw=Math.max(80,b.clientWidth-8),bh=Math.max(40,b.clientHeight-6);let W1=Math.max(bw,W0);c.style.zoom='1';b.replaceChildren(c);let h0=bh;for(let i=0;i<4;i++){c.style.width=W1+'px';h0=c.offsetHeight||bh;const zw=bw/W1,zh=bh/h0;if(zh>=zw*0.97)break;W1=Math.round(W1*Math.sqrt(zw/zh));}const zmax=1.25*(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1);const z=Math.max(0.3,Math.min(zmax,bw/W1,bh/h0));c.style.zoom=String(z);}
 function w0(id){if(id==='notice')return 700;if(id==='x:delivery')return 640;if(/^x:sk/.test(id))return 560;const k=id.slice(2);if(k==='khday')return 560;if(k.startsWith('core4:'))return 280;return {stock:460,fneed:460,fraw:380,'fraw:todo':800,ftodo:900,ford:900}[k]||560;}
 function syncAll(force){const bd=document.getElementById('mybBoard');if(!bd||!document.body.classList.contains('myb-on'))return;catalog();bd.querySelectorAll('.grid-stack-item').forEach(el=>fill(el,force));}
 function widgetEl(id){const it=CAT.find(c=>c.id===id);const d=document.createElement('div');d.className='myb-w';d.innerHTML='<div class="myb-h"><b>'+esc2(it?it.n:id)+'</b><button type="button" class="myb-x" data-mybx="'+esc2(id)+'">끄기 ✕</button></div><div class="myb-b'+(it&&it.kind==='main'?' kpis':'')+'"></div>';return d;}
@@ -2952,13 +2982,43 @@ function skPick(kind,open){let m=document.getElementById('skPick');if(open===fal
   m.addEventListener('click',ev=>{const b=ev.target.closest('[data-pk]');if(!b){if(ev.target===m)skPick(k,false);return;}const o=b.dataset.pk;skPick(k,false);if(o!=='x')skPrint(k,o);});
   document.body.appendChild(m);m.querySelector('.best').focus();}
 addEventListener('keydown',ev=>{const m=document.getElementById('skPick');if(!m)return;if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();skPick(null,false);return;}if(ev.key==='Tab'){const c=[...m.querySelectorAll('button')],f=c[0],l=c.at(-1);if(ev.shiftKey&&document.activeElement===f){ev.preventDefault();l.focus();}else if(!ev.shiftKey&&document.activeElement===l){ev.preventDefault();f.focus();}}},true);
+// 2026-11-23 v125: 업무 1면 재고 두 칸용 글자 목록 (원본 보고서와 같은 자료 R.cols / R.loss.secs 를 그대로 씀)
+function skFlowRowS(x,key){const k=skKind(x),c=k==='short'?'f-red':k==='over'?'f-grn':'f-gry';
+  const rs=k==='short'?'−'+skN(-x.sh)+x.u+' 부족':k==='over'?'+'+skN(x.sh)+x.u+' 여유':(x.q<=0&&!x.each?'재고 없음':(x.sf?'적정':'안전재고 미설정'));
+  const s=['실물 '+skN(x.q)+x.u+(x.each?' +'+skN(x.each)+'낱개':''),x.sf?'안전재고 '+skN(x.sf):'',x.hs&&x.hs.length?'출고 예정 뒤 '+skN(x.aq)+x.u:'',x.oo?'발주 시 관리':''].filter(Boolean).join(' · ');
+  return '<div class="skf-r '+c+'" role="button" tabindex="0" data-skitem="'+key+'" aria-label="'+skE(x.n)+' 자세히"><div class="a"><span class="nm">'+skE(x.n)+'</span><span class="rs">'+skE(rs)+'</span></div><div class="s">'+skE(s)+'</div></div>';}
+function skFlowRowL(r,key,c){const s=r.k==='defect'?'':[r.ddt||'',r.exp?'소비기한 '+r.exp:'소비기한 미기재'].filter(Boolean).join(' · ');
+  return '<div class="skf-r '+c+'" role="button" tabindex="0" data-skitem="'+key+'" aria-label="'+skE(r.n)+' 자세히"><div class="a"><span class="nm">'+skE(r.n)+'</span><span class="rs">'+skE(skLossQ(r))+'</span></div><div class="s">'+(s?skE(s)+' · ':'')+(r.plan?'<span class="ok">✔ 조치 '+skE(r.plan)+'</span>':'<span class="no">⚠ 조치 계획 미입력</span>')+'</div></div>';}
+function skFlowSec(t,n,c,kind,rows){return '<div class="skf-h '+c+'" data-skbig="'+kind+'"><span>'+skE(t)+'</span><b>'+n+'</b></div>'+(rows||'<div class="skf-r none '+c+'"><div class="a"><span class="nm">없음</span></div></div>');}
+function skFlow(kind,R){let h='';
+  if(kind==='loss'){const S=R.loss.secs,CC=['f-red','f-amb','f-nv','f-gry'];S.forEach((g,i)=>{h+=skFlowSec(g.title,g.rows.length,CC[i]||'f-gry',kind,g.rows.map((r,j)=>skFlowRowL(r,'loss:'+i+':'+j,CC[i]||'f-gry')).join(''));});}
+  else{const C=R.cols;[['short','↘ 부족 품목','f-red'],['over','👍 과잉·여유 품목','f-grn'],['rest','✔ 적정·재고無 품목','f-gry']].forEach(([k,t,c])=>{h+=skFlowSec(t,C[k].length,c,kind,C[k].map((x,j)=>skFlowRowS(x,'stock:'+k+':'+j)).join(''));});}
+  return '<div class="sk-flow" data-kind="'+kind+'">'+h+'</div>';}
+// 칸 높이·폭에 맞춰 글씨 크기를 자동으로 정함: 넘치지 않는 가장 큰 크기 → 남는 높이는 줄 간격으로 나눠 아래 빈칸 없음. 너무 작아지면(실제 16px 아래) 2열
+window.skFlowFit=function(f){if(!f||!f.isConnected)return;if(f.clientHeight<40||f.clientWidth<60)return;
+  let ez=1;for(let n=f.parentElement;n;n=n.parentElement){const zz=parseFloat(getComputedStyle(n).zoom);if(zz>0)ez*=zz;}
+  const over=()=>f.scrollHeight>f.clientHeight+1||f.scrollWidth>f.clientWidth+1;
+  const run=two=>{f.classList.toggle('two',two);let lo=9,hi=34;f.style.fontSize=hi+'px';if(!over())return hi;for(let i=0;i<12;i++){const m=(lo+hi)/2;f.style.fontSize=m+'px';if(over())hi=m;else lo=m;}f.style.fontSize=lo.toFixed(2)+'px';return lo;};
+  const z1=run(false);if(z1*ez<16){const z2=run(true);if(!(z2>z1*1.15))run(false);}
+  f.dataset.fz=(parseFloat(f.style.fontSize)*ez).toFixed(1);};
+function skItemHtml(key){const R=skR();if(!R||!key)return '';const p=String(key).split(':');
+  if(p[0]==='stock'){const x=(R.cols[p[1]]||[])[+p[2]];return x?'<div class="skp skp-one">'+skCard(x)+'</div>':'';}
+  const g=R.loss.secs[+p[1]],r=g&&g.rows[+p[2]];return r?'<div class="skp skp-one"><div class="sk-grp g-'+skE(g.k)+'"><div class="sk-grp-h"><span>'+skE(g.title)+'</span></div>'+skLossRow(r)+'</div></div>':'';}
+let SKI_BACK=null;
+function skItem(open,key){let m=document.getElementById('skItem');if(!open){if(m)m.remove();const f=SKI_BACK;SKI_BACK=null;if(f&&f.focus&&f.isConnected)f.focus();return;}
+  const h=skItemHtml(key);if(!h)return;if(m)m.remove();SKI_BACK=document.activeElement;m=document.createElement('div');m.id='skItem';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','품목 자세히');
+  m.innerHTML='<div class="ski-box"><div class="ski-h"><b>품목 자세히 · '+(key.startsWith('loss')?'관리 요망 재고':'재고 현황')+'</b><button type="button" data-ski="big">보고서 전체 크게 보기</button><button type="button" data-ski="x" class="x">닫기 (Esc)</button></div><div class="ski-b">'+h+'</div></div>';
+  m.addEventListener('click',ev=>{const b=ev.target.closest('[data-ski]');if(b&&b.dataset.ski==='big'){skItem(false);skBig(true,key.startsWith('loss')?'loss':'stock');return;}if(b||ev.target===m||ev.target.closest('.ski-b'))skItem(false);});
+  document.body.appendChild(m);m.querySelector('.x').focus();}
+addEventListener('keydown',ev=>{const m=document.getElementById('skItem');if(m&&ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();skItem(false);return;}const r=ev.target&&ev.target.closest&&ev.target.closest('.skf-r[data-skitem]');if(r&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();skItem(true,r.dataset.skitem);}},true);
+try{document.fonts&&document.fonts.ready.then(()=>document.querySelectorAll('.myb-fill .sk-flow').forEach(f=>window.skFlowFit(f)));}catch(_){}
 function skCardHtml(kind,R){const C=R.cols,L=R.loss,S=L.secs,old=R.date<skToday();const K=SK_KIND[kind];
   const chips=kind==='loss'?'<div class="sk-chips"><span class="c-short"><b>'+S[0].rows.length+'</b>경과</span><span class="c-loss"><b>'+(S[1].rows.length+S[2].rows.length)+'</b>임박</span><span class="c-rest"><b>'+S[3].rows.length+'</b>비상품</span><span class="c-loss"><b>'+L.noPlan+'</b>조치 미입력</span></div>'
     :'<div class="sk-chips"><span class="c-short"><b>'+C.short.length+'</b>부족</span><span class="c-over"><b>'+C.over.length+'</b>과잉·여유</span><span class="c-rest"><b>'+C.rest.length+'</b>적정·재고無</span><span class="c-nv"><b>'+(R.dough?skN(R.dough.cur):'–')+'</b>200생지(봉)</span></div>';
   const stat=kind==='loss'?'<span class="sk-stat'+(L.noPlan?' old':'')+'">'+(L.noPlan?'⚠ 조치 계획 미입력 '+L.noPlan+'건 · 김명우 대리 확인':'✔ 조치 계획 모두 입력')+'</span>'
     :'<span class="sk-stat'+(old?' old':'')+'">'+(old?'⚠ 오늘 실물 입력 전 · '+skShort(R.date)+' 기준':'✔ 오늘 실물 '+skE((R.at||'').slice(-5))+' 입력')+(R.ecAt?' · 전산 '+skE(R.ecAt.slice(-5)):'')+'</span>';
-  return '<section class="sk-card" data-kind="'+kind+'"><div class="sk-head"><h2>'+K.t+' <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">'+K.sub+'</div><div class="sk-date">'+skMd(R.date)+'</div>'+chips+stat+'</div>'+
-    '<div class="sk-prev" role="button" tabindex="0" data-skbig="'+kind+'" aria-label="'+K.t+' 크게 보기">'+skPaper(kind)+'</div>'+
+  return '<section class="sk-card" data-kind="'+kind+'"><div class="sk-head"><h2>'+K.t+' <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">'+K.sub+'</div><div class="sk-date">'+skMd(R.date)+'</div><div class="sk-hb"><button type="button" data-skbig="'+kind+'">크게 보기</button><button type="button" data-skprint="'+kind+'">🖨 인쇄</button></div>'+chips+stat+'</div>'+
+    '<div class="sk-prev" role="button" tabindex="0" data-skbig="'+kind+'" aria-label="'+K.t+' 크게 보기">'+skPaper(kind)+'</div>'+skFlow(kind,R)+
     '<div class="sk-foot"><div class="sk-fb"><button type="button" data-skbig="'+kind+'">크게 보기</button><button type="button" data-skprint="'+kind+'">🖨 인쇄</button></div></div></section>';}
 function skRail(){const R=skR();if(!R)return '<section class="sk-card"><div class="sk-head"><h2>재고 현황 <span class="work-owner">(김명우 대리)</span></h2><div class="sk-from">완제품·생지 일일 보고</div></div><div class="sk-empty" style="margin:12px">재고 현황 자료가 아직 없어요.<br>다음 대시보드 갱신 때 들어와요.</div></section>';
   return skCardHtml('stock',R)+skCardHtml('loss',R);}
@@ -2973,7 +3033,7 @@ function skSize(){const a=document.getElementById('stockCol');if(!a){document.bo
 function skPaint(){if(typeof D==='undefined'||!D||STAFF){document.getElementById('stockCol')?.remove();document.getElementById('stockBig')?.remove();document.body.classList.remove('sk-wide','sk-inline');return;}
   let a=document.getElementById('stockCol');
   if(!a){a=document.createElement('aside');a.id='stockCol';a.setAttribute('aria-label','재고 현황과 관리 요망 재고 (김명우 대리)');const m=document.getElementById('main');m.after(a);
-    a.addEventListener('click',ev=>{const p=ev.target.closest('[data-skprint]');if(p){skPick(p.dataset.skprint,true);return;}const g=ev.target.closest('[data-skbig]');if(g)skBig(true,g.dataset.skbig);});
+    a.addEventListener('click',ev=>{const it=ev.target.closest('[data-skitem]');if(it){skItem(true,it.dataset.skitem);return;}const p=ev.target.closest('[data-skprint]');if(p){skPick(p.dataset.skprint,true);return;}const g=ev.target.closest('[data-skbig]');if(g)skBig(true,g.dataset.skbig);});
     a.addEventListener('keydown',ev=>{if((ev.key==='Enter'||ev.key===' ')&&ev.target.classList.contains('sk-prev')){ev.preventDefault();skBig(true,ev.target.dataset.skbig);}});}
   const R=skR(),sig=R?(R.built||'')+'|'+((D.stock&&D.stock.built)||''):'none';
   if(a.dataset.sig!==sig){const y=a.scrollTop;a.innerHTML=skRail();a.dataset.sig=sig;a.scrollTop=y;skBigPaint();}
