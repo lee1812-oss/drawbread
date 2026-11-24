@@ -34,7 +34,8 @@ header{flex:none;display:flex;align-items:center;gap:22px;padding:10px 22px;back
 .side{text-align:right;font-size:16px;color:var(--sub);line-height:1.4;font-weight:600}
 .side select{font:inherit;font-size:18px;font-weight:700;height:40px;border:2px solid var(--ink2);border-radius:10px;padding:0 8px;color:var(--ink);background:#fff}
 .side .clock{font-size:30px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-main{flex:1;min-height:0;padding:10px 14px 6px;display:flex;gap:14px}
+main{flex:1;min-height:0;padding:10px 14px 6px;display:flex;gap:14px;overflow:hidden}
+.col{align-items:flex-start}
 .col{flex:1;min-width:0;display:flex}
 table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:2px solid var(--ink2);border-radius:12px;overflow:hidden;font-size:var(--fs,30px);table-layout:auto}
 th,td{padding:0 .45em;border-bottom:1.5px solid var(--line);vertical-align:middle;white-space:nowrap}
@@ -51,6 +52,7 @@ td.cur{background:#f8fafc}
 tr.sec td{height:auto;background:#e5e7eb;text-align:left;font-size:.6em;font-weight:800;padding:.18em .7em;color:var(--ink2)}
 td.inp{background:var(--blue-bg);padding:.08em .25em}
 td.inp input{width:100%;min-width:4.2em;height:calc(var(--rh,60px) - 12px);font:inherit;font-weight:800;text-align:right;border:2px solid #93c5fd;border-radius:10px;padding:0 .3em;background:#fff;color:var(--ink)}
+td.inp input::placeholder{color:#9ca3af;font-weight:600;font-size:.6em}
 td.inp input:focus{outline:4px solid #1d4ed8;border-color:#1d4ed8}
 td.inp input.saving{color:#6b7280}
 td.inp input.err{border-color:var(--red);background:#fff1f2}
@@ -146,7 +148,7 @@ function rowHTML(x){
   const v=x.ph==null?'':String(Math.round(disp(x.it,x.ph)*1000)/1000);
   return `<tr data-c="${esc(x.c)}"><td class="nm">${esc(x.it.nm)}${notes.length?`<span class="sub">${esc(notes.join(' · '))}</span>`:''}</td>
 <td>${fmt(x.it,x.prev)}${u}</td><td class="use">${fmt(x.it,x.use)}${u}</td><td class="cur">${fmt(x.it,x.cur)}${u}</td>
-<td class="inp"><input inputmode="decimal" autocomplete="off" data-c="${esc(x.c)}" value="${esc(v)}" placeholder="${unitTxt(x.it)}" ${KEY?'':'disabled title="입력 열쇠가 없는 화면입니다"'}></td>${diffCell(x)}</tr>`;
+<td class="inp"><input inputmode="decimal" autocomplete="off" data-c="${esc(x.c)}" value="${esc(v)}" placeholder="${unitTxt(x.it)} 입력" ${KEY?'':'disabled title="입력 열쇠가 없는 화면입니다"'}></td>${diffCell(x)}</tr>`;
 }
 function tableHTML(rows){
   let h='<table><thead><tr><th>품목</th><th>전일 재고</th><th>오늘 사용</th><th>전산 재고</th><th class="inp">실물 재고 (입력)</th><th>차이</th></tr></thead><tbody>';
@@ -172,7 +174,7 @@ function render(){
   let ok=0,bad=0,inp=0; rows.forEach(x=>{if(x.ph==null)return;inp++;const d=x.ph-(x.cur||0),t=tol(x.it,x.cur);if(Math.abs(d)<=t.ok)ok++;else bad++;});
   $('#chips').innerHTML=`<div class="chip"><b>${rows.length}</b><span>쓴 품목</span></div><div class="chip"><b>${inp}</b><span>실물 입력</span></div><div class="chip ok"><b>${ok}</b><span>일치</span></div><div class="chip ${bad?'bad':''}"><b>${bad}</b><span>차이</span></div>`;
   // 한 줄이 너무 낮아지면 두 칸으로 나눔
-  const avail=m.clientHeight-4; const n1=rows.length+new Set(rows.map(x=>isRaw(x.it))).size+1;
+  const avail=m.clientHeight-16; const n1=rows.length+new Set(rows.map(x=>isRaw(x.it))).size+1;
   const two=avail/n1<50&&rows.length>8;
   if(two){const half=Math.ceil(rows.length/2);m.innerHTML=`<div class="col">${tableHTML(rows.slice(0,half))}</div><div class="col">${tableHTML(rows.slice(half))}</div>`;}
   else m.innerHTML=`<div class="col">${tableHTML(rows)}</div>`;
@@ -183,7 +185,7 @@ function render(){
 // 칸이 허락하는 만큼 글씨를 키우고, 줄 높이로 화면 높이를 꽉 채움
 function fit(){
   const m=$('#main'); const tables=[...m.querySelectorAll('table')]; if(!tables.length)return;
-  const avail=m.clientHeight-4;
+  const cs=getComputedStyle(m);const avail=m.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-2;
   const rowsN=Math.max(...tables.map(t=>t.tBodies[0].rows.length));
   const secN=Math.max(...tables.map(t=>t.querySelectorAll('tr.sec').length));
   const fits=()=>tables.every(t=>t.offsetHeight<=avail+1&&t.scrollWidth<=t.parentElement.clientWidth+1);
