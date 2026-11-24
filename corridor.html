@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="corridor-build" content="v001 2026-11-24">
+<title>오늘 쓴 원료 · 재고 맞추기 | 빵을그리다</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#0b1220;--ink2:#1f2937;--sub:#4b5563;--line:#d1d5db;--soft:#f9fafb;--brand:#d9622b;
+--red:#b91c1c;--red-bg:#fee2e2;--org:#c2410c;--org-bg:#ffedd5;--green:#15803d;--green-bg:#dcfce7;--blue:#1d4ed8;--blue-bg:#eff6ff}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Pretendard,'Malgun Gothic',sans-serif;word-break:keep-all;overflow:hidden}
+body{display:flex;flex-direction:column}
+header{flex:none;display:flex;align-items:center;gap:22px;padding:10px 22px;background:#fff;border-bottom:3px solid var(--brand)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:58px;width:auto}
+.bm .nm{font-size:19px;font-weight:700;color:var(--sub)}
+.bm .ver{font-size:15px;color:var(--sub);margin-left:8px;font-weight:600}
+.bm .tt{font-size:34px;font-weight:800;letter-spacing:-.5px;line-height:1.15}
+.datebox{display:flex;align-items:center;gap:10px;margin-left:10px}
+.datebox button{min-width:64px;height:58px;font:inherit;font-size:28px;font-weight:800;border:2px solid var(--ink2);background:#fff;border-radius:12px;cursor:pointer;color:var(--ink)}
+.datebox button:disabled{opacity:.25;cursor:default}
+.datebox .today{font-size:20px;min-width:84px}
+.datebox .dt{font-size:38px;font-weight:800;min-width:250px;text-align:center;font-variant-numeric:tabular-nums}
+.datebox .dt small{display:block;font-size:16px;font-weight:600;color:var(--sub);margin-top:-2px}
+.sp{flex:1}
+.chips{display:flex;gap:10px}
+.chip{border-radius:12px;padding:6px 14px;text-align:center;background:var(--soft);border:1.5px solid var(--line)}
+.chip b{display:block;font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.chip span{font-size:15px;font-weight:700;color:var(--sub)}
+.chip.ok{background:var(--green-bg);border-color:#86efac}.chip.ok b{color:var(--green)}
+.chip.bad{background:var(--red-bg);border-color:#fca5a5}.chip.bad b{color:var(--red)}
+.side{text-align:right;font-size:16px;color:var(--sub);line-height:1.4;font-weight:600}
+.side select{font:inherit;font-size:18px;font-weight:700;height:40px;border:2px solid var(--ink2);border-radius:10px;padding:0 8px;color:var(--ink);background:#fff}
+.side .clock{font-size:30px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+main{flex:1;min-height:0;padding:10px 14px 6px;display:flex;gap:14px}
+.col{flex:1;min-width:0;display:flex}
+table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:2px solid var(--ink2);border-radius:12px;overflow:hidden;font-size:var(--fs,30px);table-layout:auto}
+th,td{padding:0 .45em;border-bottom:1.5px solid var(--line);vertical-align:middle;white-space:nowrap}
+thead th{background:#111827;color:#fff;font-weight:800;font-size:.62em;height:var(--hh,52px);text-align:right;padding:0 .7em}
+thead th:first-child{text-align:left}
+thead th.inp{background:#1d4ed8}
+tbody td{height:var(--rh,60px);text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+td.nm{text-align:left;white-space:normal;font-weight:800;line-height:1.12;max-width:16em}
+td.nm .sub{display:block;font-size:.5em;font-weight:600;color:var(--sub);margin-top:2px;line-height:1.15}
+td .u{font-size:.55em;font-weight:700;color:var(--sub);margin-left:.18em}
+td.use{color:#7c2d12;background:#fff7ed}
+td.cur{background:#f8fafc}
+tr.sec td{height:auto;background:#e5e7eb;text-align:left;font-size:.6em;font-weight:800;padding:.18em .7em;color:var(--ink2)}
+td.inp{background:var(--blue-bg);padding:.08em .25em}
+td.inp input{width:100%;min-width:4.2em;height:calc(var(--rh,60px) - 12px);font:inherit;font-weight:800;text-align:right;border:2px solid #93c5fd;border-radius:10px;padding:0 .3em;background:#fff;color:var(--ink)}
+td.inp input:focus{outline:4px solid #1d4ed8;border-color:#1d4ed8}
+td.inp input.saving{color:#6b7280}
+td.inp input.err{border-color:var(--red);background:#fff1f2}
+td.inp input:disabled{background:#f3f4f6;border-color:#e5e7eb}
+td.diff{min-width:4.6em}
+td.diff.ok{background:var(--green-bg);color:var(--green)}
+td.diff.mid{background:var(--org-bg);color:var(--org)}
+td.diff.bad{background:var(--red-bg);color:var(--red)}
+td.diff.none{color:#9ca3af;font-weight:600}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:44px;font-weight:800;color:var(--ink2);background:#fff;border:2px solid var(--line);border-radius:14px;text-align:center;gap:16px}
+.empty small{font-size:26px;color:var(--sub);font-weight:600}
+footer{flex:none;padding:4px 22px 8px;font-size:17px;color:var(--sub);font-weight:600;display:flex;gap:18px;justify-content:space-between}
+footer b{color:var(--ink2)}
+#msg{color:var(--red);font-weight:800}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><div class="bm"><div><span class="nm">빵을그리다 주식회사</span><span class="ver" id="ver"></span></div><div class="tt">오늘 쓴 원료 · 재고 맞추기</div></div></div>
+  <div class="datebox"><button id="bPrev" title="전날">◀</button><div class="dt" id="dt"></div><button id="bNext" title="다음날">▶</button><button class="today" id="bToday">오늘</button></div>
+  <div class="sp"></div>
+  <div class="chips" id="chips"></div>
+  <div class="side"><div class="clock" id="clock"></div><div id="upd"></div><div>입력자 <select id="who"></select></div></div>
+</header>
+<main id="main"></main>
+<footer><span><b>오늘 사용</b> = 전일 재고 + 입고 − 판매 − 전산 재고 (이카운트에 들어간 생산 소모·자가사용 등 모두) · <b>차이</b> = 실물 − 전산 · 실물 입력은 이카운트에 쓰지 않습니다 (조정은 사무실 확인 후)</span><span id="msg"></span></footer>
+<script>
+'use strict';
+const PAGE_V=1, VER='v001';
+const DATA_URL='https://lee1812-oss.github.io/wonryo/corridor/data.json', LIVE_URL='https://lee1812-oss.github.io/wonryo/data.json';
+const GAS='https://script.google.com/macros/s/AKfycbxJfmX8Ju_mCl4QEM6eITSHS42vLwGpITdcvtVVklme8icrg18h-oV5JkN1vngASYtU6w/exec';
+const PEOPLE=['오승태','이정현','김명우','서재우','박태일','황정기','이혜영','김영복'];
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kstDay=(t=Date.now())=>new Date(t+9*3600e3).toISOString().slice(0,10);
+const addDay=(d,n)=>{const t=new Date(d+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10);};
+const WK='일월화수목금토';
+// 열쇠: 주소 ?k= 를 이 브라우저에 기억 (저장할 때만 필요, 보기는 열쇠 없이도 됨)
+const qs=new URLSearchParams(location.search);
+if(qs.get('k'))localStorage.setItem('corridor_k',qs.get('k'));
+const KEY=localStorage.getItem('corridor_k')||'';
+let TOKEN='';
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+
+let D=null, LIVE=null, PHYS={}, day=kstDay(), physDay='', busy=false;
+const who=$('#who');
+PEOPLE.forEach(n=>who.insertAdjacentHTML('beforeend',`<option>${n}</option>`));
+who.value=localStorage.getItem('corridor_who')||PEOPLE[0];
+who.onchange=()=>localStorage.setItem('corridor_who',who.value);
+$('#ver').textContent=VER;
+
+async function getJSON(u){const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json();}
+async function gas(body){const r=await fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),credentials:'omit',cache:'no-store'});return r.json();}
+
+// 표시 단위: 원료는 g → kg, 생지는 이카운트 단위 그대로
+const isRaw=it=>it&&it.base==='g';
+const disp=(it,v)=>isRaw(it)?v/1000:v;
+const fmt=(it,v,sign)=>{if(v==null||!isFinite(v))return '—';const x=disp(it,v);const dg=isRaw(it)?2:(Math.abs(x%1)>1e-9?1:0);const s=Math.abs(x).toLocaleString('ko-KR',{minimumFractionDigits:dg,maximumFractionDigits:dg});return (sign&&x>0?'+':x<0?'−':'')+s;};
+const unitTxt=it=>isRaw(it)?'kg':(it.u||'개');
+function tol(it,cur){ // 일치로 보는 범위 (기본 단위)
+  if(isRaw(it))return {ok:Math.max(50,Math.abs(cur||0)*0.02),mid:Math.max(500,Math.abs(cur||0)*0.10)};
+  return {ok:0.5,mid:2};
+}
+
+function rowsFor(d){
+  if(!D||!D.days[d])return null;
+  const live=(d===kstDay()&&LIVE&&LIVE.baseDate===d)?LIVE.map:null;
+  const out=[];
+  for(const r of D.days[d]){
+    const [c,prev,inq,sale,cur0,pu]=r; const it=D.items[c]; if(!it)continue;
+    const cur=live?(live[c]??0):cur0;
+    let use=cur==null?null:prev+inq-sale-cur, inx=inq;
+    if(use!=null&&pu>use+0.0001){inx=inq+(pu-use);use=pu;} // 생산 소모가 더 크면 그만큼 다른 입고가 있었던 것
+    const ph=PHYS[c]?PHYS[c].q:null;
+    if(!(use>0.0001||pu>0.0001||ph!=null))continue;
+    out.push({c,it,prev,inq:inx,sale,cur,use,pu,ph});
+  }
+  const ord=x=>(isRaw(x.it)?0:1);
+  out.sort((a,b)=>ord(a)-ord(b)||a.it.nm.localeCompare(b.it.nm,'ko'));
+  return out;
+}
+
+function diffCell(x){
+  if(x.ph==null)return '<td class="diff none">—</td>';
+  const d=x.ph-(x.cur||0), t=tol(x.it,x.cur);
+  const cls=Math.abs(d)<=t.ok?'ok':Math.abs(d)<=t.mid?'mid':'bad';
+  if(cls==='ok')return `<td class="diff ok">일치${Math.abs(d)>1e-9?` <span class="u">${fmt(x.it,d,true)}</span>`:''}</td>`;
+  return `<td class="diff ${cls}">${fmt(x.it,d,true)}<span class="u">${unitTxt(x.it)}</span></td>`;
+}
+function rowHTML(x){
+  const u=`<span class="u">${unitTxt(x.it)}</span>`;
+  const notes=[]; if(x.inq>0.0001)notes.push('입고 +'+fmt(x.it,x.inq)+unitTxt(x.it)); if(x.sale>0.0001)notes.push('판매 −'+fmt(x.it,x.sale)+unitTxt(x.it));
+  const v=x.ph==null?'':String(Math.round(disp(x.it,x.ph)*1000)/1000);
+  return `<tr data-c="${esc(x.c)}"><td class="nm">${esc(x.it.nm)}${notes.length?`<span class="sub">${esc(notes.join(' · '))}</span>`:''}</td>
+<td>${fmt(x.it,x.prev)}${u}</td><td class="use">${fmt(x.it,x.use)}${u}</td><td class="cur">${fmt(x.it,x.cur)}${u}</td>
+<td class="inp"><input inputmode="decimal" autocomplete="off" data-c="${esc(x.c)}" value="${esc(v)}" placeholder="${unitTxt(x.it)}" ${KEY?'':'disabled title="입력 열쇠가 없는 화면입니다"'}></td>${diffCell(x)}</tr>`;
+}
+function tableHTML(rows){
+  let h='<table><thead><tr><th>품목</th><th>전일 재고</th><th>오늘 사용</th><th>전산 재고</th><th class="inp">실물 재고 (입력)</th><th>차이</th></tr></thead><tbody>';
+  let last='';
+  for(const x of rows){const s=isRaw(x.it)?'원료 (kg)':'생지 (이카운트 단위)'; if(s!==last){h+=`<tr class="sec"><td colspan="6">${s}</td></tr>`;last=s;} h+=rowHTML(x);}
+  return h+'</tbody></table>';
+}
+
+function render(){
+  const today=kstDay(); const dts=D?Object.keys(D.days).sort():[];
+  const w=WK[new Date(day+'T00:00:00Z').getUTCDay()];
+  $('#dt').innerHTML=`${+day.slice(5,7)}월 ${+day.slice(8)}일 (${w})<small>${day===today?'오늘':''}</small>`;
+  $('#bPrev').disabled=!dts.length||day<=dts[0]; $('#bNext').disabled=day>=today; $('#bToday').disabled=day===today;
+  const m=$('#main');
+  const act=document.activeElement; const keep=act&&act.matches&&act.matches('td.inp input')?{c:act.dataset.c,v:act.value,s:act.selectionStart}:null;
+  if(!D){m.innerHTML='<div class="empty">자료를 불러오는 중입니다…</div>';return;}
+  const rows=rowsFor(day);
+  if(!rows||!rows.length){
+    m.innerHTML=`<div class="empty">${rows?'이 날은 이카운트에 원료·생지 사용 기록이 없습니다.':'이 날 자료가 아직 없습니다.'}<small>${day===today?'생산일지가 이카운트로 넘어가면 자동으로 나타납니다 (5분마다 확인)':'◀ ▶ 로 다른 날짜를 볼 수 있습니다'}</small></div>`;
+    $('#chips').innerHTML='';return;
+  }
+  // 칩: 품목 수 · 실물 입력 · 일치 · 차이
+  let ok=0,bad=0,inp=0; rows.forEach(x=>{if(x.ph==null)return;inp++;const d=x.ph-(x.cur||0),t=tol(x.it,x.cur);if(Math.abs(d)<=t.ok)ok++;else bad++;});
+  $('#chips').innerHTML=`<div class="chip"><b>${rows.length}</b><span>쓴 품목</span></div><div class="chip"><b>${inp}</b><span>실물 입력</span></div><div class="chip ok"><b>${ok}</b><span>일치</span></div><div class="chip ${bad?'bad':''}"><b>${bad}</b><span>차이</span></div>`;
+  // 한 줄이 너무 낮아지면 두 칸으로 나눔
+  const avail=m.clientHeight-4; const n1=rows.length+new Set(rows.map(x=>isRaw(x.it))).size+1;
+  const two=avail/n1<50&&rows.length>8;
+  if(two){const half=Math.ceil(rows.length/2);m.innerHTML=`<div class="col">${tableHTML(rows.slice(0,half))}</div><div class="col">${tableHTML(rows.slice(half))}</div>`;}
+  else m.innerHTML=`<div class="col">${tableHTML(rows)}</div>`;
+  fit();
+  m.querySelectorAll('td.inp input').forEach(bindInput);
+  if(keep){const el=m.querySelector(`td.inp input[data-c="${CSS.escape(keep.c)}"]`);if(el){el.value=keep.v;el.focus();try{el.setSelectionRange(keep.s,keep.s);}catch(e){}}}
+}
+// 칸이 허락하는 만큼 글씨를 키우고, 줄 높이로 화면 높이를 꽉 채움
+function fit(){
+  const m=$('#main'); const tables=[...m.querySelectorAll('table')]; if(!tables.length)return;
+  const avail=m.clientHeight-4;
+  const rowsN=Math.max(...tables.map(t=>t.tBodies[0].rows.length));
+  const secN=Math.max(...tables.map(t=>t.querySelectorAll('tr.sec').length));
+  const fits=()=>tables.every(t=>t.offsetHeight<=avail+1&&t.scrollWidth<=t.parentElement.clientWidth+1);
+  let lo=14,hi=120;
+  for(let i=0;i<14;i++){
+    const fs=(lo+hi)/2; const hh=Math.round(fs*1.45);
+    const rh=Math.max(fs*1.25,(avail-hh-secN*fs*0.95)/(rowsN-secN||1));
+    m.style.setProperty('--fs',fs+'px');m.style.setProperty('--rh',Math.floor(rh-1.5)+'px');m.style.setProperty('--hh',hh+'px');
+    if(fits())lo=fs;else hi=fs;
+  }
+  const fs=lo,hh=Math.round(fs*1.45),rh=Math.max(fs*1.25,(avail-hh-secN*fs*0.95)/(rowsN-secN||1));
+  m.style.setProperty('--fs',fs+'px');m.style.setProperty('--rh',Math.floor(rh-1.5)+'px');m.style.setProperty('--hh',hh+'px');
+  // 남는 높이가 있으면 줄 높이를 늘려 아래 빈 공간을 없앰
+  tables.forEach(t=>{const gap=avail-t.offsetHeight;const n=t.tBodies[0].querySelectorAll('tr:not(.sec)').length;if(gap>2&&n){const cur=parseFloat(getComputedStyle(m).getPropertyValue('--rh'))||rh;t.style.setProperty('--rh',Math.floor(cur+gap/n-0.5)+'px');}});
+}
+function bindInput(el){
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save(el,true);}});
+  el.addEventListener('change',()=>save(el,false));
+}
+async function save(el,next){
+  const c=el.dataset.c, it=D.items[c]; const raw=el.value.trim().replace(/,/g,'');
+  let q=null; if(raw!==''){const v=Number(raw);if(!isFinite(v)){el.classList.add('err');msg('숫자만 넣어 주세요');return;}q=isRaw(it)?Math.round(v*1000*1000)/1000:v;}
+  const cur=PHYS[c]?PHYS[c].q:null; if(q===cur){if(next)focusNext(el);return;}
+  if(!KEY){msg('입력 열쇠가 없는 화면입니다');return;}
+  el.classList.add('saving');el.classList.remove('err');
+  try{
+    if(!TOKEN)TOKEN=await sha('corridor|'+KEY);
+    const j=await gas({op:'set',date:day,code:c,q,by:who.value,token:TOKEN});
+    if(!j.ok)throw new Error(j.err==='auth'?'열쇠가 맞지 않습니다':j.err);
+    PHYS=j.v||PHYS; physDay=day; msg('');
+    el.classList.remove('saving');
+    const nx=next?nextInput(el):null; render(); if(nx){const e2=$(`td.inp input[data-c="${CSS.escape(nx)}"]`);if(e2){e2.focus();e2.select();}}
+  }catch(e){el.classList.remove('saving');el.classList.add('err');msg('저장 안 됨: '+(e.message||'연결 오류')+' · 다시 Enter');}
+}
+function nextInput(el){const a=[...document.querySelectorAll('td.inp input')];const i=a.indexOf(el);return a[i+1]?a[i+1].dataset.c:null;}
+function focusNext(el){const a=[...document.querySelectorAll('td.inp input')];const n=a[a.indexOf(el)+1];if(n){n.focus();n.select();}}
+function msg(t){$('#msg').textContent=t;}
+
+async function loadData(){try{const j=await getJSON(DATA_URL);D=j;if(j.page>PAGE_V){location.reload();return;}}catch(e){if(!D)msg('자료를 못 읽었습니다. 잠시 뒤 다시 시도합니다');}}
+async function loadLive(){try{const j=await getJSON(LIVE_URL);const map={};(j.items||[]).forEach(x=>{map[x.code]=Number(x.qty)||0;});LIVE={baseDate:j.baseDate,at:j.updatedAt,map};}catch(e){}}
+async function loadPhys(){if(busy)return;busy=true;try{const d=day;const j=await gas({op:'get',date:d});if(j.ok&&d===day){PHYS=j.v||{};physDay=d;}}catch(e){}finally{busy=false;}}
+function upd(){
+  const t=s=>s?String(s).replace('T',' ').slice(5,16).replace('-','/'):'';
+  $('#upd').innerHTML=`이카운트 ${day===kstDay()&&LIVE?t(LIVE.at):'자료 '+(D?t(D.built):'')}`;
+}
+function clock(){const k=new Date(Date.now()+9*3600e3);$('#clock').textContent=k.toISOString().slice(11,16);}
+async function go(d){day=d;PHYS={};render();await loadPhys();render();upd();}
+$('#bPrev').onclick=()=>{const dts=Object.keys(D.days).sort();const p=dts.filter(x=>x<day).pop();if(p)go(p);};
+$('#bNext').onclick=()=>{const dts=Object.keys(D.days).sort();const n=dts.find(x=>x>day)||kstDay();go(n>kstDay()?kstDay():n);};
+$('#bToday').onclick=()=>go(kstDay());
+window.addEventListener('resize',()=>render());
+(async()=>{
+  clock();setInterval(clock,10000);
+  const qd=qs.get('d'); if(qd&&/^\d{4}-\d{2}-\d{2}$/.test(qd))day=qd;
+  await Promise.all([loadData(),loadLive(),loadPhys()]);render();upd();
+  setInterval(async()=>{await loadLive();if(!document.activeElement||!document.activeElement.matches('td.inp input'))render();upd();},5*60e3);
+  setInterval(async()=>{await loadData();if(!document.activeElement||!document.activeElement.matches('td.inp input'))render();upd();},15*60e3);
+  setInterval(async()=>{await loadPhys();if(!document.activeElement||!document.activeElement.matches('td.inp input'))render();},60e3);
+  // 날짜가 바뀌면(자정) 오늘로
+  setInterval(()=>{const t=kstDay();if(t!==window.__lastDay){const was=window.__lastDay;window.__lastDay=t;if(was&&day===was)go(t);}},60e3);window.__lastDay=kstDay();
+})();
+</script>
+</body>
+</html>
