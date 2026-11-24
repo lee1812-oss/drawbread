@@ -186,7 +186,7 @@ function render(){
 // 칸이 허락하는 만큼 글씨를 키우고, 줄 높이로 화면 높이를 꽉 채움
 function fit(){
   const m=$('#main'); const tables=[...m.querySelectorAll('table')]; if(!tables.length)return;
-  const cs=getComputedStyle(m); const avail=m.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-2;
+  const cs=getComputedStyle(m); const avail=m.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-6;
   const body=t=>[...t.tBodies[0].rows];
   const apply=fs=>{m.style.setProperty('--fs',fs+'px');m.style.setProperty('--hh',Math.round(fs*1.45)+'px');m.style.setProperty('--rh',Math.round(fs*1.5)+'px');tables.forEach(t=>body(t).forEach(r=>r.style.height=''));};
   const fits=()=>tables.every(t=>t.offsetHeight<=avail&&t.scrollWidth<=t.parentElement.clientWidth+1);
@@ -232,7 +232,7 @@ $('#bPrev').onclick=()=>{const dts=Object.keys(D.days).sort();const p=dts.filter
 $('#bNext').onclick=()=>{const dts=Object.keys(D.days).sort();const n=dts.find(x=>x>day)||kstDay();go(n>kstDay()?kstDay():n);};
 $('#bToday').onclick=()=>go(kstDay());
 window.addEventListener('resize',()=>render());
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>render());
+if(document.fonts){document.fonts.ready.then(()=>render());document.fonts.addEventListener('loadingdone',()=>{clearTimeout(window.__ft);window.__ft=setTimeout(()=>{if(!document.activeElement||!document.activeElement.matches('td.inp input'))render();else fit();},300);});}
 (async()=>{
   clock();setInterval(clock,10000);
   const qd=qs.get('d'); if(qd&&/^\d{4}-\d{2}-\d{2}$/.test(qd))day=qd;
