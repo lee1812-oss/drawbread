@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v132"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-24 18:55 v132 업무 3면 창 전환 때 닫히지 않게">
+<meta name="dash-ver" content="v133"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-24 21:05 v133 UTCA 출력일보 옆 미국 동부 시간">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1324,13 +1324,17 @@ window.__myb={show,edit,current,catalog:()=>catalog().map(c=>c.id+' = '+c.n),ref
 #sheetBar .sh-dash2{color:#7a4a12}#sheetBar .sh-dash2[aria-pressed="true"]{background:#BF913C;color:#fff;border-color:#BF913C}
 body:not(.wall) #sheetBar .sh-dash2{display:none}
 body.sheet-p2 #mybBar,body.sheet-p2 .myb-hbtn{display:none!important}
+/* 2026-11-24 v133 조조: UTCA 출력일보 버튼 바로 옆 미국 동부 시각·날짜(뉴욕 기준, 서머타임 자동) */
+#usClock{display:flex;flex-direction:column;justify-content:center;line-height:1.15;padding:0 2px 0 10px;margin-left:2px;border-left:3px solid #1F3A68;white-space:nowrap}
+#usClock .t{font-size:26px;font-weight:700;color:#1F3A68}#usClock .d{font-size:17px;font-weight:700;color:#1F3A68}
+body.night #usClock{border-left-color:#93c5fd}body.night #usClock .t,body.night #usClock .d{color:#93c5fd}
 #sheetBar .sh-utca{color:#1F3A68}#sheetBar .sh-utca[aria-pressed="true"]{background:#1F3A68;color:#fff;border-color:#1F3A68}
 body.night #sheetBar button:not([aria-pressed="true"]){background:#111827}
 body.night #sheetBar .sh-dash:not([aria-pressed="true"]){color:#FCF1D0}
 body.night #sheetBar .sh-haccp:not([aria-pressed="true"]){color:#4ade80}
 body.night #sheetBar .sh-utca:not([aria-pressed="true"]){color:#93c5fd}
 body.night #sheetBar .sh-dash2:not([aria-pressed="true"]){color:#e8c88a}
-body.wall #sheetBar button{min-height:46px;font-size:17px;padding:0 14px}
+body.wall #sheetBar button{min-height:46px;font-size:17px;padding:0 11px}body.wall #sheetBar{gap:6px}/* v133: 미국 동부 시계 자리 확보 */
 /* 2026-11-23 v122: 27인치 — 머리줄·칸 제목을 --f27 배로 */
 body.fp-27 header{zoom:var(--f27,1)}
 body.fp-27 .myb-h{zoom:var(--f27,1)}
@@ -1376,6 +1380,7 @@ globalThis.installSheets=function(api){
  function goV(s,quiet){go0(s,quiet);syncPause();try{dispatchEvent(new CustomEvent('dash-sheetvis',{detail:{sheet:s}}));}catch(_){}}
  function mount(){if(document.getElementById('sheetBar'))return;const br=document.querySelector('header .dash-top .brand')||document.querySelector('header .brand');if(!br)return;const bar=document.createElement('div');bar.id='sheetBar';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','시트');
   bar.innerHTML=ITEMS.map(x=>'<button type="button" class="sh-'+x[0]+'" data-sheet="'+x[0]+'" aria-pressed="false">'+x[1]+'</button>').join('');br.after(bar);
+  /* v133: UTCA 출력일보 버튼 옆 미국 동부 시계 */try{const u=document.createElement('div');u.id='usClock';u.innerHTML='<div class="t num" id="usT"></div><div class="d" id="usD"></div>';const ub=bar.querySelector('.sh-utca');(ub?ub.after(u):bar.append(u));window.__usTick&&window.__usTick();}catch(_){}
   bar.addEventListener('click',e=>{const b=e.target.closest('[data-sheet]');if(b)go(b.dataset.sheet);});paint();if(cur!=='dash')go(cur,true);}
  const go=goV;
  document.addEventListener('visibilitychange',()=>{syncPause();if(!document.hidden){try{dispatchEvent(new CustomEvent('dash-sheetvis',{detail:{sheet:cur}}));}catch(_){}}});
@@ -1474,7 +1479,9 @@ function md(d){const k=kst(d);return (k.getMonth()+1)+'/'+k.getDate()+'('+DOW[k.
 function hm(d){const k=kst(d);return String(k.getHours()).padStart(2,'0')+':'+String(k.getMinutes()).padStart(2,'0');}
 function sameDay(a,b){const x=kst(a),y=kst(b);return x.getFullYear()===y.getFullYear()&&x.getMonth()===y.getMonth()&&x.getDate()===y.getDate();}
 function ago(t){const m=Math.round((Date.now()-t)/60000);if(m<1)return '방금';if(m<60)return m+'분 전';const h=Math.floor(m/60);return h<24?h+'시간 전':Math.floor(h/24)+'일 전';}
-function tick(){const k=kst();$('#ct').textContent=hm();$('#cd').textContent=(k.getMonth()+1)+'월 '+k.getDate()+'일 '+DOW[k.getDay()]+'요일';const f=$('#fresh');if(f&&D)f.lastChild.textContent=' 자료 '+D.built.slice(5).replace('-','/')+' · '+ago(lastLoad)+' 확인';}
+/* v133: 미국 동부(뉴욕) 시각 — 서머타임(EDT)·표준시(EST) 자동 */
+window.__usTick=function(){const t=document.getElementById('usT'),d=document.getElementById('usD');if(!t||!d)return;try{const p={};new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',month:'numeric',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'short'}).formatToParts(new Date()).forEach(x=>p[x.type]=x.value);const W={Sun:'일',Mon:'월',Tue:'화',Wed:'수',Thu:'목',Fri:'금',Sat:'토'};t.textContent=p.hour+':'+p.minute;d.textContent='미국 동부 '+p.month+'/'+p.day+'('+(W[p.weekday]||p.weekday)+')';document.getElementById('usClock').title='미국 동부 시간(뉴욕 기준, '+(p.timeZoneName||'')+') · 서머타임 자동 반영';}catch(_){}};
+function tick(){const k=kst();$('#ct').textContent=hm();$('#cd').textContent=document.getElementById('usClock')?('한국 '+(k.getMonth()+1)+'/'+k.getDate()+'('+DOW[k.getDay()]+')'):((k.getMonth()+1)+'월 '+k.getDate()+'일 '+DOW[k.getDay()]+'요일');try{window.__usTick&&window.__usTick();}catch(_){}const f=$('#fresh');if(f&&D)f.lastChild.textContent=' 자료 '+D.built.slice(5).replace('-','/')+' · '+ago(lastLoad)+' 확인';}
 
 async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const enc=new TextEncoder();const it=+((e.kdf||'').match(/(\d+)$/)||[0,100000])[1];
   const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
