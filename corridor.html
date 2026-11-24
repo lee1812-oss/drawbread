@@ -48,6 +48,7 @@ td.nm{text-align:left;white-space:nowrap;font-weight:800;line-height:1.1}
 td.nm .sub{display:block;font-size:.5em;font-weight:600;color:var(--sub);margin-top:2px;line-height:1.15}
 td .u{font-size:.55em;font-weight:700;color:var(--sub);margin-left:.18em}
 td.use{color:#7c2d12;background:#fff7ed}
+td.use .g{display:block;font-size:.48em;font-weight:800;color:#9a3412;line-height:1.15;margin-top:.05em;white-space:nowrap}
 td.cur{background:#f8fafc}
 tr.sec td{height:auto;background:#e5e7eb;text-align:left;font-size:.6em;font-weight:800;padding:.18em .7em;color:var(--ink2)}
 td.inp{background:var(--blue-bg);padding:.08em .25em}
@@ -81,7 +82,7 @@ footer b{color:var(--ink2)}
 <footer><span><b>오늘 사용</b> = 전일 재고 + 입고 − 판매 − 전산 재고 (이카운트에 들어간 생산 소모·자가사용 등 모두) · <b>차이</b> = 실물 − 전산 · 실물 입력은 이카운트에 쓰지 않습니다 (조정은 사무실 확인 후)</span><span id="msg"></span></footer>
 <script>
 'use strict';
-const PAGE_V=1, VER='v001';
+const PAGE_V=1, VER='v002'; // v002 2026-11-24: 오늘 사용 아래 (g) 이중 표시
 const DATA_URL='https://lee1812-oss.github.io/wonryo/corridor/data.json', LIVE_URL='https://lee1812-oss.github.io/wonryo/data.json';
 const GAS='https://script.google.com/macros/s/AKfycbxJfmX8Ju_mCl4QEM6eITSHS42vLwGpITdcvtVVklme8icrg18h-oV5JkN1vngASYtU6w/exec';
 const PEOPLE=['오승태','이정현','김명우','서재우','박태일','황정기','이혜영','김영복'];
@@ -143,12 +144,15 @@ function diffCell(x){
   return `<td class="diff ${cls}">${fmt(x.it,d,true)}<span class="u">${unitTxt(x.it)}</span></td>`;
 }
 function splitNm(nm){const m=String(nm).match(/^(.*?)\s*((?:[\[(]?\d[\d.,]*\s*(?:g|kg|G|KG)\b|BOX|\d+\s*EA).*)$/);return m&&m[1].trim().length>=2?[m[1].trim(),m[2].trim()]:[nm,''];}
+// v002: 오늘 사용을 g으로도 — 원료는 기본 단위가 g, 생지는 품목 이름의 「200g*20EA」처럼 적힌 무게로 계산(이름에 무게가 없으면 표시 안 함)
+function gPer(it){if(isRaw(it))return 1;const nm=String(it.nm||'');const m=nm.match(/(\d+(?:\.\d+)?)\s*g((?:\s*[*xX×]\s*\d+(?:\.\d+)?\s*(?:EA|ea|PK|pk|개|입|봉)?)*)/);if(!m)return 0;let g=parseFloat(m[1]);if((it.u||'개')==='개')return g;const ms=m[2].match(/\d+(?:\.\d+)?/g)||[];ms.forEach(n=>g*=parseFloat(n));return g;}
+function gTxt(it,v){const p=gPer(it);if(!p||v==null||!isFinite(v))return '';const g=v*p;const a=Math.abs(g);const s=a.toLocaleString('ko-KR',{maximumFractionDigits:a<10?1:0});return `<span class="g">(${g<0?'−':''}${s}g)</span>`;}
 function rowHTML(x){
   const u=`<span class="u">${unitTxt(x.it)}</span>`;
   const sp=splitNm(x.it.nm); const notes=sp[1]?[sp[1]]:[]; if(x.inq>0.0001)notes.push('입고 +'+fmt(x.it,x.inq)+unitTxt(x.it)); if(x.sale>0.0001)notes.push('판매 −'+fmt(x.it,x.sale)+unitTxt(x.it));
   const v=x.ph==null?'':String(Math.round(disp(x.it,x.ph)*1000)/1000);
   return `<tr data-c="${esc(x.c)}"><td class="nm">${esc(sp[0])}${notes.length?`<span class="sub">${esc(notes.join(' · '))}</span>`:''}</td>
-<td>${fmt(x.it,x.prev)}${u}</td><td class="use">${fmt(x.it,x.use)}${u}</td><td class="cur">${fmt(x.it,x.cur)}${u}</td>
+<td>${fmt(x.it,x.prev)}${u}</td><td class="use">${fmt(x.it,x.use)}${u}${gTxt(x.it,x.use)}</td><td class="cur">${fmt(x.it,x.cur)}${u}</td>
 <td class="inp"><input inputmode="decimal" autocomplete="off" data-c="${esc(x.c)}" value="${esc(v)}" placeholder="${unitTxt(x.it)} 입력" ${KEY?'':'disabled title="입력 열쇠가 없는 화면입니다"'}></td>${diffCell(x)}</tr>`;
 }
 function tableHTML(rows){
