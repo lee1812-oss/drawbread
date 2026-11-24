@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v131"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-24 18:53 v131 업무 3면(오늘 쓴 원료·재고 맞추기) 업무 2면 뒤로">
+<meta name="dash-ver" content="v132"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-24 18:55 v132 업무 3면 창 전환 때 닫히지 않게">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -3264,8 +3264,10 @@ document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&
 </script>
 <script>
 /* 2026-11-24 조조: 시트 「원료 재고 맞추기」 추가 — 공장 복도 화면(corridor.html)을 같은 크기로 안에 띄움(보기 전용, 실물 입력은 복도 화면에서). 기존 시트 코드는 건드리지 않고 단추만 덧붙임 */
-/* 2026-11-24 v130 조조: 이 시트 이름을 「업무 3면」으로 바꾸고 업무 2면 바로 뒤에 둠(넓은 화면이 아니어도 보임). 고른 상태를 이 PC에 기억(dash_corr_on), 주소 ?sheet=dash3 로도 열림 */
-(function(){let fr=null,on=false;const LS='dash_corr_on';
+/* 2026-11-24 v131 조조: 이 시트 이름을 「업무 3면」으로 바꾸고 업무 2면 바로 뒤에 둠(넓은 화면이 아니어도 보임). 고른 상태를 이 PC에 기억(dash_corr_on), 주소 ?sheet=dash3 로도 열림 */
+(function(){let fr=null,on=false,lastVis=0;const LS='dash_corr_on';
+ /* v132: 창이 가려졌다 다시 보일 때(visibilitychange) 대시보드가 보내는 dash-sheetvis 신호로 3면이 닫히던 문제 → 그 신호는 무시 */
+ addEventListener('visibilitychange',()=>{lastVis=Date.now();},true);
  try{const st=document.createElement('style');st.textContent='#sheetBar .sh-corr{color:#0F5F5A}#sheetBar .sh-corr[aria-pressed="true"]{background:#0F5F5A;color:#fff;border-color:#0F5F5A}body.night #sheetBar .sh-corr:not([aria-pressed="true"]){color:#5eead4}body.wall #sheetBar .sh-corr{min-height:46px;font-size:17px;padding:0 14px}';document.head.append(st);}catch(_){}
  function place(){if(!fr)return;const h=document.querySelector('header');const t=h?Math.max(0,Math.round(h.getBoundingClientRect().bottom)):0;fr.style.top=t+'px';fr.style.height=Math.max(200,innerHeight-t)+'px';}
  function show(v){on=v;try{localStorage.setItem(LS,v?'1':'0');}catch(_){}const bar=document.getElementById('sheetBar');if(bar){bar.querySelectorAll('[data-sheet]').forEach(b=>{if(v)b.setAttribute('aria-pressed','false');});const m=bar.querySelector('[data-csheet]');if(m)m.setAttribute('aria-pressed',String(v));}
@@ -3275,7 +3277,7 @@ document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&
   b.addEventListener('click',e=>{e.stopPropagation();show(true);});bar.addEventListener('click',e=>{if(e.target.closest('[data-sheet]'))show(false);});
   let want=false;try{want=localStorage.getItem(LS)==='1';const q=new URLSearchParams(location.search).get('sheet');if(q==='corr'||q==='dash3')want=true;else if(q)want=false;}catch(_){}
   if(want)show(true);}
- addEventListener('dash-sheetvis',()=>{if(on)show(false);});addEventListener('resize',place);setInterval(()=>{mount();if(on)place();},2000);
+ addEventListener('dash-sheetvis',()=>{if(Date.now()-lastVis<300)return;if(on)show(false);});addEventListener('resize',place);setInterval(()=>{mount();if(on)place();},2000);
 })();
 </script>
 </body>
