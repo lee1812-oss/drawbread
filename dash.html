@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
 <meta name="dash-ver" content="v129"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-24 09:16 바로가기 줄은 업무 1면에서만(2면·해썹·UTCA는 숨기고 꽉 채움), 2면 글씨 칸 높이만큼 키움">
+<meta name="dash-build" content="2026-11-24 17:55 시트 「원료 재고 맞추기」 추가(공장 복도 화면 보기)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -3261,6 +3261,19 @@ document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&
  var W=Math.min(1400,(screen.availWidth||1400)-40),H=Math.min(900,(screen.availHeight||900)-60),w=null;
  try{w=window.open(a.href,'danga','popup=1,width='+W+',height='+H+',left='+Math.max(0,Math.round(((screen.availWidth||W)-W)/2))+',top='+Math.max(0,Math.round(((screen.availHeight||H)-H)/2)));}catch(_){w=null;}
  if(w){try{w.opener=null;}catch(_){}try{w.focus();}catch(_){}e.preventDefault();}},true);
+</script>
+<script>
+/* 2026-11-24 조조: 시트 「원료 재고 맞추기」 추가 — 공장 복도 화면(corridor.html)을 같은 크기로 안에 띄움(보기 전용, 실물 입력은 복도 화면에서). 기존 시트 코드는 건드리지 않고 단추만 덧붙임 */
+(function(){let fr=null,on=false;
+ function place(){if(!fr)return;const h=document.querySelector('header');const t=h?Math.max(0,Math.round(h.getBoundingClientRect().bottom)):0;fr.style.top=t+'px';fr.style.height=Math.max(200,innerHeight-t)+'px';}
+ function show(v){on=v;const bar=document.getElementById('sheetBar');if(bar){bar.querySelectorAll('[data-sheet]').forEach(b=>{if(v)b.setAttribute('aria-pressed','false');});const m=bar.querySelector('[data-csheet]');if(m)m.setAttribute('aria-pressed',String(v));}
+  if(v&&!fr){fr=document.createElement('iframe');fr.id='corrFrame';fr.title='원료 재고 맞추기';fr.src='corridor.html';fr.style.cssText='position:fixed;left:0;right:0;width:100%;border:0;z-index:60;background:#f3f4f6';document.body.append(fr);}
+  if(fr){fr.style.display=v?'block':'none';place();}}
+ function mount(){const bar=document.getElementById('sheetBar');if(!bar||bar.querySelector('[data-csheet]'))return;const b=document.createElement('button');b.type='button';b.className='sh-corr';b.dataset.csheet='corr';b.setAttribute('aria-pressed','false');b.textContent='원료 재고 맞추기';bar.append(b);
+  b.addEventListener('click',e=>{e.stopPropagation();show(true);});bar.addEventListener('click',e=>{if(e.target.closest('[data-sheet]'))show(false);});
+  try{if(new URLSearchParams(location.search).get('sheet')==='corr')show(true);}catch(_){}}
+ addEventListener('dash-sheetvis',()=>{if(on)show(false);});addEventListener('resize',place);setInterval(()=>{mount();if(on)place();},2000);
+})();
 </script>
 </body>
 </html>

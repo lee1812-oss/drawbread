@@ -195,6 +195,7 @@ function fit(){
   apply(Math.floor(lo*10)/10);
   // 남는 높이를 줄마다 나눠 아래 빈 공간을 없앰
   tables.forEach(t=>{const rs=body(t).filter(r=>!r.classList.contains('sec'));const gap=avail-t.offsetHeight;if(gap<=1||!rs.length)return;const add=Math.floor(gap/rs.length);const hs=rs.map(r=>r.getBoundingClientRect().height);rs.forEach((r,i)=>r.style.height=(hs[i]+add)+'px');});
+  tables.forEach(t=>{const rs=body(t).filter(r=>!r.classList.contains('sec'));for(let k=0;k<3;k++){const over=t.offsetHeight-avail;if(over<=0||!rs.length)break;const cut=Math.ceil(over/rs.length);rs.forEach(r=>r.style.height=Math.max(0,r.getBoundingClientRect().height-cut)+'px');}});
 }
 function bindInput(el){
   el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();save(el,true);}});
