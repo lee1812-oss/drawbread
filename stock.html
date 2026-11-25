@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="stock-ver" content="v001">
-<meta name="stock-build" content="2026-11-25 11:20 v001 첫 배포">
+<meta name="stock-build" content="2026-11-25 10:31 v001 첫 배포">
 <title>오늘의 재고 현황 · 빵을그리다</title>
 <meta name="theme-color" content="#FFFFFF">
 <style>
@@ -109,7 +109,7 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const addD=(s,n)=>{const t=new Date(s+'T00:00:00');t.setDate(t.getDate()+n);return ymd(t);};
 const md=s=>{const t=new Date(s+'T00:00:00');return (t.getMonth()+1)+'/'+t.getDate()+'('+DOW[t.getDay()]+')';};
 const fg=v=>Math.round(v).toLocaleString('ko-KR');
-function kgTxt(g){const a=Math.abs(g);if(a<1000)return {n:fg(g),u:'g'};const k=g/1000;return {n:(a>=100000?Math.round(k):Math.round(k*10)/10).toLocaleString('ko-KR'),u:'kg'};}
+function kgTxt(g){const a=Math.abs(g);if(a<10&&Math.round(g)!==g)return {n:String(Math.round(g*10)/10),u:'g'};if(a<1000)return {n:fg(g),u:'g'};const k=g/1000;return {n:(a>=100000?Math.round(k):Math.round(k*10)/10).toLocaleString('ko-KR'),u:'kg'};}
 function kgS(g){const x=kgTxt(g);return x.n+x.u;}
 async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const enc=new TextEncoder();const it=+((e.kdf||'').match(/(\d+)$/)||[0,100000])[1];
  const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
@@ -137,7 +137,7 @@ function render(){
  if(!L.length){$('#grid').innerHTML='<div class="empty">이 구분에 해당하는 품목이 없습니다</div>';return;}
  $('#grid').innerHTML=L.map(({it,c})=>{const q=kgTxt(c.q);
   const d1=c.q<0?'전산 재고가 마이너스입니다':c.days==null?'최근 4주 사용 기록 없음':'하루 약 '+kgS(c.daily)+' 사용 · <b class="num">약 '+(c.days>=100?'100일 이상':Math.floor(c.days)+'일치')+'</b>';
-  const pk=it.spec&&c.q>0?' <span class="gg">('+(Math.round(c.q/it.spec*10)/10)+'개분)</span>':'';
+  const pk=it.spec&&c.q>0?' <span class="gg">(포장 '+(Math.round(c.q/it.spec*10)/10)+'개)</span>':'';
   return '<button class="card '+c.st+'" data-code="'+esc(it.code)+'"><div class="h"><span class="lab '+c.st+'">'+c.lab+'</span><span class="gg">gg'+esc(it.gg)+'</span></div>'+
   '<div class="nm">'+esc(it.nm)+'</div><div class="q num">'+q.n+'<small>'+q.u+'</small>'+pk+'</div><div class="d1">'+d1+'</div>'+
   '<div class="d2">이번 주 입고 <b class="num">'+(c.wi?kgS(c.wi):'0')+'</b> · 출고 <b class="num">'+(c.wo?kgS(c.wo):'0')+'</b></div></button>';}).join('');

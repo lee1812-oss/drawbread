@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v133"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-24 21:05 v133 UTCA 출력일보 옆 미국 동부 시간">
+<meta name="dash-ver" content="v134"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-25 10:31 v134 업무 4면 오늘의 재고 현황">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -3285,6 +3285,24 @@ document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&
   let want=false;try{want=localStorage.getItem(LS)==='1';const q=new URLSearchParams(location.search).get('sheet');if(q==='corr'||q==='dash3')want=true;else if(q)want=false;}catch(_){}
   if(want)show(true);}
  addEventListener('dash-sheetvis',()=>{if(Date.now()-lastVis<300)return;if(on)show(false);});addEventListener('resize',place);setInterval(()=>{mount();if(on)place();},2000);
+})();
+/* 2026-11-25 v134 조조: 「업무 4면 · 오늘의 재고 현황」 — stock.html(이카운트 재고현황 양식 「금주의 재고현황_오승태」 29품목 + 품목별 재고수불부)을 3면과 같은 방식으로 안에 띄움. 고른 상태는 이 PC에 기억(dash_stock_on), 주소 ?sheet=dash4 로도 열림. 3면과 서로 하나만 보임 */
+(function(){let fr=null,on=false,lastVis=0;const LS='dash_stock_on';
+ addEventListener('visibilitychange',()=>{lastVis=Date.now();},true);
+ try{const st=document.createElement('style');st.textContent='#sheetBar .sh-stock{color:#8B5A2B}#sheetBar .sh-stock[aria-pressed="true"]{background:#8B5A2B;color:#fff;border-color:#8B5A2B}body.night #sheetBar .sh-stock:not([aria-pressed="true"]){color:#f0b27a}body.wall #sheetBar .sh-stock{min-height:46px;font-size:17px;padding:0 14px}';document.head.append(st);}catch(_){}
+ function place(){if(!fr)return;const h=document.querySelector('header');const t=h?Math.max(0,Math.round(h.getBoundingClientRect().bottom)):0;fr.style.top=t+'px';fr.style.height=Math.max(200,innerHeight-t)+'px';}
+ function hide3(){const c=document.getElementById('corrFrame');if(c)c.style.display='none';const b=document.querySelector('#sheetBar .sh-corr');if(b)b.setAttribute('aria-pressed','false');try{localStorage.setItem('dash_corr_on','0');}catch(_){}}
+ function show(v){on=v;try{localStorage.setItem(LS,v?'1':'0');}catch(_){}const bar=document.getElementById('sheetBar');
+  if(v){hide3();if(bar)bar.querySelectorAll('[data-sheet]').forEach(b=>b.setAttribute('aria-pressed','false'));}
+  const m=bar&&bar.querySelector('[data-xsheet]');if(m)m.setAttribute('aria-pressed',String(v));
+  if(v&&!fr){fr=document.createElement('iframe');fr.id='stockFrame';fr.title='업무 4면 · 오늘의 재고 현황';fr.src='stock.html';fr.style.cssText='position:fixed;left:0;right:0;width:100%;border:0;z-index:61;background:#f3f4f6';document.body.append(fr);}
+  if(fr){fr.style.display=v?'block':'none';place();}}
+ function mount(){const bar=document.getElementById('sheetBar');if(!bar||bar.querySelector('[data-xsheet]'))return;const b=document.createElement('button');b.type='button';b.className='sh-stock';b.dataset.xsheet='stock';b.setAttribute('aria-pressed','false');b.title='오늘의 재고 현황 (이카운트 금주의 재고현황 · 재고수불부)';b.textContent='업무 4면';const p3=bar.querySelector('.sh-corr')||bar.querySelector('.sh-dash2');if(p3)p3.after(b);else bar.append(b);
+  b.addEventListener('click',e=>{e.stopPropagation();show(true);});
+  bar.addEventListener('click',e=>{if(e.target.closest('[data-sheet]')||e.target.closest('.sh-corr'))show(false);});
+  let want=false;try{want=localStorage.getItem(LS)==='1';const q=new URLSearchParams(location.search).get('sheet');if(q==='stock'||q==='dash4')want=true;else if(q)want=false;}catch(_){}
+  if(want)show(true);}
+ addEventListener('dash-sheetvis',()=>{if(Date.now()-lastVis<300)return;if(on)show(false);});addEventListener('resize',place);setInterval(()=>{if(!document.querySelector('#sheetBar [data-xsheet]')){mount();}if(on)place();},2000);mount();
 })();
 </script>
 </body>
