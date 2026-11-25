@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="stock-ver" content="v001">
+<meta name="stock-build" content="2026-11-25 11:20 v001 첫 배포">
+<title>오늘의 재고 현황 · 빵을그리다</title>
+<meta name="theme-color" content="#FFFFFF">
+<style>
+/* 2026-11-25 조조: 업무 대시보드 「업무 4면 · 오늘의 재고 현황」. 원본 = 이카운트 재고현황 양식 「금주의 재고현황_오승태」 + 품목별 재고수불부 */
+*{box-sizing:border-box}
+html,body{margin:0;background:#f3f4f6;color:#111827;font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-size:17px;-webkit-text-size-adjust:100%;word-break:keep-all;overflow-wrap:break-word}
+button{font:inherit;cursor:pointer}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+/* 머리줄: 왼쪽 이름 · 가운데 요약 숫자 · 오른쪽 시각 (가로로 펼침) */
+#top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:3px solid #8B5A2B;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:10px 18px}
+.brand{display:flex;gap:12px;align-items:center;min-width:0}
+.brand img{width:62px;height:62px;object-fit:contain}
+.bm .co{font-size:16px;font-weight:700;color:#6b4a2b}.bm .ver{font-size:14px;color:#4b5563;font-weight:600;margin-left:6px}
+.bm h1{margin:2px 0 0;font-size:29px;line-height:1.15;font-weight:900;letter-spacing:-.5px;color:#111827;white-space:nowrap}
+#sum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;max-width:900px;justify-self:center;width:100%}
+.st{border:2px solid #e5e7eb;background:#fff;border-radius:14px;min-height:62px;padding:6px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;color:#111827}
+.st b{font-size:30px;font-weight:900}.st span{font-size:15px;font-weight:700;color:#374151}
+.st[aria-pressed="true"]{outline:3px solid #111827;outline-offset:1px}
+.st.r b{color:#b91c1c}.st.o b{color:#c2410c}.st.g b{color:#15803d}.st.n b{color:#4b5563}
+.clock{text-align:right;line-height:1.3}
+.clock .t{font-size:34px;font-weight:900}
+.clock .s{font-size:14.5px;color:#374151;font-weight:600}
+/* 정렬 줄 */
+#bar{display:flex;gap:8px;align-items:center;padding:10px 18px 0;flex-wrap:wrap}
+#bar .lb{font-weight:800;color:#374151;margin-right:4px}
+.chip{min-height:44px;border:2px solid #d1d5db;background:#fff;border-radius:22px;padding:0 16px;font-weight:700;color:#1f2937}
+.chip[aria-pressed="true"]{background:#1f2937;color:#fff;border-color:#1f2937}
+#bar .note{margin-left:auto;font-size:15px;color:#374151}
+/* 카드 */
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px;padding:10px 18px 18px}
+.card{position:relative;background:#fff;border:2px solid #e5e7eb;border-left-width:8px;border-radius:14px;padding:10px 12px 10px 12px;text-align:left;display:flex;flex-direction:column;gap:3px;min-height:150px;color:#111827}
+.card:hover{border-color:#9ca3af}.card:focus-visible{outline:3px solid #2563eb}
+.card.r{border-left-color:#dc2626;background:#fff7f7}.card.o{border-left-color:#ea580c;background:#fffaf3}.card.g{border-left-color:#16a34a}.card.n{border-left-color:#9ca3af}
+.card .h{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.lab{display:inline-block;font-size:14.5px;font-weight:800;border-radius:8px;padding:2px 8px;white-space:nowrap}
+.lab.r{background:#fee2e2;color:#991b1b}.lab.o{background:#ffedd5;color:#9a3412}.lab.g{background:#dcfce7;color:#166534}.lab.n{background:#e5e7eb;color:#374151}
+.card .gg{font-size:13.5px;color:#4b5563;font-weight:700}
+.card .nm{font-size:20px;font-weight:900;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .q{font-size:34px;font-weight:900;line-height:1.05;margin-top:2px}.card .q small{font-size:18px;font-weight:800;margin-left:3px;color:#374151}
+.card.r .q{color:#b91c1c}
+.card .d1{font-size:15.5px;font-weight:700;color:#1f2937}
+.card .d2{font-size:14.5px;color:#374151;margin-top:auto}
+.empty{padding:60px 20px;text-align:center;font-size:24px;font-weight:800;color:#374151}
+/* 상세 (오른쪽에서 나오는 창) */
+#ov{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:20;display:none}
+#ov.show{display:block}
+#pn{position:fixed;top:0;right:0;bottom:0;width:min(860px,100%);background:#fff;z-index:21;transform:translateX(102%);transition:transform .18s ease;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.2)}
+#pn.show{transform:none}
+#pn .ph{display:flex;gap:12px;align-items:flex-start;padding:14px 18px 10px;border-bottom:2px solid #e5e7eb}
+#pn .ph h2{margin:0;font-size:27px;font-weight:900;line-height:1.2}
+#pn .ph .sub{font-size:15.5px;color:#374151;margin-top:4px}
+#pn .x{margin-left:auto;min-width:54px;min-height:54px;border-radius:12px;border:2px solid #d1d5db;background:#fff;font-size:24px;font-weight:900}
+#pn .bd{overflow:auto;padding:12px 18px 24px;flex:1}
+.big3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.big3 div{border:2px solid #e5e7eb;border-radius:14px;padding:10px 12px;text-align:center}
+.big3 span{display:block;font-size:15.5px;font-weight:800;color:#374151}.big3 b{display:block;font-size:30px;font-weight:900;margin-top:2px}
+.big3 .in b{color:#15803d}.big3 .out b{color:#9a3412}
+.info{margin:10px 0 0;font-size:15.5px;color:#1f2937;line-height:1.6}
+.warn{margin:10px 0 0;border-radius:12px;padding:10px 12px;font-size:15.5px;line-height:1.5;background:#fff4e5;color:#7c2d12;border:2px solid #fdba74}
+.kinds{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 6px}
+.kinds .chip{min-height:42px;font-size:16px;padding:0 13px}
+table.lg{width:100%;border-collapse:collapse;font-size:16.5px}
+table.lg th{position:sticky;top:-12px;background:#f9fafb;z-index:1;font-size:15px;color:#1f2937;font-weight:800;padding:8px 6px;border-bottom:2px solid #d1d5db;text-align:center}
+table.lg td{padding:8px 6px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
+table.lg td.r{text-align:right}
+table.lg tr.mh td{background:#f3f4f6;font-weight:800;font-size:16px;color:#111827;border-bottom:2px solid #d1d5db}
+.k{display:inline-block;font-size:14px;font-weight:800;border-radius:7px;padding:2px 7px;white-space:nowrap}
+.k.buy{background:#dcfce7;color:#166534}.k.use{background:#ffedd5;color:#9a3412}.k.self{background:#ede9fe;color:#5b21b6}.k.adj{background:#e0f2fe;color:#075985}.k.etc{background:#e5e7eb;color:#374151}
+.memo{font-size:15px;color:#374151}
+.pin{color:#15803d;font-weight:800}.pout{color:#9a3412;font-weight:800}
+.src{margin-top:14px;font-size:14.5px;color:#374151;line-height:1.6;border-top:1px solid #e5e7eb;padding-top:10px}
+@media(max-width:1100px){#top{grid-template-columns:1fr auto}#sum{grid-column:1/-1;grid-row:2;max-width:none}}
+@media(max-width:640px){#top{padding:8px 10px;gap:8px}.brand img{width:46px;height:46px}.bm h1{font-size:23px}#sum{grid-template-columns:repeat(3,1fr)}.st b{font-size:24px}.clock .t{font-size:26px}
+ #grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:8px 10px 14px;gap:8px}.card{min-height:132px;padding:8px 9px}.card .nm{font-size:18px}.card .q{font-size:28px}
+ #bar{padding:8px 10px 0}#bar .note{margin-left:0;width:100%}.big3 b{font-size:23px}#pn .ph h2{font-size:23px}table.lg{font-size:15px}.hide-m{display:none}}
+</style></head><body>
+<header id="top">
+ <div class="brand"><img src="brand_logo.png" alt="빵을그리다 로고"><div class="bm"><div><span class="co">빵을그리다 주식회사</span><span class="ver" id="ver"></span></div><h1>오늘의 재고 현황</h1></div></div>
+ <div id="sum"></div>
+ <div class="clock"><div class="t num" id="ck"></div><div class="s" id="ts1"></div><div class="s" id="ts2"></div></div>
+</header>
+<div id="bar"><span class="lb">보는 순서</span>
+ <button class="chip" data-sort="need" aria-pressed="true">급한 순</button>
+ <button class="chip" data-sort="list" aria-pressed="false">수불부 순서</button>
+ <button class="chip" data-sort="name" aria-pressed="false">가나다순</button>
+ <span class="note">카드를 누르면 입고 · 출고 · 재고 내역이 열립니다</span></div>
+<main id="grid"><div class="empty">재고 자료를 불러오는 중입니다…</div></main>
+<div id="ov"></div>
+<aside id="pn" aria-hidden="true"><div class="ph"><div><h2 id="pt"></h2><div class="sub" id="ps"></div></div><button class="x" id="px" aria-label="닫기">✕</button></div><div class="bd" id="pb"></div></aside>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const DEF_F='YQCKYNRdM9aUwBoRco-wVsZbrPqpNrcE_spfdCqlD0w'; /* 업무 대시보드 직원용 공장 화면과 같은 열쇠(대시보드 dash.html에도 들어 있음) */
+const LIVE='https://lee1812-oss.github.io/wonryo/data.json'; /* 이카운트 전산 재고, 사무실 PC가 5분마다 갱신 */
+const DOW=['일','월','화','수','목','금','토'];
+const VER=($('meta[name="stock-ver"]')||{}).content||'',BUILD=($('meta[name="stock-build"]')||{}).content||'';
+$('#ver').textContent=VER+' · '+BUILD.slice(5,16).replace('-','/')+' 업데이트';
+let D=null,LV=null,LVAT='',SORT='need',FIL='all',OPEN=null,KF='all';
+try{SORT=localStorage.getItem('stock4_sort')||'need';}catch(_){}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kst=()=>new Date(Date.now()+(new Date().getTimezoneOffset()+540)*60000);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addD=(s,n)=>{const t=new Date(s+'T00:00:00');t.setDate(t.getDate()+n);return ymd(t);};
+const md=s=>{const t=new Date(s+'T00:00:00');return (t.getMonth()+1)+'/'+t.getDate()+'('+DOW[t.getDay()]+')';};
+const fg=v=>Math.round(v).toLocaleString('ko-KR');
+function kgTxt(g){const a=Math.abs(g);if(a<1000)return {n:fg(g),u:'g'};const k=g/1000;return {n:(a>=100000?Math.round(k):Math.round(k*10)/10).toLocaleString('ko-KR'),u:'kg'};}
+function kgS(g){const x=kgTxt(g);return x.n+x.u;}
+async function decrypt(e,pw){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const enc=new TextEncoder();const it=+((e.kdf||'').match(/(\d+)$/)||[0,100000])[1];
+ const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
+ const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.salt),iterations:it,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))));}
+const USE=l=>(l.k==='생산 소모'||l.k==='자가사용')&&!/실사/.test(l.m||'');
+function calc(it){
+ const today=ymd(kst());const live=LV&&LV[it.code]!=null?LV[it.code]:null;const q=live!=null?live:it.qty;
+ const from28=addD(today,-28);let use28=0;for(const l of it.lines)if(l.d>from28&&USE(l))use28+=l.o;
+ const daily=use28/28;const days=daily>0?q/daily:null;
+ const t=kst();const mon=addD(today,-((t.getDay()+6)%7));let wi=0,wo=0;for(const l of it.lines)if(l.d>=mon){wi+=l.i;wo+=l.o;}
+ let st,lab;if(q<0){st='r';lab='확인 필요';}else if(q===0){st='r';lab='재고 없음';}else if(days==null){st='n';lab='4주간 사용 없음';}else if(days<7){st='o';lab='부족 주의';}else{st='g';lab='여유';}
+ const last=it.lines.length?it.lines[it.lines.length-1].b:it.open;
+ return {q,live:live!=null,daily,days,wi,wo,st,lab,diff:live!=null?Math.round((live-last)*10)/10:0};}
+const RANK={r:0,o:1,g:2,n:3};
+function render(){
+ if(!D)return;const rows=D.items.map((it,i)=>({it,i,c:calc(it)}));
+ const cnt={all:rows.length,r:0,o:0,g:0,n:0};rows.forEach(x=>cnt[x.c.st]++);
+ const T=[['all','전체 품목',cnt.all,''],['r','확인 필요',cnt.r,'r'],['o','부족 주의',cnt.o,'o'],['g','여유',cnt.g,'g'],['n','사용 없음',cnt.n,'n']];
+ $('#sum').innerHTML=T.map(x=>'<button class="st '+x[3]+'" data-f="'+x[0]+'" aria-pressed="'+(FIL===x[0])+'"><b class="num">'+x[2]+'</b><span>'+x[1]+'</span></button>').join('');
+ let L=rows.filter(x=>FIL==='all'||x.c.st===FIL);
+ if(SORT==='need')L.sort((a,b)=>RANK[a.c.st]-RANK[b.c.st]||((a.c.days==null?1e9:a.c.days)-(b.c.days==null?1e9:b.c.days))||a.i-b.i);
+ else if(SORT==='name')L.sort((a,b)=>a.it.nm.localeCompare(b.it.nm,'ko'));
+ document.querySelectorAll('#bar [data-sort]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sort===SORT)));
+ if(!L.length){$('#grid').innerHTML='<div class="empty">이 구분에 해당하는 품목이 없습니다</div>';return;}
+ $('#grid').innerHTML=L.map(({it,c})=>{const q=kgTxt(c.q);
+  const d1=c.q<0?'전산 재고가 마이너스입니다':c.days==null?'최근 4주 사용 기록 없음':'하루 약 '+kgS(c.daily)+' 사용 · <b class="num">약 '+(c.days>=100?'100일 이상':Math.floor(c.days)+'일치')+'</b>';
+  const pk=it.spec&&c.q>0?' <span class="gg">('+(Math.round(c.q/it.spec*10)/10)+'개분)</span>':'';
+  return '<button class="card '+c.st+'" data-code="'+esc(it.code)+'"><div class="h"><span class="lab '+c.st+'">'+c.lab+'</span><span class="gg">gg'+esc(it.gg)+'</span></div>'+
+  '<div class="nm">'+esc(it.nm)+'</div><div class="q num">'+q.n+'<small>'+q.u+'</small>'+pk+'</div><div class="d1">'+d1+'</div>'+
+  '<div class="d2">이번 주 입고 <b class="num">'+(c.wi?kgS(c.wi):'0')+'</b> · 출고 <b class="num">'+(c.wo?kgS(c.wo):'0')+'</b></div></button>';}).join('');
+ if(OPEN)detail(OPEN,true);}
+const KC={'구매 입고':'buy','생산 소모':'use','자가사용':'self','조정':'adj'};
+function detail(code,keep){
+ const it=D.items.find(x=>x.code===code);if(!it)return;OPEN=code;if(!keep)KF='all';const c=calc(it);
+ $('#pt').textContent=it.nm;
+ $('#ps').innerHTML='gg'+esc(it.gg)+' · 품목코드 '+esc(it.code)+' · 매입처 '+esc(it.sup||'-');
+ const mon=ymd(kst()).slice(0,7);let mi=0,mo=0;for(const l of it.lines)if(l.d.slice(0,7)===mon){mi+=l.i;mo+=l.o;}
+ let h='<div class="big3"><div><span>지금 재고</span><b class="num" style="color:'+(c.q<0?'#b91c1c':'#111827')+'">'+kgS(c.q)+'</b></div><div class="in"><span>이번 달 입고</span><b class="num">'+(mi?kgS(mi):'0')+'</b></div><div class="out"><span>이번 달 출고</span><b class="num">'+(mo?kgS(mo):'0')+'</b></div></div>';
+ h+='<p class="info">'+[it.spec?'포장 1개 '+fg(it.spec)+'g':'',it.empty?'빈 용기 '+fg(it.empty)+'g (실사 때 빼는 무게)':'',c.days!=null?'최근 4주 하루 평균 '+kgS(c.daily)+' 사용':''].filter(Boolean).join(' · ')+'</p>';
+ if(c.live&&Math.abs(c.diff)>=1)h+='<div class="warn">※ 아래 내역을 읽은 뒤('+esc(String(D.scrapedAt||D.built).slice(5,16).replace('T',' ').replace('-','/'))+') 이카운트 재고가 '+(c.diff>0?'+':'')+fg(c.diff)+'g 바뀌었습니다. 새 내역은 다음 갱신 때 나타납니다.</div>';
+ const kinds=['all','구매 입고','생산 소모','자가사용','조정'];
+ h+='<div class="kinds">'+kinds.map(k=>{const n=k==='all'?it.lines.length:it.lines.filter(l=>l.k===k).length;return n||k==='all'?'<button class="chip" data-k="'+k+'" aria-pressed="'+(KF===k)+'">'+(k==='all'?'전체':k)+' '+n+'</button>':'';}).join('')+'</div>';
+ const lines=it.lines.filter(l=>KF==='all'||l.k===KF).slice().reverse();
+ if(!lines.length)h+='<div class="empty" style="font-size:19px;padding:30px">내역이 없습니다</div>';
+ else{h+='<table class="lg"><thead><tr><th>날짜</th><th>구분</th><th>내용</th><th>입고(g)</th><th>출고(g)</th><th>재고(g)</th></tr></thead><tbody>';
+  let cm='';const ms={};for(const l of it.lines){const m=l.d.slice(0,7);ms[m]=ms[m]||{i:0,o:0,b:0};ms[m].i+=l.i;ms[m].o+=l.o;ms[m].b=l.b;}
+  for(const l of lines){const m=l.d.slice(0,7);if(m!==cm){cm=m;const s=ms[m];h+='<tr class="mh"><td colspan="6">'+(+m.slice(0,4))+'년 '+(+m.slice(5))+'월 · 입고 <span class="num">'+kgS(s.i)+'</span> · 출고 <span class="num">'+kgS(s.o)+'</span> · 월말 재고 <span class="num">'+kgS(s.b)+'</span></td></tr>';}
+   const memo=[l.w&&l.w!=='빵을그리다'?l.w:'',l.m].filter(Boolean).join(' · ');
+   h+='<tr><td class="num">'+md(l.d)+'</td><td><span class="k '+(KC[l.k]||'etc')+'">'+esc(l.k)+'</span></td><td class="memo">'+esc(memo||'-')+'</td><td class="r num">'+(l.i?'<span class="pin">+'+fg(l.i)+'</span>':'')+'</td><td class="r num">'+(l.o?'<span class="pout">−'+fg(l.o)+'</span>':'')+'</td><td class="r num"><b>'+fg(l.b)+'</b></td></tr>';}
+  h+='</tbody></table>';}
+ h+='<div class="src">이카운트 재고 I → 출력물 → 재고현황(양식 「'+esc(D.form)+'」)에서 품목을 눌렀을 때 나오는 재고수불부와 같은 내용입니다. 기간 2026/08/01부터, 조정의 마이너스 출고는 입고로 바꿔 보여 줍니다. 이 화면은 보기 전용이며 이카운트에는 아무것도 쓰지 않습니다.</div>';
+ $('#pb').innerHTML=h;if(!keep)$('#pb').scrollTop=0;$('#ov').classList.add('show');$('#pn').classList.add('show');$('#pn').setAttribute('aria-hidden','false');}
+function closeD(){OPEN=null;$('#ov').classList.remove('show');$('#pn').classList.remove('show');$('#pn').setAttribute('aria-hidden','true');}
+document.addEventListener('click',e=>{const t=e.target;
+ const cd=t.closest('.card');if(cd){detail(cd.dataset.code);return;}
+ const f=t.closest('[data-f]');if(f){FIL=FIL===f.dataset.f?'all':f.dataset.f;render();return;}
+ const s=t.closest('[data-sort]');if(s){SORT=s.dataset.sort;try{localStorage.setItem('stock4_sort',SORT);}catch(_){}render();return;}
+ const k=t.closest('[data-k]');if(k){KF=k.dataset.k;detail(OPEN,true);return;}
+ if(t.id==='ov'||t.closest('#px'))closeD();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeD();});
+function tick(){const t=kst();$('#ck').textContent=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+ const s1=LVAT?'이카운트 재고 '+LVAT:'';$('#ts1').textContent=s1;
+ $('#ts2').textContent=D?'입출고 내역 '+String(D.built).slice(5,16).replace('-','/')+' 기준':'';}
+async function loadLive(){try{const r=await fetch(LIVE+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json();const m={};for(const x of j.items||[])m[x.code]=x.qty;LV=m;const u=String(j.updatedAt||'');LVAT=u?u.slice(5,7)+'/'+u.slice(8,10)+' '+u.slice(11,16):'';}catch(_){}}
+async function loadData(){let fk=DEF_F;try{fk=localStorage.getItem('dash_fkey_v1')||DEF_F;}catch(_){}
+ try{const r=await fetch('stock4.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('자료 파일 '+r.status);let e=await r.json(),d;
+  try{d=await decrypt(e,fk);}catch(err){if(fk!==DEF_F)d=await decrypt(e,DEF_F);else throw err;}
+  D=d;try{localStorage.setItem('stock4_cache',JSON.stringify(D));}catch(_){}}
+ catch(err){if(!D){try{D=JSON.parse(localStorage.getItem('stock4_cache')||'null');}catch(_){}}if(!D)$('#grid').innerHTML='<div class="empty">재고 자료를 열지 못했습니다 ('+esc(err.message||err)+')<br>잠시 뒤 다시 확인합니다</div>';}}
+async function all(){await Promise.all([loadLive(),loadData()]);render();tick();}
+/* 새 판이 올라오면 스스로 새로고침 (상세 창이 열려 있으면 닫힌 뒤) */
+async function verCheck(){try{const r=await fetch('stock.html?vc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const b=((await r.text()).match(/name="stock-build" content="([^"]+)"/)||[])[1];if(b&&BUILD&&b!==BUILD&&!OPEN)location.reload();}catch(_){}}
+all();setInterval(tick,15000);setInterval(all,5*60e3);setInterval(verCheck,10*60e3);
+})();
+</script>
+</body></html>
