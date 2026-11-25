@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="stock-ver" content="v005">
-<meta name="stock-build" content="2026-11-25 11:24 v005 구매 품목 기준 사진·사진 크게">
+<meta name="stock-ver" content="v006">
+<meta name="stock-build" content="2026-11-25 11:26 v006 사진 새로 받기">
 <title>오늘의 재고 현황 · 빵을그리다</title>
 <meta name="theme-color" content="#FFFFFF">
 <style>
@@ -185,7 +185,7 @@ async function loadData(){let fk=DEF_F;try{fk=localStorage.getItem('dash_fkey_v1
   try{d=await decrypt(e,fk);}catch(err){if(fk!==DEF_F)d=await decrypt(e,DEF_F);else throw err;}
   D=d;try{localStorage.setItem('stock4_cache',JSON.stringify(D));}catch(_){}}
  catch(err){if(!D){try{D=JSON.parse(localStorage.getItem('stock4_cache')||'null');}catch(_){}}if(!D)$('#grid').innerHTML='<div class="empty">재고 자료를 열지 못했습니다 ('+esc(err.message||err)+')<br>잠시 뒤 다시 확인합니다</div>';}}
-async function loadImg(){if(Object.keys(IMG).length)return;try{const c=localStorage.getItem('stock4_img');if(c){const j=JSON.parse(c);if(j.v>=2)IMG=j.img||{};}}catch(_){}try{const r=await fetch('stock_img.json?v='+VER+'b');if(r.ok){const j=await r.json();IMG=j.img||{};try{localStorage.setItem('stock4_img',JSON.stringify(j));}catch(_){}}}catch(_){}}
+let imgAt=0;async function loadImg(){if(Object.keys(IMG).length&&Date.now()-imgAt<3600e3)return;imgAt=Date.now();try{const c=localStorage.getItem('stock4_img');if(c){const j=JSON.parse(c);if(j.v>=2)IMG=j.img||{};}}catch(_){}try{const r=await fetch('stock_img.json?t='+Math.floor(Date.now()/3600e3),{cache:'no-store'});if(r.ok){const j=await r.json();IMG=j.img||{};try{localStorage.setItem('stock4_img',JSON.stringify(j));}catch(_){}}}catch(_){}}
 async function all(){await Promise.all([loadLive(),loadData(),loadImg()]);render();tick();}
 /* 새 판이 올라오면 스스로 새로고침 (상세 창이 열려 있으면 닫힌 뒤) */
 async function verCheck(){try{const r=await fetch('stock.html?vc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const b=((await r.text()).match(/name="stock-build" content="([^"]+)"/)||[])[1];if(b&&BUILD&&b!==BUILD&&!OPEN)location.reload();}catch(_){}}
