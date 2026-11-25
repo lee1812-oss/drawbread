@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="stock-ver" content="v003">
-<meta name="stock-build" content="2026-11-25 10:46 v003 한 화면 맞춤">
+<meta name="stock-ver" content="v004">
+<meta name="stock-build" content="2026-11-25 11:03 v004 원료 사진 카드">
 <title>오늘의 재고 현황 · 빵을그리다</title>
 <meta name="theme-color" content="#FFFFFF">
 <style>
@@ -33,14 +33,14 @@ body{display:flex;flex-direction:column}#top{position:sticky;top:0;z-index:5;bac
 #bar .note{margin-left:auto;font-size:15px;color:#374151}
 /* 카드 */
 #grid{--s:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:8px;padding:8px 14px 10px;flex:1 1 auto;min-height:0}#grid.fit{overflow:hidden;align-content:stretch}#grid.tight .d2{display:none}
-.card{position:relative;background:#fff;border:2px solid #e5e7eb;border-left-width:8px;border-radius:14px;padding:calc(var(--s)*8px) calc(var(--s)*11px);text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:calc(var(--s)*2px);min-height:0;overflow:hidden;color:#111827}#grid:not(.fit) .card{min-height:128px}
+.card{position:relative;background:#fff;border:2px solid #e5e7eb;border-left-width:8px;border-radius:16px;padding:calc(var(--s)*8px) calc(var(--s)*10px);text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:calc(var(--s)*11px);min-height:0;overflow:hidden;color:#111827;box-shadow:0 1px 3px rgba(0,0,0,.06)}.card .pic{width:calc(var(--s)*98px);height:calc(var(--s)*98px);border-radius:calc(var(--s)*12px);background:#fff;border:1px solid #e5e7eb;object-fit:contain;display:block}.card .pic.no{display:flex;align-items:center;justify-content:center;font-size:calc(var(--s)*30px);color:#9ca3af;background:#f9fafb}.card .tx{display:flex;flex-direction:column;justify-content:center;gap:calc(var(--s)*2px);min-width:0}.card .nm.long{font-size:calc(var(--s)*19px)}.card .br{font-size:calc(var(--s)*14px);font-weight:700;color:#4b5563;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:calc(var(--s)*-2px)}.card .ft{display:flex;align-items:center;gap:calc(var(--s)*6px);min-width:0}#grid:not(.fit) .card{min-height:110px}
 .card:hover{border-color:#9ca3af}.card:focus-visible{outline:3px solid #2563eb}
 .card.r{border-left-color:#dc2626;background:#fff7f7}.card.o{border-left-color:#ea580c;background:#fffaf3}.card.g{border-left-color:#16a34a}.card.n{border-left-color:#9ca3af}
 .card>*{flex-shrink:0}.card .h{display:flex;justify-content:space-between;align-items:center;gap:6px;min-width:0}.card .h .nm{flex:1 1 auto;min-width:0}.card .h .gg{flex:0 0 auto}.card .h .lab{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}.card .pk{margin-left:4px;font-weight:700}.card .d1,.card .d2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lab{display:inline-block;font-size:calc(var(--s)*14.5px);font-weight:800;border-radius:8px;padding:2px 8px;white-space:nowrap}
 .lab.r{background:#fee2e2;color:#991b1b}.lab.o{background:#ffedd5;color:#9a3412}.lab.g{background:#dcfce7;color:#166534}.lab.n{background:#e5e7eb;color:#374151}
 .card .gg{font-size:calc(var(--s)*13.5px);color:#4b5563;font-weight:700}
-.card .nm{font-size:calc(var(--s)*20px);font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .nm{font-size:calc(var(--s)*22px);font-weight:900;line-height:1.2;letter-spacing:-.4px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .h .q{flex:0 0 auto}.card .q{font-size:calc(var(--s)*34px);font-weight:900;line-height:1.05}.card .q small{font-size:calc(var(--s)*18px);font-weight:800;margin-left:3px;color:#374151}
 .card.r .q{color:#b91c1c}
 .card .d1{font-size:calc(var(--s)*15.5px);line-height:1.25;font-weight:700;color:#1f2937}
@@ -97,7 +97,7 @@ const LIVE='https://lee1812-oss.github.io/wonryo/data.json'; /* 이카운트 전
 const DOW=['일','월','화','수','목','금','토'];
 const VER=($('meta[name="stock-ver"]')||{}).content||'',BUILD=($('meta[name="stock-build"]')||{}).content||'';
 $('#ver').textContent=VER+' · '+BUILD.slice(5,16).replace('-','/')+' 업데이트';
-let D=null,LV=null,LVAT='',SORT='need',FIL='all',OPEN=null,KF='all';
+let IMG={};let D=null,LV=null,LVAT='',SORT='need',FIL='all',OPEN=null,KF='all';
 try{SORT=localStorage.getItem('stock4_sort')||'need';}catch(_){}
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kst=()=>new Date(Date.now()+(new Date().getTimezoneOffset()+540)*60000);
@@ -121,6 +121,7 @@ function calc(it){
  const last=it.lines.length?it.lines[it.lines.length-1].b:it.open;
  return {q,live:live!=null,daily,days,wi,wo,st,lab,diff:live!=null?Math.round((live-last)*10)/10:0};}
 const RANK={r:0,o:1,g:2,n:3};
+const nmMain=s=>String(s).replace(/\s*\(([^)]*)\)\s*$/,'').trim();const nmSub=s=>((String(s).match(/\(([^)]*)\)\s*$/)||[])[1]||'').replace(/\//g,' · ');
 function render(){
  if(!D)return;const rows=D.items.map((it,i)=>({it,i,c:calc(it)}));
  const cnt={all:rows.length,r:0,o:0,g:0,n:0};rows.forEach(x=>cnt[x.c.st]++);
@@ -132,27 +133,27 @@ function render(){
  try{$('#sortSel').value=SORT;}catch(_){}
  if(!L.length){$('#grid').innerHTML='<div class="empty">이 구분에 해당하는 품목이 없습니다</div>';return;}
  $('#grid').innerHTML=L.map(({it,c})=>{const q=kgTxt(c.q);
-  const d1=c.q<0?'전산 재고 마이너스':c.days==null?'최근 4주 사용 없음':'<b class="num">약 '+(c.days>=100?'100일 이상':Math.floor(c.days)+'일치')+'</b> · 하루 '+kgS(c.daily);
+  const d1=c.q<0?'':c.days==null?'':'<b class="num">약 '+(c.days>=100?'100일+':Math.floor(c.days)+'일치')+'</b>';
   const pk=it.spec&&c.q/it.spec>=0.1?' <span class="gg pk">포장 '+(Math.round(c.q/it.spec*10)/10)+'개</span>':'';
-  return '<button class="card '+c.st+'" data-code="'+esc(it.code)+'" title="'+esc(it.nm)+' · 누르면 입고·출고·재고 내역"><div class="h"><span class="nm">'+esc(it.nm)+'</span><span class="gg">gg'+esc(it.gg)+'</span></div>'+
-  '<div class="h"><div class="q num">'+q.n+'<small>'+q.u+'</small></div><span class="lab '+c.st+'">'+c.lab+'</span></div><div class="d1">'+d1+'</div>'+
-  '<div class="d2">이번 주 입고 <b class="num">'+(c.wi?kgS(c.wi):'0')+'</b> · 출고 <b class="num">'+(c.wo?kgS(c.wo):'0')+'</b></div></button>';}).join('');
+  return '<button class="card '+c.st+'" data-code="'+esc(it.code)+'" title="'+esc(it.nm)+' · 누르면 입고·출고·재고 내역">'+(IMG[it.code]?'<img class="pic" alt="" src="'+IMG[it.code]+'">':'<span class="pic no">📦</span>')+'<div class="tx"><div class="nm'+(nmMain(it.nm).length>7?' long':'')+'">'+esc(nmMain(it.nm))+'</div>'+(nmSub(it.nm)?'<div class="br">'+esc(nmSub(it.nm))+'</div>':'')+
+  '<div class="q num">'+q.n+'<small>'+q.u+'</small></div><div class="ft"><span class="lab '+c.st+'">'+c.lab+'</span><span class="d1">'+d1+'</span></div></div>'+
+  '</button>';}).join('');
  fit();if(OPEN)detail(OPEN,true);}
 /* 한 화면 맞춤(2026-11-25 v003): 남은 높이·폭과 품목 수로 칸 수·카드 크기를 계산 (넓은 화면만, 휴대폰은 아래로 넘김) */
 function fit(){const g=$('#grid');const n=g.querySelectorAll('.card').length;g.classList.remove('fit','tight');g.style.gridTemplateColumns='';g.style.gridTemplateRows='';g.style.setProperty('--s','1');
  if(!n||innerWidth<700||innerHeight<420)return;const cs=getComputedStyle(g);const W=g.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);const H=innerHeight-g.getBoundingClientRect().top-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);const gap=8;
- const pick=bh=>{let best=null;for(let c=2;c<=12;c++){const r=Math.ceil(n/c);const cw=(W-(c-1)*gap)/c,ch=(H-(r-1)*gap)/r;if(cw<120||ch<60)continue;const s=Math.min(cw/240,ch/bh);if(!best||s>best.s)best={c,r,ch,s};}return best;};
- let b=pick(127),tight=false;if(b&&b.s<0.8){const b2=pick(104);if(b2&&b2.s>b.s){b=b2;tight=true;}}if(!b)return;
+ const pick=bh=>{let best=null;for(let c=2;c<=12;c++){const r=Math.ceil(n/c);const cw=(W-(c-1)*gap)/c,ch=(H-(r-1)*gap)/r;if(cw<120||ch<60)continue;const s=Math.min(cw/300,ch/bh);if(!best||s>best.s)best={c,r,ch,s};}return best;};
+ let b=pick(132),tight=false;if(!b)return;
  g.classList.add('fit');g.classList.toggle('tight',tight);g.style.gridTemplateColumns='repeat('+b.c+',minmax(0,1fr))';g.style.gridTemplateRows='repeat('+b.r+','+Math.floor(b.ch)+'px)';g.style.setProperty('--s',String(Math.max(0.55,Math.min(1.6,b.s)).toFixed(3)));}
 addEventListener('resize',()=>{clearTimeout(window.__ft);window.__ft=setTimeout(fit,120);});
 const KC={'구매 입고':'buy','생산 소모':'use','자가사용':'self','조정':'adj'};
 function detail(code,keep){
  const it=D.items.find(x=>x.code===code);if(!it)return;OPEN=code;if(!keep)KF='all';const c=calc(it);
- $('#pt').textContent=it.nm;
+ $('#pt').innerHTML=(IMG[it.code]?'<img src="'+IMG[it.code]+'" alt="" style="width:84px;height:84px;object-fit:contain;border:1px solid #e5e7eb;border-radius:12px;vertical-align:middle;margin-right:12px;background:#fff">':'')+esc(it.nm);
  $('#ps').innerHTML='gg'+esc(it.gg)+' · 품목코드 '+esc(it.code)+' · 매입처 '+esc(it.sup||'-');
  const mon=ymd(kst()).slice(0,7);let mi=0,mo=0;for(const l of it.lines)if(l.d.slice(0,7)===mon){mi+=l.i;mo+=l.o;}
  let h='<div class="big3"><div><span>지금 재고</span><b class="num" style="color:'+(c.q<0?'#b91c1c':'#111827')+'">'+kgS(c.q)+'</b></div><div class="in"><span>이번 달 입고</span><b class="num">'+(mi?kgS(mi):'0')+'</b></div><div class="out"><span>이번 달 출고</span><b class="num">'+(mo?kgS(mo):'0')+'</b></div></div>';
- h+='<p class="info">'+[it.spec?'포장 1개 '+fg(it.spec)+'g'+(c.q>0?' (약 '+(Math.round(c.q/it.spec*10)/10)+'개 분량)':''):'',it.empty?'빈 용기 '+fg(it.empty)+'g (실사 때 빼는 무게)':'',c.days!=null?'최근 4주 하루 평균 '+kgS(c.daily)+' 사용':''].filter(Boolean).join(' · ')+'</p>';
+ h+='<p class="info">'+[it.spec?'포장 1개 '+fg(it.spec)+'g'+(c.q>0?' (약 '+(Math.round(c.q/it.spec*10)/10)+'개 분량)':''):'',it.empty?'빈 용기 '+fg(it.empty)+'g (실사 때 빼는 무게)':'',c.days!=null?'최근 4주 하루 평균 '+kgS(c.daily)+' 사용 · 약 '+Math.floor(c.days)+'일치':'','이번 주 입고 '+(c.wi?kgS(c.wi):'0')+' · 출고 '+(c.wo?kgS(c.wo):'0')].filter(Boolean).join(' · ')+'</p>';
  if(c.live&&Math.abs(c.diff)>=1)h+='<div class="warn">※ 아래 내역을 읽은 뒤('+esc(String(D.scrapedAt||D.built).slice(5,16).replace('T',' ').replace('-','/'))+') 이카운트 재고가 '+(c.diff>0?'+':'')+fg(c.diff)+'g 바뀌었습니다. 새 내역은 다음 갱신 때 나타납니다.</div>';
  const kinds=['all','구매 입고','생산 소모','자가사용','조정'];
  h+='<div class="kinds">'+kinds.map(k=>{const n=k==='all'?it.lines.length:it.lines.filter(l=>l.k===k).length;return n||k==='all'?'<button class="chip" data-k="'+k+'" aria-pressed="'+(KF===k)+'">'+(k==='all'?'전체':k)+' '+n+'</button>':'';}).join('')+'</div>';
@@ -184,7 +185,8 @@ async function loadData(){let fk=DEF_F;try{fk=localStorage.getItem('dash_fkey_v1
   try{d=await decrypt(e,fk);}catch(err){if(fk!==DEF_F)d=await decrypt(e,DEF_F);else throw err;}
   D=d;try{localStorage.setItem('stock4_cache',JSON.stringify(D));}catch(_){}}
  catch(err){if(!D){try{D=JSON.parse(localStorage.getItem('stock4_cache')||'null');}catch(_){}}if(!D)$('#grid').innerHTML='<div class="empty">재고 자료를 열지 못했습니다 ('+esc(err.message||err)+')<br>잠시 뒤 다시 확인합니다</div>';}}
-async function all(){await Promise.all([loadLive(),loadData()]);render();tick();}
+async function loadImg(){if(Object.keys(IMG).length)return;try{const c=localStorage.getItem('stock4_img');if(c){const j=JSON.parse(c);IMG=j.img||{};}}catch(_){}try{const r=await fetch('stock_img.json?v='+VER);if(r.ok){const j=await r.json();IMG=j.img||{};try{localStorage.setItem('stock4_img',JSON.stringify(j));}catch(_){}}}catch(_){}}
+async function all(){await Promise.all([loadLive(),loadData(),loadImg()]);render();tick();}
 /* 새 판이 올라오면 스스로 새로고침 (상세 창이 열려 있으면 닫힌 뒤) */
 async function verCheck(){try{const r=await fetch('stock.html?vc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const b=((await r.text()).match(/name="stock-build" content="([^"]+)"/)||[])[1];if(b&&BUILD&&b!==BUILD&&!OPEN)location.reload();}catch(_){}}
 all();setInterval(tick,15000);setInterval(all,5*60e3);setInterval(verCheck,10*60e3);
