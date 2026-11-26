@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" crossorigin><!-- 2026-11-22 v109: 5개 화면 공통 글꼴 Pretendard Variable(머리·K-HACCP 달력에 적용, 안 뜨면 Malgun Gothic) -->
-<meta name="dash-ver" content="v138"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
-<meta name="dash-build" content="2026-11-26 20:25 v140 해썹 시트 K-HACCP 종합현황·머리줄 한 줄·표 머리 끊김 정리(ccpview v019)">
+<meta name="dash-ver" content="v141"><!-- 버전 규칙(2026-11-22): GitHub에 dash.html이 올라간 횟수 = 버전 번호. 올리기 전에 commits?path=dash.html 개수+1 로 바꿈 -->
+<meta name="dash-build" content="2026-11-26 20:27 v141 해썹 시트 K-HACCP 종합현황·머리줄 한 줄·표 머리 끊김 정리(ccpview v019)">
 <!-- 화면(dash.html)을 고쳐 올릴 때는 위 dash-build 값을 바꿔 주세요. 열려 있는 대시보드(전광판·태블릿)가 5분 안에 스스로 새 화면으로 바뀝니다. 깜빡해도 내용 비교로 바뀌지만 표시 값을 바꾸는 쪽이 확실합니다. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1376,7 +1376,7 @@ globalThis.installSheets=function(api){
  let paused=null;function shown(){return !document.hidden&&(cur==='haccp'||cur==='utca');}
  function syncPause(){if(!frame)return;const p=!shown();let w=null;try{w=frame.contentWindow;}catch(_){}if(!w)return;try{w.__ccpPaused=p;}catch(_){}if(paused===true&&!p){try{if(typeof w.__ccpKeyed==='function'&&w.CCP02_KEY)w.__ccpKeyed();}catch(_){}}paused=p;}
  function feed(){if(!frame)return;const k=key();if(!k){msg.style.display='flex';return;}msg.style.display='none';try{const w=frame.contentWindow;if(!w||!w.document||w.document.readyState==='loading')return;if(w.CCP02_KEY!==k){w.CCP02_KEY=k;w.__ccpPaused=!shown();paused=w.__ccpPaused;if(typeof w.__ccpKeyed==='function')w.__ccpKeyed();}else syncPause();select();try{const f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f27'))||1;const z=f>1.001?String(f):'';if(w.document.documentElement.style.zoom!==z){w.document.documentElement.style.zoom=z;try{w.dispatchEvent(new Event('resize'));}catch(_){}}}catch(_){}}catch(_){}}
- function ensure(){if(!frame){frame=document.createElement('iframe');frame.id='sheetFrame';frame.title='해썹 일지 현황';frame.src='ccpview.html?v=138';frame.addEventListener('load',()=>setTimeout(feed,50));document.body.append(frame);msg=document.createElement('div');msg.id='sheetMsg';msg.innerHTML='<div>해썹·UTCA 자료 열쇠를 받는 중이에요.<br><small>사무실 PC가 다음에 대시보드 자료를 올리면 자동으로 보입니다.</small></div>';document.body.append(msg);}place();feed();}
+ function ensure(){if(!frame){frame=document.createElement('iframe');frame.id='sheetFrame';frame.title='해썹 일지 현황';frame.src='ccpview.html?v=141';frame.addEventListener('load',()=>setTimeout(feed,50));document.body.append(frame);msg=document.createElement('div');msg.id='sheetMsg';msg.innerHTML='<div>해썹·UTCA 자료 열쇠를 받는 중이에요.<br><small>사무실 PC가 다음에 대시보드 자료를 올리면 자동으로 보입니다.</small></div>';document.body.append(msg);}place();feed();}
  function go0(s,quiet){cur=s;try{localStorage.setItem(LS,s);}catch(_){}paint();const p2=s==='dash2';const was2=document.body.classList.contains('sheet-p2');document.body.classList.toggle('sheet-p2',p2);if(s==='dash'||p2){document.body.classList.remove('sheet-on');if(was2!==p2){try{window.__myb&&window.__myb.refresh();}catch(_){}}if(!quiet)try{dispatchEvent(new Event('resize'));}catch(_){}return;}document.body.classList.add('sheet-on');ensure();}
  function goV(s,quiet){go0(s,quiet);syncPause();try{dispatchEvent(new CustomEvent('dash-sheetvis',{detail:{sheet:s}}));}catch(_){}}
  function mount(){if(document.getElementById('sheetBar'))return;const br=document.querySelector('header .dash-top .brand')||document.querySelector('header .brand');if(!br)return;const bar=document.createElement('div');bar.id='sheetBar';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','시트');
