@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><title>UTCA 출력일보</title><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
-<meta name="utca-ver" content="v002"><meta name="utca-build" content="2026-11-26 v002 머리 한 줄·남색 바탕·시계 크게">
+<meta name="utca-ver" content="v003"><meta name="utca-build" content="2026-11-26 v003 한국·미국 날짜와 시간 크게">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <!-- 2026-11-26 조조: 업무 대시보드 「UTCA 출력일보」 시트를 떼어 낸 단독 화면. 02 컴퓨터 2번(위) 모니터용.
  자료: 사무실 PC가 02 열쇠로 암호화해 올리는 utcak02.enc.json(03 화면 틀·카톡 원문·반영 명단) + utca02.enc.json(주간·월간 다이어리 그림), 10분마다 새로 받음.
@@ -9,15 +9,20 @@
 *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
 body{font:18px/1.35 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;color:#1a1a1a;background:#e9ecf1;display:flex;flex-direction:column}
 /* v002: 머리 한 줄(안쪽 화면 제목 줄은 숨김) · 남색 바탕 · 시계 숫자 크게 */
-header{flex:none;display:flex;align-items:center;gap:16px;padding:6px 10px 6px 16px;background:#0D1C42;border-bottom:4px solid #BF913C;white-space:nowrap;min-height:76px}
+header{flex:none;display:flex;align-items:center;gap:14px;padding:6px 10px 6px 16px;background:#0D1C42;border-bottom:4px solid #BF913C;white-space:nowrap;min-height:96px}
 .brand .co{font-size:15px;font-weight:700;color:#FCF1D0}.brand .co .v{font-size:14px;font-weight:600;color:#c9cfdb}
 .brand h1{margin:0;font-size:30px;line-height:1.15;font-weight:800;color:#fff;letter-spacing:-.6px}
-.clk{display:flex;gap:10px;margin-left:10px}
-.clk div{background:#FCF1D0;border-radius:10px;padding:3px 16px 4px;display:flex;align-items:center;gap:12px}
-.clk div.us{background:#DCE8FA}
-.clk b{font-size:42px;font-weight:800;color:#0D1C42;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-1px}
-.clk span{font-size:16px;font-weight:800;color:#22396F;line-height:1.25;text-align:left}
-.clk span i{display:block;font-style:normal;font-size:19px;color:#0D1C42}
+/* v003: 한국·미국 칸마다 「나라 이름 + 날짜(요일)」와 시간을 모두 크게. 오전/오후 표시 */
+.clk{display:flex;gap:12px;margin-left:6px}
+.clk>div{background:#FCF1D0;border-radius:12px;padding:6px 18px;display:flex;align-items:center;gap:14px;border:3px solid #BF913C}
+.clk>div.us{background:#DCE8FA;border-color:#5B8BD9}
+.clk .lb{display:flex;flex-direction:column;line-height:1.05}
+.clk .lb em{font-style:normal;font-size:21px;font-weight:800;color:#fff;background:#0D1C42;border-radius:6px;padding:2px 9px;align-self:flex-start}
+.clk .us .lb em{background:#1F4FA0}
+.clk .lb i{font-style:normal;font-size:34px;font-weight:900;color:#0D1C42;letter-spacing:-1px;margin-top:4px;font-variant-numeric:tabular-nums}
+.clk .tm{display:flex;align-items:baseline;gap:6px}
+.clk .tm small{font-size:22px;font-weight:800;color:#22396F}
+.clk b{font-size:58px;font-weight:900;color:#0D1C42;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-1.5px}
 #info{font-size:16px;font-weight:700;color:#FCF1D0;line-height:1.4;overflow:hidden;text-overflow:ellipsis;min-width:0}
 #info small{display:block;font-size:14px;font-weight:600;color:#c9cfdb}
 .sp{flex:1}
@@ -29,10 +34,11 @@ header{flex:none;display:flex;align-items:center;gap:16px;padding:6px 10px 6px 1
 #msg{position:absolute;inset:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:28px;font-weight:800;color:#14284B;background:#fff;border:2px solid #1F3A68;border-radius:6px}
 #msg small{display:block;font-size:19px;font-weight:600;color:#3d4654;margin-top:8px}
 #toast{position:fixed;right:16px;top:90px;background:#A11B1B;color:#fff;font-size:20px;font-weight:800;padding:12px 18px;border-radius:8px;display:none;z-index:9}
-@media (max-width:1500px){.clk b{font-size:34px}.brand h1{font-size:26px}#info small{display:none}}
+@media (max-width:1800px){#info small{display:none}}
+@media (max-width:1500px){.clk b{font-size:44px}.clk .lb i{font-size:27px}.clk .lb em{font-size:18px}.brand h1{font-size:24px}#info{display:none}.brand .co{font-size:13px}.brand .co .v{font-size:13px}}
 </style></head><body>
-<header><div class="brand"><div class="co">(주)유티씨에이솔루션 · 평택 법인<span class="v"> · v002 · 11/26 19:25 업데이트</span></div><h1>UTCA 출력일보 · 공수 현황</h1></div>
-<div class="clk"><div class="kr"><b id="krT">--:--</b><span>한국<i id="krD">-</i></span></div><div class="us"><b id="usT">--:--</b><span>미국 동부<i id="usD">-</i></span></div></div>
+<header><div class="brand"><div class="co">(주)유티씨에이솔루션 · 평택 법인<span class="v"> · v003 · 11/26 21:50 업데이트</span></div><h1>UTCA 출력일보 · 공수 현황</h1></div>
+<div class="clk"><div class="kr"><span class="lb"><em>한국</em><i id="krD">-</i></span><span class="tm"><small id="krA"></small><b id="krT">--:--</b></span></div><div class="us"><span class="lb"><em>미국 동부</em><i id="usD">-</i></span><span class="tm"><small id="usA"></small><b id="usT">--:--</b></span></div></div>
 <div id="info"><span id="at">자료 받는 중</span><small id="binfo"></small></div><span class="sp"></span><button id="close" type="button" title="창 닫기 (ESC)">✕ 닫기<small>ESC</small></button></header>
 <div id="wrap"><div id="msg"><div>UTCA 출력일보 자료를 받는 중입니다<small>잠시만 기다려 주세요</small></div></div><iframe id="utf" title="UTCA 출력일보"></iframe></div>
 <div id="toast">창 오른쪽 위 X를 눌러 닫아 주세요</div>
@@ -48,9 +54,9 @@ function onKey(e){if(e.key==='Escape'||e.keyCode===27){e.preventDefault();closeW
 document.addEventListener('keydown',onKey,true);$('close').onclick=closeWin;
 /* 한국·미국 동부 시계 */
 var WD=['일','월','화','수','목','금','토'];
-function fmt(tz){var o=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,weekday:'short'}).formatToParts(new Date()),m={};o.forEach(function(p){m[p.type]=p.value});var d=new Date(+m.year,+m.month-1,+m.day);return {t:(m.hour==='24'?'00':m.hour)+':'+m.minute,d:m.month+'/'+m.day+'('+WD[d.getDay()]+')'}}
-function tick(){var k=fmt('Asia/Seoul'),u=fmt('America/New_York');$('krT').textContent=k.t;$('krD').textContent=k.d;$('usT').textContent=u.t;$('usD').textContent=u.d}
-tick();setInterval(tick,15000);
+function fmt(tz){var o=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,weekday:'short'}).formatToParts(new Date()),m={};o.forEach(function(p){m[p.type]=p.value});var d=new Date(+m.year,+m.month-1,+m.day),H=(m.hour==='24'?0:+m.hour);return {t:(H<10?'0':'')+H+':'+m.minute,a:H<12?'오전':'오후',d:(+m.month)+'/'+(+m.day)+'('+WD[d.getDay()]+')'}}
+function tick(){var k=fmt('Asia/Seoul'),u=fmt('America/New_York');$('krT').textContent=k.t;$('krA').textContent=k.a;$('krD').textContent=k.d;$('usT').textContent=u.t;$('usA').textContent=u.a;$('usD').textContent=u.d}
+tick();setInterval(tick,5000);
 var UTK=null,UTI=null,S2K='',SHEET=2;
 function wireFrame(){try{var w=$('utf').contentWindow;w.document.addEventListener('keydown',onKey,true);}catch(e){}}
 $('utf').addEventListener('load',wireFrame);
