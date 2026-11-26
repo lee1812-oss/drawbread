@@ -55,7 +55,7 @@ function s2build(){if(!UTK||!UTK.tpl){return}var key=UTK.at+'|'+(UTI?UTI.at:'');
   .replace("location.hash=weekly?'':'weekly';location.reload();","weekly=!weekly;document.getElementById('img').className=weekly?'weekly':'';refresh();")
   .replace("setTimeout(function(){location.reload();},10*60*1000);","");
  var f=$('utf');f.srcdoc=t;f.style.display='block';$('msg').style.display='none'}
-function showAt(){try{var s=UTK&&UTK.at;if(!s)return;var d=new Date(s);if(isNaN(d))return;var k=fmt('Asia/Seoul');$('at').textContent='자료 '+new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)+' 기준';}catch(e){}}
+function showAt(){try{var s=UTK&&UTK.at;if(!s)return;var d=new Date(s);if(isNaN(d))return;var k=fmt('Asia/Seoul');var p={};new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d).forEach(function(x){p[x.type]=x.value});$('at').textContent='자료 '+p.month+'/'+p.day+' '+(p.hour==='24'?'00':p.hour)+':'+p.minute+' 기준';}catch(e){}}
 function b(s){var x=atob(s),u=new Uint8Array(x.length);for(var i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return u}
 function dec(e,pw){var enc=new TextEncoder();return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(base){return crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.salt),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}).then(function(key){return crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))}).then(function(buf){return JSON.parse(new TextDecoder().decode(buf))})}
 
