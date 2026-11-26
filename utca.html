@@ -56,7 +56,7 @@ function wireFrame(){try{var w=$('utf').contentWindow;w.document.addEventListene
 $('utf').addEventListener('load',wireFrame);
 /* 업무 대시보드 시트(ccpview.html v015 s2build)와 같은 조립 방식 */
 function s2build(){if(!UTK||!UTK.tpl){return}var key=UTK.at+'|'+(UTI?UTI.at:'');if(key===S2K)return;S2K=key;
- var t=UTK.tpl,inj='<style>#bar{display:none!important}</style><script>'+[UTK.kakao,UTK.refl,UTK.local].map(function(x){return String(x||'').replace(/<\/script/gi,'<\\/script')}).join('\n')+'\nwindow.UTIMG='+JSON.stringify(UTI?{w:UTI.weekly,m:UTI.monthly}:null)+';<\/script>';
+ var t=UTK.tpl,inj='<style>#bar{display:none!important}#main{top:0!important}body{max-width:none!important}</style><script>'+[UTK.kakao,UTK.refl,UTK.local].map(function(x){return String(x||'').replace(/<\/script/gi,'<\\/script')}).join('\n')+'\nwindow.UTIMG='+JSON.stringify(UTI?{w:UTI.weekly,m:UTI.monthly}:null)+';<\/script>';
  t=t.replace(/<head>/i,'<head>'+inj).replace('async function findLatest(){','async function findLatest(){if(window.UTIMG&&(weekly?UTIMG.w:UTIMG.m))return {name:"",d:new Date(),src:weekly?UTIMG.w:UTIMG.m};')
   .replace("img.src=encodeURI(r.name)+'?t='+Date.now();","img.src=r.src||(encodeURI(r.name)+'?t='+Date.now());")
   .replace("location.hash=weekly?'':'weekly';location.reload();","weekly=!weekly;document.getElementById('img').className=weekly?'weekly':'';refresh();")
