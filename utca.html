@@ -1,0 +1,69 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>UTCA 출력일보</title><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta name="utca-ver" content="v001"><meta name="utca-build" content="2026-11-26 17:30 v001 업무 대시보드에서 분리한 단독 화면">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<!-- 2026-11-26 조조: 업무 대시보드 「UTCA 출력일보」 시트를 떼어 낸 단독 화면. 02 컴퓨터 2번(위) 모니터용.
+ 자료: 사무실 PC가 02 열쇠로 암호화해 올리는 utcak02.enc.json(03 화면 틀·카톡 원문·반영 명단) + utca02.enc.json(주간·월간 다이어리 그림), 10분마다 새로 받음.
+ 열쇠: 02 PC 실행 파일이 주소 #k= 로 넘김 → 이 PC 전용 크롬 프로필에만 기억, 주소창에서는 바로 지움. 화면 파일에는 열쇠·자료 없음.
+ ESC 또는 오른쪽 위 「닫기」 = 창 닫기. 작업 표시줄 UTCA 아이콘으로 다시 엶. -->
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+body{font:18px/1.35 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;color:#1a1a1a;background:#eef0f2;display:flex;flex-direction:column}
+header{flex:none;display:flex;align-items:center;gap:18px;padding:6px 10px 6px 16px;background:#fff;border-bottom:3px solid #1F3A68;white-space:nowrap}
+.brand .co{font-size:15px;font-weight:800;color:#1F3A68}.brand .co .v{font-size:13px;font-weight:600;color:#59616d}
+.brand h1{margin:0;font-size:29px;line-height:1.1;font-weight:800;color:#14284B;letter-spacing:-.8px}
+.clk{display:flex;gap:10px;margin-left:8px}.clk div{border:2px solid #1F3A68;border-radius:8px;padding:2px 12px;text-align:center;min-width:150px}
+.clk b{display:block;font-size:24px;font-weight:800;color:#14284B;font-variant-numeric:tabular-nums;line-height:1.15}.clk span{font-size:14px;font-weight:700;color:#3d4654}
+#at{font-size:16px;font-weight:700;color:#3d4654}
+.sp{flex:1}
+#hint{font-size:16px;font-weight:700;color:#3d4654}
+#close{height:54px;min-width:150px;padding:0 20px;font:800 21px 'Pretendard Variable',Pretendard,'Malgun Gothic',sans-serif;border:2px solid #A11B1B;background:#fff;color:#A11B1B;border-radius:8px;cursor:pointer}
+#close:hover{background:#A11B1B;color:#fff}
+#wrap{flex:1;min-height:0;position:relative;padding:6px}
+#utf{width:100%;height:100%;border:0;background:#fff;display:none}
+#msg{position:absolute;inset:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:28px;font-weight:800;color:#14284B;background:#fff;border:2px solid #1F3A68;border-radius:6px}
+#msg small{display:block;font-size:19px;font-weight:600;color:#3d4654;margin-top:8px}
+#toast{position:fixed;right:16px;top:76px;background:#A11B1B;color:#fff;font-size:20px;font-weight:800;padding:12px 18px;border-radius:8px;display:none;z-index:9}
+</style></head><body>
+<header><div class="brand"><div class="co">평택 법인 · UTCA<span class="v"> · v001 · 11/26 17:30 업데이트</span></div><h1>UTCA 출력일보</h1></div>
+<div class="clk"><div><b id="krT">--:--</b><span id="krD">한국</span></div><div><b id="usT">--:--</b><span id="usD">미국 동부</span></div></div>
+<span id="at"></span><span class="sp"></span><span id="hint">ESC 누르면 창 닫힘</span><button id="close" type="button" title="창 닫기 (ESC)">✕ 닫기</button></header>
+<div id="wrap"><div id="msg"><div>UTCA 출력일보 자료를 받는 중입니다<small>잠시만 기다려 주세요</small></div></div><iframe id="utf" title="UTCA 출력일보"></iframe></div>
+<div id="toast">창 오른쪽 위 X를 눌러 닫아 주세요</div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+/* 열쇠: #k= 로 받으면 기억하고 주소에서 지움(기록 줄 늘리지 않음 → ESC 닫기 유지) */
+var KEY='';try{var h=location.hash.match(/[#&]k=([^&]+)/);if(h){KEY=decodeURIComponent(h[1]);localStorage.setItem('utca_k',KEY);history.replaceState(null,'',location.pathname+location.search);}else KEY=localStorage.getItem('utca_k')||'';}catch(e){}
+if(!KEY){$('msg').innerHTML='<div>이 PC에 UTCA 열쇠가 없습니다<small>작업 표시줄의 UTCA 아이콘으로 열어 주세요</small></div>';}
+/* 창 닫기: ESC · 닫기 버튼 */
+function closeWin(){try{window.close();}catch(e){}setTimeout(function(){var t=$('toast');t.style.display='block';setTimeout(function(){t.style.display='none'},4000)},400)}
+function onKey(e){if(e.key==='Escape'||e.keyCode===27){e.preventDefault();closeWin();}}
+document.addEventListener('keydown',onKey,true);$('close').onclick=closeWin;
+/* 한국·미국 동부 시계 */
+var WD=['일','월','화','수','목','금','토'];
+function fmt(tz){var o=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,weekday:'short'}).formatToParts(new Date()),m={};o.forEach(function(p){m[p.type]=p.value});var d=new Date(+m.year,+m.month-1,+m.day);return {t:(m.hour==='24'?'00':m.hour)+':'+m.minute,d:m.month+'/'+m.day+'('+WD[d.getDay()]+')'}}
+function tick(){var k=fmt('Asia/Seoul'),u=fmt('America/New_York');$('krT').textContent=k.t;$('krD').textContent='한국 '+k.d;$('usT').textContent=u.t;$('usD').textContent='미국 동부 '+u.d}
+tick();setInterval(tick,15000);
+var UTK=null,UTI=null,S2K='',SHEET=2;
+function wireFrame(){try{var w=$('utf').contentWindow;w.document.addEventListener('keydown',onKey,true);}catch(e){}}
+$('utf').addEventListener('load',wireFrame);
+/* 업무 대시보드 시트(ccpview.html v015 s2build)와 같은 조립 방식 */
+function s2build(){if(!UTK||!UTK.tpl){return}var key=UTK.at+'|'+(UTI?UTI.at:'');if(key===S2K)return;S2K=key;
+ var t=UTK.tpl,inj='<script>'+[UTK.kakao,UTK.refl,UTK.local].map(function(x){return String(x||'').replace(/<\/script/gi,'<\\/script')}).join('\n')+'\nwindow.UTIMG='+JSON.stringify(UTI?{w:UTI.weekly,m:UTI.monthly}:null)+';<\/script>';
+ t=t.replace(/<head>/i,'<head>'+inj).replace('async function findLatest(){','async function findLatest(){if(window.UTIMG&&(weekly?UTIMG.w:UTIMG.m))return {name:"",d:new Date(),src:weekly?UTIMG.w:UTIMG.m};')
+  .replace("img.src=encodeURI(r.name)+'?t='+Date.now();","img.src=r.src||(encodeURI(r.name)+'?t='+Date.now());")
+  .replace("location.hash=weekly?'':'weekly';location.reload();","weekly=!weekly;document.getElementById('img').className=weekly?'weekly':'';refresh();")
+  .replace("setTimeout(function(){location.reload();},10*60*1000);","");
+ var f=$('utf');f.srcdoc=t;f.style.display='block';$('msg').style.display='none'}
+/* v008
+function showAt(){try{var s=UTK&&UTK.at;if(!s)return;var d=new Date(s);if(isNaN(d))return;var k=fmt('Asia/Seoul');$('at').textContent='자료 '+new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)+' 기준';}catch(e){}}
+function b(s){var x=atob(s),u=new Uint8Array(x.length);for(var i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return u}
+function dec(e,pw){var enc=new TextEncoder();return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(base){return crypto.subtle.deriveKey({name:'PBKDF2',salt:b(e.salt),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}).then(function(key){return crypto.subtle.decrypt({name:'AES-GCM',iv:b(e.iv)},key,b(e.ct))}).then(function(buf){return JSON.parse(new TextDecoder().decode(buf))})}
+
+var UL1='',UL2='';function pullU(){var pw=KEY;if(!pw||!window.crypto||!crypto.subtle)return;var B='https://lee1812-oss.github.io/drawbread/';
+ fetch(B+'utcak02.enc.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(e){if(!e||e.updated===UL1)return;return dec(e,pw).then(function(n){UL1=e.updated;if(n&&n.tpl){UTK=n;showAt();s2build()}})}).catch(function(){if(!UTK)$('msg').innerHTML='<div>자료를 풀지 못했습니다<small>열쇠가 바뀌었을 수 있습니다. 조조에게 알려 주세요</small></div>'});
+ fetch(B+'utca02.enc.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(e){if(!e||e.updated===UL2)return;return dec(e,pw).then(function(n){UL2=e.updated;if(n&&(n.weekly||n.monthly)){UTI=n;s2build()}})}).catch(function(){})}
+pullU();setInterval(function(){if(!document.hidden)pullU()},600000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)pullU()});
+})();
+</script></body></html>
